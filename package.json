@@ -1,0 +1,26 @@
+{
+  "name": "organ-donors",
+  "version": "1.0.0",
+  "description": "Group 3 project for COSC 3380 Spring 2017",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.heroku.com/fathomless-chamber-42958.git"
+  },
+  "keywords": [
+    "organ",
+    "donor",
+    "network",
+    "group3",
+    "cosc3380"
+  ],
+  "author": "Nick Biddle, Yaroslav Berejnoi, Hasnain Bilgrami, Kun Yu, Julian Brown",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.1",
+    "mongodb": "^2.2.24"
+  }
+}
