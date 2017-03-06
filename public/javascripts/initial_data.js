@@ -24,7 +24,7 @@ module.exports.donors = [
 		health: {
 			sex: "male",
 			height: 150.00,
-			dob: "05/08/1989",
+			dob: d,
 			blood_type: "B",
 			HLA_class: 5,
 			weight: 80.04

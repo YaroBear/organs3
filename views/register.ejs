@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html ng-app="Register">
+	<body ng-contoller="RegisterDoctor">
+
+		<div class="container register-form">
+			<form class="register-form" ng-show="isRegistering" role="form" ng-submit="registerDoctor(newDoctor)" novalidate>
+				<div class= "form-group">
+					<label for="newDoctorSSN">SSN</label>
+					<input type="text" class="form-control" id ="newDoctorSSN" ng-model="newDoctor.SSN" placeholder="xxx-xx-xxxx">
+				</div>
+				<div class= "form-group">
+					<label for="newDoctorName">Name</label>
+					<input type="text" class="form-control" id ="newDoctorName" ng-model="newDoctor.name" placeholder="Enter name">
+				</div>
+				<div class= "form-group">
+					<label for="newDoctorUsername">Username</label>
+					<input type="text" class="form-control" id ="newDoctorUsername" ng-model="newDoctor.username" placeholder="Desired Username">
+				</div>
+				<div class= "form-group">
+					<label for="newDoctorName">Password</label>
+					<input type="text" class="form-control" id ="newDoctorName" ng-model="newDoctor.password" placeholder="Desired Password">
+				</div>
+				<div class= "form-group">
+					<label for="permissionCode">Permission Code</label>
+					<input type="text" class="form-control" id ="permissionCode" ng-model="permissionCode" placeholder="">
+				</div>
+				<a class="btn btn-primary btn-lg pull-right" href="#" role="button">Submit</a>
+		</div>
+
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/main.css"/>
+		
+	</body>
+</html>
