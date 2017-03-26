@@ -8,7 +8,7 @@ var Schema = mongoose.Schema;
 var mongodb_uri = process.env.MONGODB_URI;
 mongoose.connect(mongodb_uri);
 
-/*
+// models
 var doctorSchema = new Schema({
 	ssn : {
 		type: String,
@@ -26,14 +26,6 @@ var doctorSchema = new Schema({
 	},
 	patients : []
 });
-*/
-
-
-var doctorSchema = new Schema({
-	ssn: {type :String, required: true},
-	name: {type :String, required: true},
-	patients: []
-});
 
 
 var userSchema = new Schema({
@@ -48,6 +40,7 @@ var userSchema = new Schema({
 // API Routes
 
 router.get('/api/doctors', function(req, res) {
+	var Doctors = mongoose.model('doctors', userSchema);
 	Doctors.find(function(err, data){
 		if(err)
 			res.send(err);
@@ -59,9 +52,21 @@ router.get('/api/doctors', function(req, res) {
 router.post('/api/doctors', function(req, res) {
 	console.log(req.body);
 	var User = mongoose.model('User', userSchema);
-	var request = req.body;
-	var isAdmin = false;
+	var request = {};
+	// if req.body is empty (form is empty), use query parameters 
+	// to test API without front end via Postman or regular xmlhttprequest
+	if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
+	{	
+		console.log("using req.query");
+		request = req.query;
+	}
+	else
+	{
+		console.log("using req.body")
+		request = req.body;
+	}
 
+	var isAdmin = false;
 	// is request code is 1234, then user is an admin
 	if (request.code == "1234")
 	{
@@ -81,7 +86,11 @@ router.post('/api/doctors', function(req, res) {
 
 		// save the user
 		newUser.save(function(err) {
-			if (err) throw err;
+			if (err)
+			{
+				console.log(err);
+				return res.json(err);
+			}
 			else
 			{
 				console.log("User Created");
@@ -90,8 +99,7 @@ router.post('/api/doctors', function(req, res) {
 	}
 	else
 	{
-		res.send("Permission code is incorrect");
-		console.log("A person who is not an admin or doctor is requesting access");
+		res.send("Permission code is incorrect or missing");
 	}
 	if (request.code == "4321")
 	{
@@ -104,8 +112,11 @@ router.post('/api/doctors', function(req, res) {
 		});
 
 		// save the new doctor
-		newDoctor.save(function(err) {
-			if (err) throw err;
+		newDoctor.save(function(err, next) {
+			if (err)
+			{
+				return res.json(err);
+			}
 			else
 			{
 				console.log("New Doctor added")
