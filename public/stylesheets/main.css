@@ -22,3 +22,7 @@ body {
 .register-form {
 
 }
+
+.error {
+	color: red;
+}

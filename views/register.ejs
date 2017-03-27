@@ -11,7 +11,7 @@
 	<body ng-controller="doctorController">
 
 		<div class="container register-form">
-			<form class="register-form">
+			<form class="register-form" ng-show="showForm">
 				<div class= "form-group">
 					<label for="newDoctorSSN">SSN</label>
 					<input type="text" class="form-control" id ="newDoctorSSN" ng-model="formData.SSN" placeholder="xxx-xx-xxxx">
@@ -38,6 +38,9 @@
 				</div>
 				<a class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addDoctor()">Submit</a>
 			</form>
+			<div ng-show="addedAlert">
+				<h1>User Added Successfully!</h1>
+			</div>
 		</div>
 		
 	</body>

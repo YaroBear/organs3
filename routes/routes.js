@@ -3,6 +3,7 @@ var router = express.Router();
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+mongoose.Promise = Promise;
 
 // connecting to Mlab
 var mongodb_uri = process.env.MONGODB_URI;
@@ -16,7 +17,7 @@ var doctorSchema = new Schema({
 			validator: function(v) {
 				return /\d{3}-\d{2}-\d{4}/.test(v);
 			},
-			message: "{VALUE} is not a valid SSN"
+			message: "Please enter your SSN as xxx-xx-xxx"
 		},
 		required: [true, "Social Security number required"]
 	},
@@ -29,7 +30,17 @@ var doctorSchema = new Schema({
 
 
 var userSchema = new Schema({
-	ssn : {type: String, required: true, unique: true},
+	ssn : {
+		type: String,
+		unique: true,
+		validate: {
+			validator: function(v) {
+				return /\d{3}-\d{2}-\d{4}/.test(v);
+			},
+			message: "Please enter your SSN as xxx-xx-xxx"
+		},
+		required: [true, "Social Security number required"]
+	},
 	name: {type: String, required: true},
 	username : {type: String, required: true, unique: true},
 	password : {type: String, required: true},
@@ -51,7 +62,7 @@ router.get('/api/doctors', function(req, res) {
 
 router.post('/api/doctors', function(req, res) {
 	console.log(req.body);
-	var User = mongoose.model('User', userSchema);
+	var User = mongoose.model('users', userSchema);
 	var request = {};
 	// if req.body is empty (form is empty), use query parameters 
 	// to test API without front end via Postman or regular xmlhttprequest
@@ -66,15 +77,41 @@ router.post('/api/doctors', function(req, res) {
 		request = req.body;
 	}
 
-	var isAdmin = false;
-	// is request code is 1234, then user is an admin
-	if (request.code == "1234")
-	{
-		isAdmin = true;
-	}
+	var duplicateErrors ={};
 
-	if (request.code == "4321" || request.code == "1234")
-	{
+	User.findOne({ssn : request.SSN}, function(err, ssn){
+		if (err) throw err;
+
+		//if ssn exists, respond with message
+		if (ssn)
+		{
+			var message = "A user with that SSN already exists";
+			duplicateErrors.ssn = {};
+			duplicateErrors.ssn.message = message;
+		}
+
+		User.findOne({username : request.username}, function(err, username){
+			if (username)
+			{
+				var message = "A user with that username already exists";
+				duplicateErrors.username = {};
+				duplicateErrors.username.message = message;
+			}
+		});
+	}).then(function(){
+
+		var codeErrors = {};
+		var isAdmin = false;
+
+		if (request.code == undefined)
+		{
+			codeErrors.message = "A system permission code is required";
+		}
+		else if (request.code == "1234")
+		{
+			isAdmin = true;
+		}
+
 		// create a new user
 		var newUser = User({
 			ssn : request.SSN,
@@ -84,45 +121,30 @@ router.post('/api/doctors', function(req, res) {
 			admin : isAdmin
 		});
 
-		// save the user
-		newUser.save(function(err) {
-			if (err)
-			{
-				console.log(err);
-				return res.json(err);
-			}
-			else
-			{
-				console.log("User Created");
-			} 
-		});
-	}
-	else
-	{
-		res.send("Permission code is incorrect or missing");
-	}
-	if (request.code == "4321")
-	{
-		// create a new doctor
-		var Doctor = mongoose.model('Doctors', doctorSchema);
-		var newDoctor = Doctor({
-			ssn: request.SSN,
-			name : request.name,
-			patients: []
-		});
 
-		// save the new doctor
-		newDoctor.save(function(err, next) {
+		newUser.validate(function (err){
 			if (err)
-			{
-				return res.json(err);
+			{	
+				res.send(err);
 			}
 			else
 			{
-				console.log("New Doctor added")
+			// save the user
+			newUser.save(function(err) {
+				if (err)
+				{
+					console.log(err);
+					res.json(err);
+				}
+				else
+				{
+					res.json("User Created")
+					console.log("User Created");
+				}
+			});
 			}
 		});
-	}
+	});
 });
 
 
@@ -143,4 +165,4 @@ router.get('/register', function(req, res, next) {
 });
 
 
-module.exports = router;
+module.exports = router
