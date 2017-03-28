@@ -12,18 +12,26 @@ var register = angular.module('register', [])
 		$http.post('/api/doctors', $scope.formData)
 			.success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
-				var errors = serverResponse.errors;
 
-				$scope.nameError = "";
+			console.log(serverResponse);
+			$scope.showForm = false;
+			$scope.addedAlert = true;
+				
+
+			})
+			.error(function(err) {
+				console.log("Error: ", err);
+
+				// reset error code messages
+				$scope.ssnError = "";
 				$scope.nameError = "";
 				$scope.usernameError = "";
 				$scope.passwordError = "";
-				$scope.codeError = "";
+				$scope.permCodeError = "";
 
-
-				if (errors)
+				if (err.errors.validationError)
 				{
-					console.log(errors);
+					var errors = err.errors.validationError.errors;
 					if (errors.ssn)
 					{
 						$scope.ssnError = errors.ssn.message;
@@ -40,23 +48,20 @@ var register = angular.module('register', [])
 					{
 						$scope.passwordError = errors.password.message;
 					}
-					if (errors.code)
-					{
-						$scope.codeError = errors.code.message;
-					}
-
 				}
-
-
-				if(errors = undefined)
+				if (err.errors.permCode)
 				{
-					$scope.showForm = false;
-					$scope.addedAlert = true;
+					$scope.permCodeError = err.errors.permCode;
+				}
+				if (err.errors.ssnExists)
+				{
+					$scope.ssnError = err.errors.ssnExists;
+				}
+				if (err.errors.usernameExists)
+				{
+					$scope.usernameError = err.errors.usernameExists;
 				}
 
-			})
-			.error(function(err) {
-				console.log("Error: " + err);
 			});
 		};
 	}]);
