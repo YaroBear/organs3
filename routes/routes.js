@@ -41,7 +41,7 @@ var userSchema = new Schema({
 // API Routes
 
 router.get('/api/doctors', function(req, res) {
-	var Doctors = mongoose.model('doctors', userSchema);
+	var Doctors = mongoose.model('doctors', doctorSchema);
 	Doctors.find(function(err, data){
 		if(err)
 			res.send(err);
