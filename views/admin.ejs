@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html ng-app="admin">
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="/stylesheets/main.css"/>
+		<script src="controllers/admin-ctrl.js"></script>
+	</head>
+	<body ng-controller="adminController">
+
+		<div class="container login-form">
+			<form class="login-form">
+
+				<div class= "form-group">
+					<label>Password</label>
+					<input type="password" class="form-control" id ="userPassword" ng-model="formData.password" placeholder="Password">
+					<p class="error">{{passwordError}}</p>
+				</div>
+				<a class="btn btn-primary btn-lg pull-right" href="#" role="button" ng-click="authenticateUser()">button</a>
+			</form>
+		</div>
+	</body>
+</html>
