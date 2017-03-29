@@ -27,7 +27,7 @@ var userSchema = new Schema({
 			validator: function(v) {
 				return /\d{3}-\d{2}-\d{4}/.test(v);
 			},
-			message: "Please enter your SSN as xxx-xx-xxx"
+			message: "Please enter your SSN as xxx-xx-xxxx"
 		},
 		required: [true, "Social Security number required"]
 	},
@@ -37,11 +37,37 @@ var userSchema = new Schema({
 	admin : Boolean
 });
 
+var hospitalSchema = new Schema({
+	name: String,
+	address : {
+		street : String,
+		city: String,
+		state: String,
+		zip: String,
+		region: Number
+	},
+	phone : String,
+	procedures : Array,
+	doctors : Array
+});
+
 
 // API Routes
 
+var Hospitals = mongoose.model('hospitals', hospitalSchema);
+
+router.get('/api/hospitals/names', function(req, res){
+	Hospitals.find({}, {name: 1}, function(err, data){
+		if (err)
+			res.send(err);
+		else
+			res.json(data);
+	});
+});
+
+var Doctors = mongoose.model('doctors', doctorSchema);
+
 router.get('/api/doctors', function(req, res) {
-	var Doctors = mongoose.model('doctors', doctorSchema);
 	Doctors.find(function(err, data){
 		if(err)
 			res.send(err);
@@ -51,7 +77,7 @@ router.get('/api/doctors', function(req, res) {
 });
 
 router.post('/api/doctors', function(req, res) {
-    console.log(req.body);
+    //console.log(req.body);
     var User = mongoose.model('users', userSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
@@ -79,7 +105,6 @@ router.post('/api/doctors', function(req, res) {
         }).then(function(username) {
             if (username)
             {
-                console.log(username);
                 errors.usernameExists = "A user with that username already exists";
             }
         }).then(function(){
@@ -113,20 +138,28 @@ router.post('/api/doctors', function(req, res) {
                 error.errors = errors;
                 throw error;
             }
-                // save the user
-                return newUser.save();
-        }).then(function() {
-            var Doctor = mongoose.model('doctors', doctorSchema);
-            var newDoctor = Doctor({
-            	name : request.name,
-            	patients : []
-            });
-
-            return newDoctor.save().then(function() {return newDoctor;});
+            else
+            {
+            	return newUser.save().then(function() {return newUser;});
+            }
         }).catch(function(err){
-        	throw err;
-        }).then(function(){
-        	res.status(201).send({ok: true, message: 'Added user successfully'});
+    	    var error = {};
+            error.message = err.message;
+            error.code = 400;
+            error.errors = errors;
+            throw error;
+        }).then(function(newUser) {
+        	var newDoctor = new Doctors({
+        		_id : newUser._id,
+        		name : newUser.name
+        	});
+
+        	return newDoctor.save().then(function() {return newUser;});
+        
+        }).then(function(newUser) {
+        	Hospitals.findOneAndUpdate({"_id": request.selectedHospital._id}, {$push:{doctors: newUser._id}}).then(function() {return Hospitals});
+        }).then(function(Hospitals){
+            res.status(201).send({ok: true, message: 'Added user successfully'});
         }).catch(function(err) {
 			var errorCode = err.code || 500;
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});

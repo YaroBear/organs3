@@ -8,7 +8,19 @@ var register = angular.module('register', [])
 
 		$scope.ssnError;
 
+		$scope.hospitals = [];
+
+		$http.get("/api/hospitals/names")
+			.success(function(names){
+				$scope.hospitals = names;
+			}).error(function(err){
+				console.log(err);
+				$scope.hospitals = "Error retrieving hospitals";
+			});
+
 		$scope.addDoctor = function() {
+		console.log($scope.formData.selectedHospital);
+
 		$http.post('/api/doctors', $scope.formData)
 			.success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
