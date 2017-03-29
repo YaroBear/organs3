@@ -1,0 +1,7 @@
+mongo shell access:
+
+mongo ds161069.mlab.com:61069/heroku_3xgz16cg -u heroku_3xgz16cg -p naifasurqnfnf0ap5us8d42jvd
+
+Create backup:
+
+mongodump --host ds161069.mlab.com --port 61069 -d heroku_3xgz16cg -u heroku_3xgz16cg -p naifasurqnfnf0ap5us8d42jvd --out <location>
