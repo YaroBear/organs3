@@ -1,6 +1,14 @@
 var express = require('express');
 var router = express.Router();
 
+
+//authentication
+var app = express();
+var jwt = require('jsonwebtoken');
+//var config = require('./config');
+app.set('superSecret', process.env.SECRET);
+
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 mongoose.Promise = Promise;
@@ -166,6 +174,76 @@ router.post('/api/doctors', function(req, res) {
         });
     });
 
+//user authentication
+router.post('/api/authenticate', function(req, res) {
+    console.log(req.body);
+    var User = mongoose.model('users', userSchema);
+    var request = {};
+    // if req.body is empty (form is empty), use query parameters 
+    // to test API without front end via Postman or regular xmlhttprequest
+    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
+    {   
+        console.log("using req.query");
+        request = req.query;
+    }
+    else
+    {
+        console.log("using req.body");
+        request = req.body;
+    }
+
+    console.log(request.username);
+
+    if (request.username != null){
+
+        User.findOne({
+            username: request.username
+        }, function(err, user) {
+
+            //console.log(user.username);
+            if(err) throw err;
+
+            if(!user){
+                res.json({ success: false, message: 'Authentication failed. User not found.' });
+            } else if (user) {
+
+                //check password
+                if (user.password != request.password){
+                    res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+                } else {
+                    //if user is found and password is correct generate token
+                    var token = jwt.sign(user, app.get('superSecret'), {
+                        expiresIn: 60*60
+                    });
+
+                    if (user.admin){                    
+
+                        //return message and token
+                        res.json({
+                            success: true,
+                            message: 'Admin Login successful',
+                            token: token
+                        });
+                    }
+                    else{
+                        //return message and token
+                        res.json({
+                            success: true,
+                            message: 'Doctor Login successful',
+                            token: token
+                        });
+                    }
+
+                }
+
+            }
+            
+        });
+    }
+    else {
+        res.send("Please enter a username");
+    }
+});
 
 
 //Angular Routes
@@ -179,6 +257,59 @@ router.get('/', function(req, res, next) {
 router.get('/register', function(req, res, next) {
   res.render('register');
 });
+
+
+/* GET login page. */
+router.get('/authenticate', function(req, res, next) {
+  res.render('authenticate');
+});
+
+
+
+
+//token verifying middleware.  This must come after any unprotected routes and 
+//before any protected routes
+router.use(function(req, res, next) {
+
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+  // decode token
+  if (token) {
+
+    // verifies secret and checks exp
+    jwt.verify(token, app.get('superSecret'), function(err, decoded) {      
+      if (err) {
+        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, save to request for use in other routes
+        req.decoded = decoded;    
+        next();
+      }
+    });
+
+  } else {
+
+    // if there is no token
+    // return an error
+    return res.status(403).send({ 
+        success: false, 
+        message: 'No token provided.' 
+    });
+    
+  }
+});
+
+
+
+
+/* GET register page. */
+router.get('/admin', function(req, res, next) {
+  res.render('admin');
+});
+
+
+//app.use('/api', router);
 
 
 module.exports = router
