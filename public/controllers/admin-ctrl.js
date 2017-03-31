@@ -3,7 +3,7 @@ var admin = angular.module('admin', [])
 
 		$scope.message = "";
 		var token = localStorage.getItem(token);
-
+		console.log("admin controller token = " + token);
 		$http({
 			method: "GET",
 			url: "/admin"

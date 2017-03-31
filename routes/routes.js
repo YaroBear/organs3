@@ -5,7 +5,6 @@ var router = express.Router();
 //authentication
 var app = express();
 var jwt = require('jsonwebtoken');
-//var config = require('./config');
 app.set('superSecret', process.env.SECRET);
 
 
@@ -61,8 +60,16 @@ var hospitalSchema = new Schema({
 
 
 // API Routes
-
 var Hospitals = mongoose.model('hospitals', hospitalSchema);
+
+router.get('/api/hospitals', function(req, res){
+    Hospitals.find(function(err, data){
+        if (err)
+            res.send(err);
+        else
+            res.json(data);
+    });
+});
 
 router.get('/api/hospitals/names', function(req, res){
 	Hospitals.find({}, {name: 1}, function(err, data){
@@ -174,6 +181,101 @@ router.post('/api/doctors', function(req, res) {
         });
     });
 
+
+//ADD HOSPITAL ROUTE
+router.post('/api/hospitals', function(req, res) {
+    //console.log(req.body);
+    var Hospital = mongoose.model('hospitals', hospitalSchema);
+    var request = {};
+    // if req.body is empty (form is empty), use query parameters 
+    // to test API without front end via Postman or regular xmlhttprequest
+    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
+    {    
+        console.log("using req.query");
+        request = req.query;
+    }
+    else
+    {
+        console.log("using req.body")
+        request = req.body;
+    }
+
+    var errors = {};
+
+    Hospital.findOne({name : request.name})
+        .then(function(name) {
+            if (name)
+            {
+                errors.nameExists = "A hospital with that name already exists";
+            }
+            return Hospital.findOne({name : request.name});
+        })
+
+        .then(function(address) {
+            if (address)
+            {
+                errors.addressExists = "A hospital with that address already exists";
+            }
+        })
+
+        .then(function(){
+            if (request.phoneNumber == undefined)
+            {
+                errors.phoneNumber = "A phone number is required";
+            }
+
+            // create a new hospital
+            var newHospital = Hospital({
+
+
+                name : request.name,
+
+
+                // street : request.street,
+                // city : request.city,
+                // state : request.state,
+                // zip : request.zip,
+                // region : request.region,
+
+                address : {street : request.street,
+                city : request.city,
+                state : request.state,
+                zip : request.zip,
+                region : request.region}
+
+
+            });
+
+            return newHospital.validate().then(function() { return newHospital; });
+        }).catch(function(err) {
+            errors.validationError = err;
+        }).then(function(newHospital) {
+            if(errors.validationError) {
+                var error = {};
+                error.message = 'Failed to add hospital';
+                error.code = 400;
+                error.errors = errors;
+                throw error;
+            }
+            else
+            {
+                return newHospital.save().then(function() {return newHospital;});
+            }
+        }).catch(function(err){
+            var error = {};
+            error.message = err.message;
+            error.code = 400;
+            error.errors = errors;
+            throw error;
+        }).catch(function(err) {
+            var errorCode = err.code || 500;
+            res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
+        });
+    });
+
+
+
+
 //user authentication
 router.post('/api/authenticate', function(req, res) {
     console.log(req.body);
@@ -264,8 +366,10 @@ router.get('/authenticate', function(req, res, next) {
   res.render('authenticate');
 });
 
-
-
+/*GET addHospital page. */
+router.get('/addHospital', function(req, res, next) {
+  res.render('addHospital');
+});
 
 //token verifying middleware.  This must come after any unprotected routes and 
 //before any protected routes
@@ -283,7 +387,8 @@ router.use(function(req, res, next) {
         return res.json({ success: false, message: 'Failed to authenticate token.' });    
       } else {
         // if everything is good, save to request for use in other routes
-        req.decoded = decoded;    
+        req.decoded = decoded;
+        //res.send("AUTHENTICATION SUCCESS");
         next();
       }
     });
@@ -299,6 +404,7 @@ router.use(function(req, res, next) {
     
   }
 });
+
 
 
 
