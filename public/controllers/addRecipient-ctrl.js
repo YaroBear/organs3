@@ -1,19 +1,23 @@
-var addHospital = angular.module('addHospital', [])
-	.controller("hospitalController", ["$scope", "$http", function hospitalController($scope, $http){
+var addRecipient = angular.module('addRecipient', [])
+	.controller("recipientController", ["$scope", "$http", function recipientController($scope, $http){
 		$scope.formData = {};
 
 		$scope.showForm = true; //default to show form on page load
 
 		$scope.addedAlert = false; //Success message is changed to true if form is filled out correctly
 
-		//$scope.ssnError;
+		$scope.ssnError;
 
 		//$scope.hospitals = [];
 
-		$scope.regions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
-		$scope.region = "";
+		
 		$scope.states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
-		$scope.state = "";
+		
+		$scope.bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+		$scope.organTypes = [ 'Heart', 'Liver', 'Lung', 'Pancreas', 'Kidney'];
+		$scope.urgencies = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+		$scope.sexes = ['F', 'M'];
+
 		// $http.get("/api/hospitals/names")
 		// 	.success(function(names){
 		// 		$scope.hospitals = names;
@@ -22,10 +26,10 @@ var addHospital = angular.module('addHospital', [])
 		// 		$scope.hospitals = "Error retrieving hospitals";
 		// 	});
 
-		$scope.addHospital = function() {
-		//console.log($scope.formData.region);
+		$scope.addRecipient = function() {
+		//console.log($scope.formData.selectedRegion);
 
-		$http.post('/api/hospitals', $scope.formData)
+		$http.post('/api/recipients', $scope.formData)
 			.success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
 
@@ -40,21 +44,32 @@ var addHospital = angular.module('addHospital', [])
 
 				// reset error code messages
 
-				$scope.nameError = "";
+				$scope.firstNameError = "";
+				$scope.lastNameError = "";
+				$scope.ssnError = "";
 				$scope.streetError = "";
 				$scope.cityError = "";
-				$scope.stateError = "";
 				$scope.zipError = "";
-				$scope.phoneNumberError = "";
+				$scope.HLAError = "";
+				$scope.heightError = "";
+				$scope.weightError = "";
 
 
 				if (err.errors.validationError)
 				{
 					var errors = err.errors.validationError.errors;
 
-					if (errors.name)
+					if (errors.firstName)
 					{
-						$scope.nameError = errors.name.message;
+						$scope.firstNameError = errors.firstName.message;
+					}
+					if (errors.lastName)
+					{
+						$scope.lastNameError = errors.lastName.message;
+					}
+					if (errors.ssn)
+					{
+						$scope.ssnError = errors.ssn.message;
 					}
 					if (errors.street)
 					{
@@ -64,30 +79,28 @@ var addHospital = angular.module('addHospital', [])
 					{
 						$scope.cityError = errors.city.message;
 					}
-
-					if (errors.state)
-					{
-						$scope.stateError = errors.state.message;
-					}
-
 					if (errors.zip)
 					{
 						$scope.zipError = errors.zip.message;
 					}
 
-					if (errors.phoneNumber)
+					if (errors.HLAType)
 					{
-						$scope.phoneNumberError = errors.phoneNumber.message;
+						$scope.HLATypeError = errors.HLAType.message;
+					}
+					if (errors.height)
+					{
+						$scope.heightError = errors.height.message;
+					}
+					if (errors.weight)
+					{
+						$scope.weightError = errors.weight.message;
 					}
 				}
 
-				if (err.errors.nameExists)
+				if (err.errors.ssnExists)
 				{
-					$scope.nameError = err.errors.nameExists;
-				}
-				if (err.errors.addressExists)
-				{
-					$scope.addressError = err.errors.addressExists;
+					$scope.ssnError = err.errors.ssnExists;
 				}
 
 			});
