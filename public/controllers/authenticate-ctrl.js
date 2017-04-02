@@ -2,7 +2,6 @@ var authenticate = angular.module('authenticate', [])
 	.controller("authenticationController", ["$scope", "$http", function authenticationcontroller($scope, $http){
 		$scope.formData = {};
 
-		$scope.ssnError;
 
 		$scope.authenticateUser = function() {
 		$http.post('/api/authenticate', $scope.formData)
@@ -10,14 +9,18 @@ var authenticate = angular.module('authenticate', [])
 				//$scope.formData = {}; //clear form
 				var errors = serverResponse.errors;
 
+				//reset error messages
+				$scope.usernameError = "";
+				$scope.passwordError = "";
+
 				if (errors){
-					if (errors.username.message)
+					if (errors.usernameError)
 					{
-						$scope.usernameError = errors.username.message;
+						$scope.usernameError = errors.usernameError.message;
 					}
-					if (errors.password.message)
+					if (errors.passwordError)
 					{
-						$scope.passwordError = errors.password.message;
+						$scope.passwordError = errors.passwordError.message;
 					}
 
 				}
@@ -27,10 +30,8 @@ var authenticate = angular.module('authenticate', [])
 				if (serverResponse.success == true){
 					console.log("SUCCESSFUL SERVER RESPONSE, STORING TOKEN");
 					localStorage.setItem('token', serverResponse.token);
+					localStorage.setItem('user', serverResponse.user);
 				}
-
-				// var t = localStorage.getItem('token');
-				// console.log("retrieving token" + t);
 
 			})
 			.error(function(err) {

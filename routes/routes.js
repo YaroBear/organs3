@@ -6,6 +6,7 @@ var router = express.Router();
 var app = express();
 var jwt = require('jsonwebtoken');
 app.set('superSecret', process.env.SECRET);
+app.set('doctorSecret', process.env.DOCTOR_SECRET);
 
 
 var mongoose = require('mongoose');
@@ -596,10 +597,24 @@ router.post('/api/authenticate', function(req, res) {
         console.log("using req.body");
         request = req.body;
     }
+    var response = {};
+    var errors = {};
 
     console.log(request.username);
 
-    if (request.username != null){
+    if(request.username == null)
+    {
+        errors.usernameError = {message : "Please enter your username"};
+    }
+    if(request.password == null)
+    {
+        errors.passwordError = {message : "Please enter your password"};
+    }
+
+    response.errors = errors;
+
+
+    if (request.username && request.password){
 
         User.findOne({
             username: request.username
@@ -609,47 +624,54 @@ router.post('/api/authenticate', function(req, res) {
             if(err) throw err;
 
             if(!user){
-                res.json({ success: false, message: 'Authentication failed. User not found.' });
+                errors.usernameError = { message: 'Authentication failed. User not found.' };
+                res.send(response);
             } else if (user) {
 
                 //check password
                 if (user.password != request.password){
-                    res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+                    errors.passwordError = { message: 'Authentication failed. Wrong password.' };
+                    res.send(response);
                 } else {
-                    //if user is found and password is correct generate token
-                    var token = jwt.sign(user, app.get('superSecret'), {
-                        expiresIn: 60*60
-                    });
 
-                    if (user.admin){                    
+                    if (user.admin){
+
+                        //if user is found and password is correct generate token
+                        var token = jwt.sign(user, app.get('superSecret'), {
+                            expiresIn: 60*60
+                        });
+                    
 
                         //return message and token
                         res.json({
                             success: true,
                             message: 'Admin Login successful',
-                            token: token
+                            token: token,
+                            user : user.name
                         });
                     }
                     else{
-                        //return message and token
+                        
+                        var token = jwt.sign(user, app.get('doctorSecret'), {
+                            expiresIn: 60*60
+                        });
+
                         res.json({
                             success: true,
                             message: 'Doctor Login successful',
-                            token: token
+                            token: token,
+                            user : user.name
                         });
                     }
-
                 }
-
             }
-            
         });
     }
-    else {
-        res.send("Please enter a username");
-    }
+     else
+        {
+            res.send(response);
+        }
 });
-
 
 //******************************
 //******************************
@@ -698,8 +720,8 @@ router.get('/doctor', function(req, res, next) {
   res.render('doctor');
 });
 
-//token verifying middleware.  This must come after any unprotected routes and 
-//before any protected routes
+
+
 router.use(function(req, res, next) {
 
   // check header or url parameters or post parameters for token
@@ -713,33 +735,64 @@ router.use(function(req, res, next) {
       if (err) {
         return res.json({ success: false, message: 'Failed to authenticate token.' });    
       } else {
-        // if everything is good, save to request for use in other routes
+        // if everything is good, next()
         req.decoded = decoded;
-        //res.send("AUTHENTICATION SUCCESS");
+        
         next();
       }
     });
+    }
+    else
+    {
+        return res.status(403).send({
+            success: false,
+            message: "No token provided"
+        });
+    }
+});
 
-  } else {
+// put apis you want to secure with admin token here
 
-    // if there is no token
-    // return an error
-    return res.status(403).send({ 
-        success: false, 
-        message: 'No token provided.' 
+router.get('/api/hospitals', function(req, res){
+    Hospitals.find(function(err, data){
+        if (err)
+            res.send(err);
+        else
+            res.json(data);
     });
-    
-  }
 });
 
 
+//token verifying middleware for requests sent to doctor apis
+router.use('/api', function(req, res, next) {
+
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+  // decode token
+  if (token) {
 
 
-
-// /* GET register page. */
-// router.get('/admin', function(req, res, next) {
-//   res.render('admin');
-// });
+    // verifies secret and checks exp
+    jwt.verify(token, app.get('doctorSecret'), function(err, decoded) {      
+      if (err) {
+        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, next()
+        req.decoded = decoded;
+        
+        next();
+      }
+    });
+    }
+    else
+    {
+        return res.status(403).send({
+            success: false,
+            message: "No token provided"
+        });
+    }
+});
 
 
 //app.use('/api', router);
