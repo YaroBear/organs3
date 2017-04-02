@@ -29,7 +29,7 @@ var addRecipient = angular.module('addRecipient', [])
 		$scope.addRecipient = function() {
 		//console.log($scope.formData.selectedRegion);
 
-		$http.post('/api/recipients', $scope.formData)
+		$http.post('/api/doctor/recipients', $scope.formData)
 			.success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
 

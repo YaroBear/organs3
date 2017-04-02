@@ -69,8 +69,6 @@ var hospitalSchema = new Schema({
 });
 
 
-
-
 //DONOR SCHEMA
 //issues:
 //-drop down menu values
@@ -172,25 +170,20 @@ var recipientSchema = new Schema({
 
 });
 
-
-
-
-
-//******************************
-//******************************
-//*********API ROUTES***********
-//******************************
-//******************************
 var Hospitals = mongoose.model('hospitals', hospitalSchema);
 
-router.get('/api/hospitals', function(req, res){
-    Hospitals.find(function(err, data){
-        if (err)
-            res.send(err);
-        else
-            res.json(data);
-    });
-});
+var Doctors = mongoose.model('doctors', doctorSchema);
+
+var Donors = mongoose.model('donors', donorSchema);
+
+var Recipients = mongoose.model('recipients', recipientSchema);
+
+
+//******************************
+//******************************
+//***** PUBLIC API ROUTES*******
+//******************************
+//******************************
 
 router.get('/api/hospitals/names', function(req, res){
     Hospitals.find({}, {name: 1}, function(err, data){
@@ -202,41 +195,7 @@ router.get('/api/hospitals/names', function(req, res){
 });
 
 
-var Doctors = mongoose.model('doctors', doctorSchema);
-
-router.get('/api/doctors', function(req, res) {
-	Doctors.find(function(err, data){
-		if(err)
-			res.send(err);
-		else
-			res.json(data);
-	});
-});
-
-
-var Donors = mongoose.model('donors', donorSchema);
-
-router.get('/api/donors', function(req, res) {
-    Donors.find(function(err, data){
-        if(err)
-            res.send(err);
-        else
-            res.json(data);
-    });
-});
-
-var Recipients = mongoose.model('recipients', recipientSchema);
-
-router.get('/api/recipients', function(req, res) {
-    Recipients.find(function(err, data){
-        if(err)
-            res.send(err);
-        else
-            res.json(data);
-    });
-});
-
-router.post('/api/doctors', function(req, res) {
+router.post('/api/register', function(req, res) {
     //console.log(req.body);
     var User = mongoose.model('users', userSchema);
     var request = {};
@@ -327,8 +286,191 @@ router.post('/api/doctors', function(req, res) {
     });
 
 
+
+//user authentication
+router.post('/api/authenticate', function(req, res) {
+    console.log(req.body);
+    var User = mongoose.model('users', userSchema);
+    var request = {};
+    // if req.body is empty (form is empty), use query parameters 
+    // to test API without front end via Postman or regular xmlhttprequest
+    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
+    {   
+        console.log("using req.query");
+        request = req.query;
+    }
+    else
+    {
+        console.log("using req.body");
+        request = req.body;
+    }
+
+    var errors = {};
+
+    console.log(request.username);
+
+    if(request.username == null)
+    {
+        errors.usernameError = {message : "Please enter your username"};
+    }
+    if(request.password == null)
+    {
+        errors.passwordError = {message : "Please enter your password"};
+    }
+
+
+    if (request.username && request.password){
+
+        User.findOne({
+            username: request.username
+        }, function(err, user) {
+
+            //console.log(user.username);
+            if(err) throw err;
+
+            if(!user){
+                errors.usernameError = { message: 'Authentication failed. User not found.' };
+                res.status(401).send({success: false, errors});
+            } else if (user) {
+
+                //check password
+                if (user.password != request.password){
+                    errors.passwordError = { message: 'Authentication failed. Wrong password.' };
+                   res.status(401).send({success: false, errors});
+                } else {
+
+                    if (user.admin){
+
+                        //if user is found and password is correct generate token
+                        var token = jwt.sign(user, app.get('superSecret'), {
+                            expiresIn: 60*60
+                        });
+                    
+
+                        //return message and token
+                        res.json({
+                            success: true,
+                            message: 'Admin Login successful',
+                            token: token,
+                            user : user.name
+                        });
+                    }
+                    else{
+                        
+                        var token = jwt.sign(user, app.get('doctorSecret'), {
+                            expiresIn: 60*60
+                        });
+
+                        res.json({
+                            success: true,
+                            message: 'Doctor Login successful',
+                            token: token,
+                            user : user.name
+                        });
+                    }
+                }
+            }
+        });
+    }
+     else
+        {
+            res.status(400).send({success: false, errors});
+        }
+});
+
+//******************************
+//******************************
+//*******ANGULAR ROUTES*********
+//******************************
+//******************************
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index');
+});
+
+/* GET register page. */
+router.get('/register', function(req, res, next) {
+  res.render('register');
+});
+
+
+/* GET login page. */
+router.get('/authenticate', function(req, res, next) {
+  res.render('authenticate');
+});
+
+/*GET addHospital page. */
+router.get('/addHospital', function(req, res, next) {
+  res.render('addHospital');
+});
+
+/*GET addDonor page. */
+router.get('/addDonor', function(req, res, next) {
+  res.render('addDonor');
+});
+
+/*GET addRecipient page. */
+router.get('/addRecipient', function(req, res, next) {
+  res.render('addRecipient');
+});
+
+/* GET register page. */
+router.get('/admin', function(req, res, next) {
+  res.render('admin');
+});
+
+/* GET register page. */
+router.get('/doctor', function(req, res, next) {
+  res.render('doctor');
+});
+
+
+
+// admin JWT checker
+
+router.use('/api/admin/',function(req, res, next) {
+
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+  // decode token
+  if (token) {
+
+    // verifies secret and checks exp
+    jwt.verify(token, app.get('superSecret'), function(err, decoded) {      
+      if (err) {
+        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, next()
+        req.decoded = decoded;
+        
+        next();
+      }
+    });
+    }
+    else
+    {
+        return res.status(403).send({
+            success: false,
+            message: "No token provided"
+        });
+    }
+});
+
+// put apis you want to secure with admin token here
+
+router.get('/api/admin/hospitals', function(req, res){
+    Hospitals.find(function(err, data){
+        if (err)
+            res.send(err);
+        else
+            res.json(data);
+    });
+});
+
 //ADD HOSPITAL ROUTE
-router.post('/api/hospitals', function(req, res) {
+router.post('/api/admin/hospitals', function(req, res) {
     //console.log(req.body);
     var Hospital = mongoose.model('hospitals', hospitalSchema);
     var request = {};
@@ -414,90 +556,43 @@ router.post('/api/hospitals', function(req, res) {
     });
 
 
-//ADD DONOR ROUTE
-router.post('/api/donors', function(req, res) {
-    //console.log(req.body);
-    var Donor = mongoose.model('donors', donorSchema);
-    var request = {};
-    // if req.body is empty (form is empty), use query parameters 
-    // to test API without front end via Postman or regular xmlhttprequest
-    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
-    {    
-        console.log("using req.query");
-        request = req.query;
+
+
+// doctor apis
+//
+//token verifying middleware for requests sent to doctor apis
+router.use('/api/doctor/', function(req, res, next) {
+
+  // check header or url parameters or post parameters for token
+  var token = req.body.token || req.query.token || req.headers['x-access-token'];
+
+  // decode token
+  if (token) {
+
+
+    // verifies secret and checks exp
+    jwt.verify(token, app.get('doctorSecret'), function(err, decoded) {      
+      if (err) {
+        return res.json({ success: false, message: 'Failed to authenticate token.' });    
+      } else {
+        // if everything is good, next()
+        req.decoded = decoded;
+        
+        next();
+      }
+    });
     }
     else
     {
-        console.log("using req.body")
-        request = req.body;
-    }
-
-    var errors = {};
-
-    Donor.findOne({ssn : request.SSN})
-        .then(function(ssn) {
-            if (ssn)
-            {
-                errors.ssnExists = "A donor with that SSN already exists";
-            }
-        }).then(function(){
-
-
-            // create a new donor
-            //drop down attributes not working
-            var newDonor = Donor({
-                ssn : request.ssn,
-                name : {
-                firstName : request.firstName,
-                lastName : request.lastName},
-
-                address : {street : request.street,
-                city : request.city,
-                state : request.state,
-                zip : request.zip},
-
-                dateAdded : request.dateAdded,
-                timeAdded : request.timeAdded,
-
-                bloodType : request.bloodType,
-                HLAType : request.HLAType,
-                organSize : request.organSize,
-                deceased : request.deceased,
-                height : request.height,
-                weight : request.weight
-
-            });
-
-            return newDonor.validate().then(function() { return newDonor; });
-        }).catch(function(err) {
-            errors.validationError = err;
-        }).then(function(newDonor) {
-            if(errors.validationError) {
-                var error = {};
-                error.message = 'Failed to add user';
-                error.code = 400;
-                error.errors = errors;
-                throw error;
-            }
-            else
-            {
-                return newDonor.save().then(function() {return newDonor;});
-            }
-        }).catch(function(err){
-            var error = {};
-            error.message = err.message;
-            error.code = 400;
-            error.errors = errors;
-            throw error;
-        }).catch(function(err) {
-            var errorCode = err.code || 500;
-            res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
+        return res.status(403).send({
+            success: false,
+            message: "No token provided"
         });
-    });
-
+    }
+});
 
 //ADD RECIPIENT ROUTE
-router.post('/api/recipients', function(req, res) {
+router.post('/api/doctor/recipients', function(req, res) {
     //console.log(req.body);
     var Recipient = mongoose.model('recipients', recipientSchema);
     var request = {};
@@ -578,182 +673,88 @@ router.post('/api/recipients', function(req, res) {
         });
     });
 
-
-
-//user authentication
-router.post('/api/authenticate', function(req, res) {
-    console.log(req.body);
-    var User = mongoose.model('users', userSchema);
+//ADD DONOR ROUTE
+router.post('/api/doctor/donors', function(req, res) {
+    //console.log(req.body);
+    var Donor = mongoose.model('donors', donorSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
     if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
-    {   
+    {    
         console.log("using req.query");
         request = req.query;
     }
     else
     {
-        console.log("using req.body");
+        console.log("using req.body")
         request = req.body;
     }
-    var response = {};
+
     var errors = {};
 
-    console.log(request.username);
-
-    if(request.username == null)
-    {
-        errors.usernameError = {message : "Please enter your username"};
-    }
-    if(request.password == null)
-    {
-        errors.passwordError = {message : "Please enter your password"};
-    }
-
-    response.errors = errors;
-
-
-    if (request.username && request.password){
-
-        User.findOne({
-            username: request.username
-        }, function(err, user) {
-
-            //console.log(user.username);
-            if(err) throw err;
-
-            if(!user){
-                errors.usernameError = { message: 'Authentication failed. User not found.' };
-                res.send(response);
-            } else if (user) {
-
-                //check password
-                if (user.password != request.password){
-                    errors.passwordError = { message: 'Authentication failed. Wrong password.' };
-                    res.send(response);
-                } else {
-
-                    if (user.admin){
-
-                        //if user is found and password is correct generate token
-                        var token = jwt.sign(user, app.get('superSecret'), {
-                            expiresIn: 60*60
-                        });
-                    
-
-                        //return message and token
-                        res.json({
-                            success: true,
-                            message: 'Admin Login successful',
-                            token: token,
-                            user : user.name
-                        });
-                    }
-                    else{
-                        
-                        var token = jwt.sign(user, app.get('doctorSecret'), {
-                            expiresIn: 60*60
-                        });
-
-                        res.json({
-                            success: true,
-                            message: 'Doctor Login successful',
-                            token: token,
-                            user : user.name
-                        });
-                    }
-                }
+    Donor.findOne({ssn : request.SSN})
+        .then(function(ssn) {
+            if (ssn)
+            {
+                errors.ssnExists = "A donor with that SSN already exists";
             }
+        }).then(function(){
+
+
+            // create a new donor
+            //drop down attributes not working
+            var newDonor = Donor({
+                ssn : request.ssn,
+                name : {
+                firstName : request.firstName,
+                lastName : request.lastName},
+
+                address : {street : request.street,
+                city : request.city,
+                state : request.state,
+                zip : request.zip},
+
+                dateAdded : request.dateAdded,
+                timeAdded : request.timeAdded,
+
+                bloodType : request.bloodType,
+                HLAType : request.HLAType,
+                organSize : request.organSize,
+                deceased : request.deceased,
+                height : request.height,
+                weight : request.weight
+
+            });
+
+            return newDonor.validate().then(function() { return newDonor; });
+        }).catch(function(err) {
+            errors.validationError = err;
+        }).then(function(newDonor) {
+            if(errors.validationError) {
+                var error = {};
+                error.message = 'Failed to add user';
+                error.code = 400;
+                error.errors = errors;
+                throw error;
+            }
+            else
+            {
+                return newDonor.save().then(function() {return newDonor;});
+            }
+        }).catch(function(err){
+            var error = {};
+            error.message = err.message;
+            error.code = 400;
+            error.errors = errors;
+            throw error;
+        }).catch(function(err) {
+            var errorCode = err.code || 500;
+            res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
         });
-    }
-     else
-        {
-            res.send(response);
-        }
-});
-
-//******************************
-//******************************
-//*******ANGULAR ROUTES*********
-//******************************
-//******************************
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index');
-});
-
-/* GET register page. */
-router.get('/register', function(req, res, next) {
-  res.render('register');
-});
-
-
-/* GET login page. */
-router.get('/authenticate', function(req, res, next) {
-  res.render('authenticate');
-});
-
-/*GET addHospital page. */
-router.get('/addHospital', function(req, res, next) {
-  res.render('addHospital');
-});
-
-/*GET addDonor page. */
-router.get('/addDonor', function(req, res, next) {
-  res.render('addDonor');
-});
-
-/*GET addRecipient page. */
-router.get('/addRecipient', function(req, res, next) {
-  res.render('addRecipient');
-});
-
-/* GET register page. */
-router.get('/admin', function(req, res, next) {
-  res.render('admin');
-});
-
-/* GET register page. */
-router.get('/doctor', function(req, res, next) {
-  res.render('doctor');
-});
-
-
-
-router.use(function(req, res, next) {
-
-  // check header or url parameters or post parameters for token
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-  // decode token
-  if (token) {
-
-    // verifies secret and checks exp
-    jwt.verify(token, app.get('superSecret'), function(err, decoded) {      
-      if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });    
-      } else {
-        // if everything is good, next()
-        req.decoded = decoded;
-        
-        next();
-      }
     });
-    }
-    else
-    {
-        return res.status(403).send({
-            success: false,
-            message: "No token provided"
-        });
-    }
-});
 
-// put apis you want to secure with admin token here
-
-router.get('/api/hospitals', function(req, res){
+router.get('/api/doctor/hospitals', function(req, res){
     Hospitals.find(function(err, data){
         if (err)
             res.send(err);
@@ -763,35 +764,32 @@ router.get('/api/hospitals', function(req, res){
 });
 
 
-//token verifying middleware for requests sent to doctor apis
-router.use('/api', function(req, res, next) {
-
-  // check header or url parameters or post parameters for token
-  var token = req.body.token || req.query.token || req.headers['x-access-token'];
-
-  // decode token
-  if (token) {
-
-
-    // verifies secret and checks exp
-    jwt.verify(token, app.get('doctorSecret'), function(err, decoded) {      
-      if (err) {
-        return res.json({ success: false, message: 'Failed to authenticate token.' });    
-      } else {
-        // if everything is good, next()
-        req.decoded = decoded;
-        
-        next();
-      }
+router.get('/api/doctor/doctors', function(req, res) {
+    Doctors.find(function(err, data){
+        if(err)
+            res.send(err);
+        else
+            res.json(data);
     });
-    }
-    else
-    {
-        return res.status(403).send({
-            success: false,
-            message: "No token provided"
-        });
-    }
+});
+
+
+router.get('/api/doctor/donors', function(req, res) {
+    Donors.find(function(err, data){
+        if(err)
+            res.send(err);
+        else
+            res.json(data);
+    });
+});
+
+router.get('/api/doctor/recipients', function(req, res) {
+    Recipients.find(function(err, data){
+        if(err)
+            res.send(err);
+        else
+            res.json(data);
+    });
 });
 
 

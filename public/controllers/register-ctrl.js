@@ -21,7 +21,7 @@ var register = angular.module('register', [])
 		$scope.addDoctor = function() {
 		console.log($scope.formData.selectedHospital);
 
-		$http.post('/api/doctors', $scope.formData)
+		$http.post('/api/register', $scope.formData)
 			.success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
 

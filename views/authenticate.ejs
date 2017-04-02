@@ -9,8 +9,7 @@
 		<script src="controllers/authenticate-ctrl.js"></script>
 	</head>
 	<body ng-controller="authenticationController">
-
-		<div class="container login-form">
+		<div class="container login-form" ng-show="showForm">
 			<form class="login-form">
 				<div class= "form-group">
 					<label>Username</label>
@@ -24,6 +23,9 @@
 				</div>
 				<a class="btn btn-primary btn-lg pull-right" role="button" ng-click="authenticateUser()">Submit</a>
 			</form>
+		</div>
+		<div ng-show="loginSuccess">
+			<h1>Welcome back {{userFullName}}!</h1>
 		</div>
 	</body>
 </html>
