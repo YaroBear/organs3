@@ -28,7 +28,7 @@ var addDonor = angular.module('addDonor', [])
 		$scope.addDonor = function() {
 		//console.log($scope.formData.selectedRegion);
 
-		$http.post('/api/doctor/donors', $scope.formData)
+		$http.post('/doctor/api/donors', $scope.formData)
 			.success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
 

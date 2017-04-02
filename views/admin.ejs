@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="admin">
 	<body>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
 		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+		<script src="controllers/admin-ctrl.js"></script>
 
 		<div class="container body-content">
 			<div class="jumbotron top-banner row text-center">
@@ -18,12 +19,13 @@
 					<h2>Admin home</h2>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" ng-controller="adminController">
 				<div class="col-xs-3 col-md-2 left-banner">
-				<a class="btn btn-primary btn-lg btn-block" href="/addHospital" role="button"><span class="glyphicon glyphicon-stats"></span> Add Hospital</a>
+				<a class="btn btn-primary btn-lg btn-block" ng-click = "addHospital()" role="button"><span class="glyphicon glyphicon-stats"></span> Add Hospital</a>
 
 				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
 
 				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+			</div>
 	</body>
 </html>

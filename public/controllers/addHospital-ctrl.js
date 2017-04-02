@@ -25,7 +25,7 @@ var addHospital = angular.module('addHospital', [])
 		$scope.addHospital = function() {
 		//console.log($scope.formData.region);
 
-		$http.post('/api/admin/hospitals', $scope.formData)
+		$http.post('/admin/api/hospitals', $scope.formData)
 			.success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
 

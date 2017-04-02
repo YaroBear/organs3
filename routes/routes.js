@@ -352,7 +352,8 @@ router.post('/api/authenticate', function(req, res) {
                             success: true,
                             message: 'Admin Login successful',
                             token: token,
-                            user : user.name
+                            user : user.name,
+                            userType : "admin"
                         });
                     }
                     else{
@@ -365,7 +366,8 @@ router.post('/api/authenticate', function(req, res) {
                             success: true,
                             message: 'Doctor Login successful',
                             token: token,
-                            user : user.name
+                            user : user.name,
+                            userType : "doctor"
                         });
                     }
                 }
@@ -380,7 +382,7 @@ router.post('/api/authenticate', function(req, res) {
 
 //******************************
 //******************************
-//*******ANGULAR ROUTES*********
+//***PUBLIC ANGULAR ROUTES******
 //******************************
 //******************************
 
@@ -400,36 +402,17 @@ router.get('/authenticate', function(req, res, next) {
   res.render('authenticate');
 });
 
-/*GET addHospital page. */
-router.get('/addHospital', function(req, res, next) {
-  res.render('addHospital');
-});
-
-/*GET addDonor page. */
-router.get('/addDonor', function(req, res, next) {
-  res.render('addDonor');
-});
-
-/*GET addRecipient page. */
-router.get('/addRecipient', function(req, res, next) {
-  res.render('addRecipient');
-});
-
-/* GET register page. */
-router.get('/admin', function(req, res, next) {
-  res.render('admin');
-});
-
-/* GET register page. */
-router.get('/doctor', function(req, res, next) {
-  res.render('doctor');
-});
 
 
+//******************************
+//******************************
+//** PROTECTED ADMIN ROUTES*****
+//******************************
+//******************************
 
 // admin JWT checker
 
-router.use('/api/admin/',function(req, res, next) {
+router.use('/admin/',function(req, res, next) {
 
   // check header or url parameters or post parameters for token
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -460,7 +443,7 @@ router.use('/api/admin/',function(req, res, next) {
 
 // put apis you want to secure with admin token here
 
-router.get('/api/admin/hospitals', function(req, res){
+router.get('/admin/api/hospitals', function(req, res){
     Hospitals.find(function(err, data){
         if (err)
             res.send(err);
@@ -470,7 +453,7 @@ router.get('/api/admin/hospitals', function(req, res){
 });
 
 //ADD HOSPITAL ROUTE
-router.post('/api/admin/hospitals', function(req, res) {
+router.post('/admin/api/hospitals', function(req, res) {
     //console.log(req.body);
     var Hospital = mongoose.model('hospitals', hospitalSchema);
     var request = {};
@@ -557,11 +540,27 @@ router.post('/api/admin/hospitals', function(req, res) {
 
 
 
+/*GET addHospital page. */
+router.get('/admin/addHospital', function(req, res, next) {
+  res.render('addHospital');
+});
 
-// doctor apis
-//
+
+/* GET register page. */
+router.get('/admin/home', function(req, res, next) {
+  res.render('admin');
+});
+
+
+
+//******************************
+//******************************
+//*** PROTECTED DOCTOR ROUTES***
+//******************************
+//******************************
+
 //token verifying middleware for requests sent to doctor apis
-router.use('/api/doctor/', function(req, res, next) {
+router.use('/doctor/', function(req, res, next) {
 
   // check header or url parameters or post parameters for token
   var token = req.body.token || req.query.token || req.headers['x-access-token'];
@@ -592,7 +591,7 @@ router.use('/api/doctor/', function(req, res, next) {
 });
 
 //ADD RECIPIENT ROUTE
-router.post('/api/doctor/recipients', function(req, res) {
+router.post('/doctor/api/recipients', function(req, res) {
     //console.log(req.body);
     var Recipient = mongoose.model('recipients', recipientSchema);
     var request = {};
@@ -674,7 +673,7 @@ router.post('/api/doctor/recipients', function(req, res) {
     });
 
 //ADD DONOR ROUTE
-router.post('/api/doctor/donors', function(req, res) {
+router.post('/doctor/api/donors', function(req, res) {
     //console.log(req.body);
     var Donor = mongoose.model('donors', donorSchema);
     var request = {};
@@ -754,7 +753,7 @@ router.post('/api/doctor/donors', function(req, res) {
         });
     });
 
-router.get('/api/doctor/hospitals', function(req, res){
+router.get('/doctor/api/hospitals', function(req, res){
     Hospitals.find(function(err, data){
         if (err)
             res.send(err);
@@ -764,7 +763,7 @@ router.get('/api/doctor/hospitals', function(req, res){
 });
 
 
-router.get('/api/doctor/doctors', function(req, res) {
+router.get('/doctor/api/doctors', function(req, res) {
     Doctors.find(function(err, data){
         if(err)
             res.send(err);
@@ -774,7 +773,7 @@ router.get('/api/doctor/doctors', function(req, res) {
 });
 
 
-router.get('/api/doctor/donors', function(req, res) {
+router.get('/doctor/api/donors', function(req, res) {
     Donors.find(function(err, data){
         if(err)
             res.send(err);
@@ -783,7 +782,7 @@ router.get('/api/doctor/donors', function(req, res) {
     });
 });
 
-router.get('/api/doctor/recipients', function(req, res) {
+router.get('/doctor/api/recipients', function(req, res) {
     Recipients.find(function(err, data){
         if(err)
             res.send(err);
@@ -791,6 +790,24 @@ router.get('/api/doctor/recipients', function(req, res) {
             res.json(data);
     });
 });
+
+
+/*GET addDonor page. */
+router.get('doctor/addDonor', function(req, res, next) {
+  res.render('addDonor');
+});
+
+/*GET addRecipient page. */
+router.get('doctor/addRecipient', function(req, res, next) {
+  res.render('addRecipient');
+});
+
+
+/* GET doctor home page. */
+router.get('/doctor/home', function(req, res, next) {
+  res.render('doctor');
+});
+
 
 
 //app.use('/api', router);
