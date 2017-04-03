@@ -18,7 +18,7 @@ var authenticate = angular.module('authenticate', [])
 					localStorage.setItem('token', serverResponse.token);
 					localStorage.setItem('user', serverResponse.user);
 					localStorage.setItem('userType', serverResponse.userType);
-
+					localStorage.setItem('mongo_id', serverResponse.mongo_id);
 					$scope.showForm = false;
 					$scope.loginSuccess = true;
 					$scope.userFullName = serverResponse.user;

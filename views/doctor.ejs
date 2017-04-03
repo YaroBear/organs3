@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app = "doctor">
 	<body>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
@@ -7,6 +7,7 @@
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
 		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+		<script src="controllers/doctor-ctrl.js"></script>
 
 		<div class="container body-content">
 			<div class="jumbotron top-banner row text-center">
@@ -18,15 +19,15 @@
 					<h2>Doctor home</h2>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row" ng-controller="doctorController">
 				<div class="col-xs-3 col-md-2 left-banner">
-				<a class="btn btn-primary btn-lg btn-block" href="/addDonor" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Donor</a>
+				<a class="btn btn-primary btn-lg btn-block" ng-click="addDonor()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Donor</a>
 
-				<a class="btn btn-primary btn-lg btn-block" href="/addRecipient" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Recipient</a>
+				<a class="btn btn-primary btn-lg btn-block" ng-click="addRecipient()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Recipient</a>
 
-				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> View Patients</a>
+				<a class="btn btn-primary btn-lg btn-block"  role="button"><span class="glyphicon glyphicon-stats"></span> View Patients</a>
 
-				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Generate Match</a>
+				<a class="btn btn-primary btn-lg btn-block"  role="button"><span class="glyphicon glyphicon-stats"></span> Generate Match</a>
 
 	</body>
 </html>

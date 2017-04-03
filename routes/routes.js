@@ -103,8 +103,7 @@ var donorSchema = new Schema({
 
     },
 
-    dateAdded: {type: String, required: [true, "Date is required"]},
-    timeAdded: {type: String, required: [true, "Time is required"]},
+    dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]}
@@ -155,8 +154,7 @@ var recipientSchema = new Schema({
 
     },
 
-    dateAdded: {type: String, required: [true, "Date is required"]},
-    timeAdded: {type: String, required: [true, "Time is required"]},
+    dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]}
@@ -353,7 +351,8 @@ router.post('/api/authenticate', function(req, res) {
                             message: 'Admin Login successful',
                             token: token,
                             user : user.name,
-                            userType : "admin"
+                            userType : "admin",
+                            mongo_id : user._id
                         });
                     }
                     else{
@@ -367,7 +366,8 @@ router.post('/api/authenticate', function(req, res) {
                             message: 'Doctor Login successful',
                             token: token,
                             user : user.name,
-                            userType : "doctor"
+                            userType : "doctor",
+                            mongo_id : user._id
                         });
                     }
                 }
@@ -619,8 +619,11 @@ router.post('/doctor/api/recipients', function(req, res) {
                 //state : request.state,
                 zip : request.zip},
 
-                dateAdded : request.dateAdded,
-                timeAdded : request.timeAdded,
+
+                dateAdded : new Date(Date.now()),
+
+
+
                 //bloodType : request.bloodType,
                 HLAType : request.HLAType,
                 organSize : request.organSize,
@@ -675,6 +678,8 @@ router.post('/doctor/api/donors', function(req, res) {
         request = req.body;
     }
 
+    console.log(request);
+
     var errors = {};
 
     Donor.findOne({ssn : request.SSN})
@@ -699,8 +704,10 @@ router.post('/doctor/api/donors', function(req, res) {
                 state : request.state,
                 zip : request.zip},
 
-                dateAdded : request.dateAdded,
-                timeAdded : request.timeAdded,
+
+
+                dateAdded : new Date(Date.now()),
+
 
                 bloodType : request.bloodType,
                 HLAType : request.HLAType,
@@ -732,6 +739,8 @@ router.post('/doctor/api/donors', function(req, res) {
             error.code = 400;
             error.errors = errors;
             throw error;
+        }).then(function(newDonor) {
+            Doctors.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}}).then(function() {return Doctors});
         }).catch(function(err) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
@@ -778,12 +787,12 @@ router.get('/doctor/api/recipients', function(req, res) {
 
 
 /*GET addDonor page. */
-router.get('doctor/addDonor', function(req, res, next) {
+router.get('/doctor/addDonor', function(req, res, next) {
   res.render('addDonor');
 });
 
 /*GET addRecipient page. */
-router.get('doctor/addRecipient', function(req, res, next) {
+router.get('/doctor/addRecipient', function(req, res, next) {
   res.render('addRecipient');
 });
 

@@ -24,12 +24,17 @@ var addDonor = angular.module('addDonor', [])
 		// 		console.log(err);
 		// 		$scope.hospitals = "Error retrieving hospitals";
 		// 	});
-
+		$scope.formData.doctor_id = localStorage.getItem("mongo_id");
 		$scope.addDonor = function() {
 		//console.log($scope.formData.selectedRegion);
+		var token = localStorage.getItem("token");
 
-		$http.post('/doctor/api/donors', $scope.formData)
-			.success(function(serverResponse) {
+		$http({
+			method : 'POST',
+			url : '/doctor/api/donors',
+			headers: {"x-access-token": token},
+			data: $scope.formData
+		}).success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
 
 			console.log(serverResponse);
