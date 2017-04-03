@@ -19,11 +19,12 @@
 </head>
 
 <body ng-controller="statisticsController">
-    <form style="margin-bottom: 5%; padding-left: 5%">
+    <form style="margin-bottom: 5%; padding-left: 5%" ng-submit="generateChart(report)">
         <div class="form-group">
             <label for="reportName">What report do you want to gernerate?</label>
-            <select class="form-control" id="reportName" ng-model="report.Name" style="width:58%;">
-                <option value = "donors_WL">Donors on waitlist</option>
+            <select class="form-control" id="reportName" ng-model="report.name" style="width:58%;" required>
+                <option value = ""></option>
+                <option value = "donors">Donors</option>
                 <option value = "recipients_WL" >Recipients on wait list</option>
                 <option value = "people_matched">People matched</option>
             </select>
@@ -31,7 +32,7 @@
         <div class="form-group">
             <label class = "inline-form" for="startDate">Start Date</label>
             <input class="form-control inline-form" type = "date" id="startDate" ng-model="report.startDate"
-            style="width :20%;">
+            style="width :20%;" >
             </input>
         </div>
         <div class="form-group">
@@ -40,15 +41,26 @@
                 style="width: 20%; margin-right:40%">
             </input>
         </div>
+        <div class="form-group" >
+            <label for="organType">What organ wait list would you like?</label>
+            <select class="form-control" id="organType" ng-model="report.organ" style="width:58%;" required>
+                <option value = ""></option>
+                <option value = "heart" >Heart</option>
+                <option value = "kidney">Kidney</option>
+                <option value = "lungs">Lungs</option>
+                <option value = "all" >I want all organs</option>
+            </select>
+        </div>
         <div class="form-group">
             <label for="reportType">What type of Graph do you want?</label>
-            <select class="form-control" id="reportType" ng-model="report.type" style="width:58%;">
+            <select class="form-control" id="reportType" ng-model="report.type" style="width:58%;" required>
+                <option value = ""></option>
                 <option value = "timeSeries">Time Series</option>
                 <option value = "ScatterPlot" >Scatter Plot</option>
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary" ng-click = "generateChart(report)">Submit</button>
+        <input type="submit" class="btn btn-primary"></input>
     </form>
     <div id="tester" style="width:90%;height:250px; margin: 0 auto;"></div>
 

@@ -14,6 +14,8 @@ app.set('superSecret', process.env.SECRET);
 
 
 var mongoose = require('mongoose');
+var ObjectId = require('mongoose').Schema.ObjectId
+
 var Schema = mongoose.Schema;
 mongoose.Promise = Promise;
 
@@ -63,7 +65,60 @@ var hospitalSchema = new Schema({
     doctors: Array
 });
 
+var donorsSchema = new Schema({
+    ssn: {
+        type: String,
+        unique: true,
+        validate: {
+            validator: function(v) {
+                return /\d{3}-\d{2}-\d{4}/.test(v);
+            },
+            message: "Please enter your SSN as xxx-xx-xxxx"
+        },
+        required: [true, "Social Security number required"]
+    },
+    name: { type: String, required: [true, "Name is required"] },
+    status: { type: String, required: [true, "Is the donor alive?"] },
+    matching_info: {
+        organs: [{
+                name: { type: String, required: [true, "Organ Name is required"] },
+                measurement: Number,
+                measurement_type: { type: String, required: [true, "Volume or size?"] }
 
+            }
+
+        ]
+    },
+    health: {
+        sex: { type: String, required: [true, "Is the donor a Male of Female"] },
+        height: { type: String, required: [true, "How tall is the donor"] },
+        dob: {
+            type: String,
+            unique: false,
+            validate: {
+                validator: function(v) {
+                    return /\d{2}-\d{2}-\d{4}/.test(v);
+                },
+                message: "Please enter your DOB as xx-xx-xxxx"
+            },
+            required: [true, "Date of birth required"]
+        },
+        blood_type: { type: String, required: [true, "Blood type is required"] },
+        HLA_class: { type: Number, required: [true, "HLA class is required"] },
+        weight: { type: Number, required: [true, "Weight is required"] }
+    },
+    created_on: { type: Date, required: [true, "Date is required"] }
+})
+
+var waitlistSchema = new Schema({
+    _id: {
+        type: Schema.Types.ObjectId
+            //, required: true
+    },
+    time_added: {
+        date: { type: Date, default: Date.now }
+    }
+});
 // API Routes
 
 var Hospitals = mongoose.model('hospitals', hospitalSchema);
@@ -83,8 +138,11 @@ router.get('/api/doctors', function(req, res) {
     Doctors.find(function(err, data) {
         if (err)
             res.send(err);
-        else
+        else {
+
             res.json(data);
+
+        }
     });
 });
 
@@ -234,6 +292,64 @@ router.post('/api/authenticate', function(req, res) {
     }
 });
 
+
+var Donors = mongoose.model('donors', donorsSchema);
+var Heart_Waitlist = mongoose.model('heart_waitlist', waitlistSchema);
+var Kidney_Waitlist = mongoose.model('kidney_waitlist', waitlistSchema);
+var Lung_Waitlist = mongoose.model('lung_waitlist', waitlistSchema);
+
+//get donors on waitlist
+router.get('/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
+    var organType = req.params.organ;
+    var start_date = req.params.start_date;
+    var end_date = req.params.end_date;
+
+    if (organType == "all") {
+        if (start_date == undefined || end_date == undefined) {
+
+            Donors.find((err, data) => {
+                if (err)
+                    res.send(err)
+                else {
+                    res.json(data);
+
+
+                }
+            })
+        } else {
+            Donors.find({ "created_on": { "$gte": start_date, "$lte": end_date } }, (err, data) => {
+                if (err)
+                    res.send(err)
+                else
+                    res.json(data);
+            })
+        }
+    } else {
+        if (start_date == undefined || end_date == undefined) {
+            Donors.find({
+                    "matching_info.organs.name": organType
+                },
+                (err, data) => {
+                    if (err)
+                        res.send(err)
+                    else {
+                        res.json(data);
+
+                    }
+                })
+        } else {
+            Donors.find({ created_on: { "$gte": start_date, "$lt": end_date }, "matching_info.organs.name": organType }, (err, data) => {
+                if (err)
+                    res.send(err)
+                else {
+
+                    res.json(data);
+                }
+            })
+        }
+    }
+
+})
 
 //Angular Routes
 
