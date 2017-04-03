@@ -1,42 +1,68 @@
 var addHospital = angular.module('addHospital', [])
-	.controller("hospitalController", ["$scope", "$http", function hospitalController($scope, $http){
+	.controller("hospitalController", ["$scope", "$http", "$window", function hospitalController($scope, $http, $window){
 		$scope.formData = {};
 
 		$scope.showForm = true; //default to show form on page load
 
 		$scope.addedAlert = false; //Success message is changed to true if form is filled out correctly
 
-		//$scope.ssnError;
 
-		//$scope.hospitals = [];
+		$scope.regions = {1: ['CT', 'ME', 'MA', 'NH', 'RI', ' EAST VT'],
+		 2: ['DE', 'DC', 'MD', 'NJ', 'PA', 'WV', 'NORTHERN VIRGINIA'],
+		  3: ['AL', 'AR', 'FL', 'GA', 'LA', 'MS', 'PR'],
+		   4: ['OK', 'TX'],
+		    5: ['AZ', 'CA', 'NV', 'NM', 'UT'],
+		     6 : ['AK', 'HI', 'ID', 'MT', 'OR', 'WA'],
+		      7: ['IL', 'MN', 'ND', 'SD', 'WI'],
+		       8 : ['CO', 'IA', 'KS', 'MO', 'NE', 'WY'],
+		        9 : ['NY', 'WESTERN VT'],
+		         10 : ['IN', 'MI', 'OH'],
+		          11: ['KY', 'NC', 'SC', 'TN', 'VA']};
 
-		$scope.regions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
-		$scope.region = "";
-		$scope.states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
-		$scope.state = "";
-		// $http.get("/api/hospitals/names")
-		// 	.success(function(names){
-		// 		$scope.hospitals = names;
-		// 	}).error(function(err){
-		// 		console.log(err);
-		// 		$scope.hospitals = "Error retrieving hospitals";
-		// 	});
+
+		$scope.regionDescriptors = [        
+
+		"Region 1: Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Eastern Vermont",
+		"Region 2: Delaware, District of Columbia, Maryland, New Jersey, Pennsylvania, West Virginia, Northern Virginia",
+		"Region 3: Alabama, Arkansas, Florida, Georgia, Louisiana, Mississippi, Puerto Rico",
+		"Region 4: Oklahoma, Texas",
+		"Region 5: Arizona, California, Nevada, New Mexico, Utah",
+		"Region 6: Alaska, Hawaii, Idaho, Montana, Oregon, Washington",
+		"Region 7: Illinois, Minnesota, North Dakota, South Dakota, Wisconsin",
+		"Region 8: Colorado, Iowa, Kansas, Missouri, Nebraska, Wyoming",
+		"Region 9: New York, Western Vermont",
+		"Region 10: Indiana, Michigan, Ohio",
+		"Region 11: Kentucky, North Carolina, South Carolina, Tennessee, Virginia"
+
+		]; 
 
 		$scope.addHospital = function() {
 		//console.log($scope.formData.region);
 
-		$http.post('/admin/api/hospitals', $scope.formData)
-			.success(function(serverResponse) {
-				//$scope.formData = {}; //clear form
+		var token = localStorage.getItem("token");
 
-			console.log(serverResponse);
+		$http({
+			method : 'POST',
+			url : '/admin/api/hospitals',
+			headers: {"x-access-token": token},
+			data: $scope.formData
+		})
+			.success(function(serverResponse) {
+
+
 			$scope.showForm = false;
 			$scope.addedAlert = true;
+
+
+			setTimeout(function(){
+					$window.location.href = "/admin/home?token=" + token;
+			},2000);
+
 				
 
-			})
-			.error(function(err) {
-				console.log("Error: ", err);
+		})
+			.error(function(serverResponse) {
+				console.log("Error: ", serverResponse);
 
 				// reset error code messages
 
@@ -46,48 +72,45 @@ var addHospital = angular.module('addHospital', [])
 				$scope.stateError = "";
 				$scope.zipError = "";
 				$scope.phoneNumberError = "";
+				$scope.regionError = "";
 
 
-				if (err.errors.validationError)
+				if (serverResponse.errors.validationError)
 				{
-					var errors = err.errors.validationError.errors;
+					var errors = serverResponse.errors.validationError.errors;
 
 					if (errors.name)
 					{
 						$scope.nameError = errors.name.message;
 					}
-					if (errors.street)
+					if (errors["address.street"])
 					{
-						$scope.streetError = errors.street.message;
+						$scope.streetError = errors["address.street"].message;
 					}
-					if (errors.city)
+					if (errors["address.state"])
 					{
-						$scope.cityError = errors.city.message;
+						$scope.stateError = errors["address.state"].message;
 					}
-
-					if (errors.state)
+					if (errors["address.city"])
 					{
-						$scope.stateError = errors.state.message;
+						$scope.cityError = errors["address.city"].message;
 					}
-
-					if (errors.zip)
+					if (errors["address.zip"])
 					{
-						$scope.zipError = errors.zip.message;
+						$scope.zipError = errors["address.zip"].message;
 					}
-
-					if (errors.phoneNumber)
+					if (errors["address.region"])
 					{
-						$scope.phoneNumberError = errors.phoneNumber.message;
+						$scope.regionError = errors["address.region"].message;
+					}
+					if (errors.phone)
+					{
+						$scope.phoneNumberError = errors.phone.message;
 					}
 				}
-
-				if (err.errors.nameExists)
+				if (serverResponse.errors.HospitalExists)
 				{
-					$scope.nameError = err.errors.nameExists;
-				}
-				if (err.errors.addressExists)
-				{
-					$scope.addressError = err.errors.addressExists;
+					$scope.nameError = serverResponse.errors.HospitalExists;
 				}
 
 			});

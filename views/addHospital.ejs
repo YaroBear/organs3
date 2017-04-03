@@ -9,9 +9,9 @@
 		<script src="controllers/addHospital-ctrl.js"></script>
 
 	</head>
-	<body ng-controller="hospitalController">
 
-		<div class="container register-form">
+	<div class="container">
+		<body ng-controller="hospitalController">
 			<form class="register-form" ng-show="showForm">
 				<div class= "form-group">
 					<label>Name</label>
@@ -21,9 +21,9 @@
 
 				<div class= "form-group">
 					<label>Region</label>
-					<select class="form-control" ng-model="formData.selectedRegion" ng-options="region for region in regions">
+					<select class="form-control" ng-model="formData.region" ng-options="region as region for (region, states) in regions">
 					</select>
-					<p>{{region}}</p>
+					<p class="error">{{regionError}}</p>
 				</div>
 
 				<div class= "form-group">
@@ -39,9 +39,9 @@
 
 				<div class= "form-group">
 					<label>State</label>
-					<select class="form-control" ng-model="formData.selectedState" ng-options="state for state in states">
+					<select class="form-control" ng-model="formData.state" ng-options="state as state for state in regions[formData.region]">
 					</select>
-					<p>{{stateError}}</p>
+					<p class="error">{{stateError}}</p>
 				</div>
 
 				<div class= "form-group">
@@ -54,13 +54,26 @@
 					<input type="phoneNumber" class="form-control" id ="newHospitalPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone Number">
 					<p class="error">{{phoneNumberError}}</p>
 				</div>
+				<div class="form-group">
+					<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addHospital()">Submit</button>
+				</div>
 
-				<a class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addHospital()">Submit</a>
+				<div style="padding-top:65px">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">Region information</h3>
+						</div>
+						<div class="panel-body">
+							<ul ng-repeat="regionDescriptor in regionDescriptors">
+								<li>{{regionDescriptor}}</li>
+							</ul>
+						</div>
+					</div>
+				</div>
 			</form>
 			<div ng-show="addedAlert">
 				<h1>Hospital Added Successfully!</h1>
 			</div>
-		</div>
-		
-	</body>
+		</body>
+	</div>
 </html>

@@ -55,15 +55,15 @@ var userSchema = new Schema({
 
 //HOSPITAL SCHEMA
 var hospitalSchema = new Schema({
-	name: String,
+	name: {type: String, required: [true, "Please provide the hospital name"]},
 	address : {
-		street : String,
-		city: String,
-		state: String,
-		zip: String,
-		region: String
+		street : {type: String, required: [true, "Please provide the hospital street address"]},
+		city: {type: String, required: [true, "Please provide the hospital city"]},
+		state: {type: String, required: [true, "Please select a state"]},
+		zip: {type: String, required: [true, "Please provide the hospital zipcode"]},
+		region: {type: String, required: [true, "Please select a region"]},
 	},
-	phone : String,
+	phone : {type: String, required: [true, "Please provide the hospital phone number"]},
 	procedures : Array,
 	doctors : Array
 });
@@ -441,7 +441,7 @@ router.use('/admin/',function(req, res, next) {
     }
 });
 
-// put apis you want to secure with admin token here
+// put apis you want to secure with admin token here VVVVVVV
 
 router.get('/admin/api/hospitals', function(req, res){
     Hospitals.find(function(err, data){
@@ -472,71 +472,56 @@ router.post('/admin/api/hospitals', function(req, res) {
 
     var errors = {};
 
-    Hospital.findOne({name : request.name})
-        .then(function(name) {
-            if (name)
-            {
-                errors.nameExists = "A hospital with that name already exists";
-            }
-            return Hospital.findOne({name : request.name});
-        })
+    console.log(request);
 
-        .then(function(address) {
-            if (address)
-            {
-                errors.addressExists = "A hospital with that address already exists";
-            }
-        })
+    Hospitals.findOne({
+        $or: [
+            {address : {street: request.street}},
+            {name: request.name}
+        ]
+    },function(err, hospital) {
+        console.log(err);
+        if (err) throw err;
+        if (hospital)
+        {
+            errors.HospitalExists = "A hospital with this name or address already exists";
+        }
 
-        .then(function(){
-            if (request.phoneNumber == undefined)
-            {
-                errors.phoneNumber = "A phone number is required";
-            }
-
-            console.log("state = " + request.state);
-
-            // create a new hospital
-            var newHospital = Hospital({
-
-
-                name : request.name,
-
-                address : {street : request.street,
+        }).then(function(){
+            var newHospital = new Hospital({
+            name : request.name,
+            address : {
+                street : request.street,
                 city : request.city,
                 state : request.state,
                 zip : request.zip,
-                region : request.region}
-
-
+                region : request.region,
+            },
+            phone : request.phoneNumber,
+            procedures : [],
+            doctors: []
             });
 
             return newHospital.validate().then(function() { return newHospital; });
+
         }).catch(function(err) {
             errors.validationError = err;
-        }).then(function(newHospital) {
-            if(errors.validationError) {
-                var error = {};
-                error.message = 'Failed to add hospital';
-                error.code = 400;
-                error.errors = errors;
-                throw error;
+        }).then(function(newHospital){
+            if (errors.validationError || errors.HospitalExists)
+            {
+                throw errors;
             }
             else
             {
-                return newHospital.save().then(function() {return newHospital;});
+                newHospital.save().then(function() { return newHospital; });
             }
-        }).catch(function(err){
-            var error = {};
-            error.message = err.message;
-            error.code = 400;
-            error.errors = errors;
-            throw error;
+        }).then(function(newHospital){
+            console.log(newHospital);
+            res.status(201).send({ok: true, message: 'Hospital added successfully'});
         }).catch(function(err) {
-            var errorCode = err.code || 500;
-            res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
+            res.status(500).send({success: false, errors});
         });
-    });
+});
 
 
 
