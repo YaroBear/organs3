@@ -49,7 +49,32 @@
 								<h3 class="panel-title">Patients</h3>
 							</div>
 							<div class="panel-body">
-							Panel content
+								<table class="table">
+									<tr>
+										<th>Name</th>
+										<th>Deceased</th>
+										<th>Sex</th>
+										<th>Weight</th>
+										<th>Height</th>
+										<th>Blood Type</th>
+										<th>HLA Type</th>
+										<th>Organ Type</th>
+										<th>Organ Size</th>
+										<th>Date Added</th>
+									</tr>
+									<tr ng-repeat="patient in donorPatients">
+										<td>{{patient.name.firstName}}</td>
+										<td>{{patient.deceased}}</td>
+										<td>{{patient.sex}}</td>
+										<td>{{patient.weight}}</td>
+										<td>{{patient.height}}</td>
+										<td>{{patient.bloodType}}</td>
+										<td>{{patient.HLAType}}</td>
+										<td>{{patient.organType}}</td>
+										<td>{{patient.organSize}}</td>
+										<td>{{patient.dateAdded}}</td>
+									</tr>
+									</table>
 							</div>
 						</div>
 					</div>

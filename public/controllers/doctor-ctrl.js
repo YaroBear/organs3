@@ -24,6 +24,7 @@ var doctor = angular.module('doctor', [])
 		$scope.viewPatients = function() {
 			$scope.defaultView = false;
 			$scope.patientView = true;
+			$scope.donorPatients = "";
 
 			var doctor_id = localStorage.getItem("mongo_id");
 
@@ -34,6 +35,8 @@ var doctor = angular.module('doctor', [])
 			})
 				.success(function(serverResponse) {
 					console.log(serverResponse);
+
+					$scope.donorPatients = serverResponse.patients.donorPatients;
 			})
 				.error(function(serverResponse) {
 
