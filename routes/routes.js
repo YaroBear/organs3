@@ -782,6 +782,39 @@ router.get('/doctor/api/recipients', function(req, res) {
     });
 });
 
+router.get('/doctor/api/view-patients/:doctor_id', function(req, res) {
+
+    var patients = {};
+    var donorPatients = [];
+    var recipientPatients = [];
+    var patient_ids = [];
+
+    Doctors.findOne({_id : req.params.doctor_id})
+        .then(function(doctor){
+            patient_ids  = doctor.patients;
+            return patient_ids;
+        }).then(function(patient_ids){
+            return Donors.find({_id : {$in : patient_ids}}).then(function(donors) {return donors;});
+
+        }).then(function(donors){
+            if (donors)
+            {
+            donorPatients = donors;
+            patients.donorPatients = donorPatients;
+            }
+            return Recipients.find({_id : {$in : patient_ids}}).then(function(recipients) {return recipients;});
+        }).then(function(recipients){
+            if (recipients)
+            {
+            recipientPatients = recipients;
+            patients.recipientPatients = recipientPatients;
+            }
+            res.status(201).send({success: true, patients});
+        });
+    
+});
+
+          
 
 /*GET addDonor page. */
 router.get('/doctor/addDonor', function(req, res, next) {
