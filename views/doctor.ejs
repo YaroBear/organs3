@@ -20,14 +20,65 @@
 				</div>
 			</div>
 			<div class="row" ng-controller="doctorController">
-				<div class="col-xs-3 col-md-2 left-banner">
-				<a class="btn btn-primary btn-lg btn-block" ng-click="addDonor()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Donor</a>
+				<div class="col-xs-4 col-md-3 left-banner">
 
-				<a class="btn btn-primary btn-lg btn-block" ng-click="addRecipient()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Recipient</a>
+					<button class="btn btn-primary btn-lg btn-block" ng-click="viewHome()" role="button"><span class="glyphicon glyphicon-home"></span> Home</button>
 
-				<a class="btn btn-primary btn-lg btn-block"  role="button"><span class="glyphicon glyphicon-stats"></span> View Patients</a>
+					<button class="btn btn-primary btn-lg btn-block" ng-click="viewPatients()" role="button"><span class="glyphicon glyphicon-user"></span> View Patients</button>
 
-				<a class="btn btn-primary btn-lg btn-block"  role="button"><span class="glyphicon glyphicon-stats"></span> Generate Match</a>
+					<button class="btn btn-primary btn-lg btn-block" ng-click="addDonor()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Donor</button>
 
+					<button class="btn btn-primary btn-lg btn-block" ng-click="addRecipient()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Recipient</button>
+
+					<button class="btn btn-primary btn-lg btn-block"  role="button"><span class="glyphicon glyphicon-random"></span> Generate Match</button>
+				</div>
+				<div class="col-xs-8 col-md-9">
+					<div ng-show="defaultView">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Welcome Dr. {{doctorName}}</h3>
+							</div>
+							<div class="panel-body">
+							Start by selecting any of the options on the left side.
+							</div>
+						</div>
+					</div>
+					<div ng-show="patientView">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Patients</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table">
+									<tr>
+										<th>Name</th>
+										<th>Deceased</th>
+										<th>Sex</th>
+										<th>Weight</th>
+										<th>Height</th>
+										<th>Blood Type</th>
+										<th>HLA Type</th>
+										<th>Organ Type</th>
+										<th>Organ Size</th>
+										<th>Date Added</th>
+									</tr>
+									<tr ng-repeat="patient in donorPatients">
+										<td>{{patient.name.firstName}}</td>
+										<td>{{patient.deceased}}</td>
+										<td>{{patient.sex}}</td>
+										<td>{{patient.weight}}</td>
+										<td>{{patient.height}}</td>
+										<td>{{patient.bloodType}}</td>
+										<td>{{patient.HLAType}}</td>
+										<td>{{patient.organType}}</td>
+										<td>{{patient.organSize}}</td>
+										<td>{{patient.dateAdded}}</td>
+									</tr>
+									</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 	</body>
 </html>

@@ -12,6 +12,36 @@ var doctor = angular.module('doctor', [])
 			$window.location.href = "/doctor/addRecipient" + "?token=" + token;
 		}
 		
+		$scope.doctorName = localStorage.getItem("user");
+		$scope.defaultView = true;
+		$scope.patientView = false;
 
-	
+		$scope.viewHome = function() {
+			$scope.defaultView = true;
+			$scope.patientView = false;
+		};
+
+		$scope.viewPatients = function() {
+			$scope.defaultView = false;
+			$scope.patientView = true;
+			$scope.donorPatients = "";
+
+			var doctor_id = localStorage.getItem("mongo_id");
+
+			$http({
+				method : 'GET',
+				url : '/doctor/api/view-patients/' + doctor_id,
+				headers: {"x-access-token": token},
+			})
+				.success(function(serverResponse) {
+					console.log(serverResponse);
+
+					$scope.donorPatients = serverResponse.patients.donorPatients;
+			})
+				.error(function(serverResponse) {
+
+			});
+
+		};
+		
 }]);
