@@ -11,7 +11,11 @@ var addDonor = angular.module('addDonor', [])
 		//$scope.hospitals = [];
 
 		
-		$scope.states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
+		$scope.states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 
+			'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 
+				'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 
+					'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 
+						'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
 		$scope.organTypes = [ 'Heart', 'Liver', 'Lung', 'Pancreas', 'Kidney'];
 		$scope.bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 		$scope.deceasedTypes = ['Yes', 'No'];
@@ -52,44 +56,62 @@ var addDonor = angular.module('addDonor', [])
 				$scope.ssnError = "";
 				$scope.streetError = "";
 				$scope.cityError = "";
+				$scope.stateError = "";
 				$scope.zipError = "";
-				$scope.HLAError = "";
+
+				$scope.organTypeError = "";
+				$scope.sexError = "";
 				$scope.heightError = "";
 				$scope.weightError = "";
+				$scope.bloodTypeError = "";
+				$scope.HLAError = "";
+				$scope.organSizeError = "";
+				$scope.deceasedError = "";
 
 				if (err.errors.validationError)
 				{
 					var errors = err.errors.validationError.errors;
 
-					if (errors.firstName)
+					if (errors["name.firstName"])
 					{
-						$scope.firstNameError = errors.firstName.message;
+						$scope.firstNameError = errors["name.firstName"].message;
 					}
-					if (errors.lastName)
+					if (errors["name.lastName"])
 					{
-						$scope.lastNameError = errors.lastName.message;
+						$scope.lastNameError = errors["name.lastName"].message;
 					}
 					if (errors.ssn)
 					{
 						$scope.ssnError = errors.ssn.message;
 					}
-					if (errors.street)
+					if (errors["address.street"])
 					{
-						$scope.streetError = errors.street.message;
+						$scope.streetError = errors["address.street"].message;
 					}
-					if (errors.city)
+					if (errors["address.city"])
 					{
-						$scope.cityError = errors.city.message;
+						$scope.cityError = errors["address.city"].message;
 					}
-					if (errors.zip)
+					if (errors["address.state"])
 					{
-						$scope.zipError = errors.zip.message;
+						$scope.stateError = errors["address.state"].message;
 					}
 
-					if (errors.HLAType)
+					if (errors["address.zip"])
 					{
-						$scope.HLATypeError = errors.HLAType.message;
+						$scope.zipError = errors["address.zip"].message;
 					}
+
+					if (errors.organType)
+					{
+						$scope.organTypeError = errors.organType.message;
+					}
+					if (errors.sex)
+					{
+						$scope.sexError = errors.sex.message;
+					}
+
+
 					if (errors.height)
 					{
 						$scope.heightError = errors.height.message;
@@ -97,6 +119,22 @@ var addDonor = angular.module('addDonor', [])
 					if (errors.weight)
 					{
 						$scope.weightError = errors.weight.message;
+					}
+					if (errors.bloodType)
+					{
+						$scope.bloodTypeError = errors.bloodType.message;
+					}
+					if (errors.HLAType)
+					{
+						$scope.HLATypeError = errors.HLAType.message;
+					}
+					if (errors.organSize)
+					{
+						$scope.organSizeError = errors.organSize.message;
+					}
+					if (errors.deceased)
+					{
+						$scope.deceasedError = errors.deceased.message;
 					}
 				}
 

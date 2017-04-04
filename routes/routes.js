@@ -95,10 +95,7 @@ var donorSchema = new Schema({
         street : {type: String, required: [true, "Street address is required"]},
         city: {type: String, required: [true, "City is required"]},
 
-        //******************************
-        //needs state from dropdown menu
-        //******************************
-
+        state: {type: String, required: [true, "Please choose a state"]},
         zip: {type: String, required: [true, "Zip code is required"]},
 
     },
@@ -106,14 +103,13 @@ var donorSchema = new Schema({
     dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
-    weight: {type: String, required: [true, "weight is required"]}
+    weight: {type: String, required: [true, "weight is required"]},
 
-    //***********************************
-    //needs sex from drop down nemu
-    //needs bloodType from dropdown menu
-    //needs organType from dropdown menu
-    //needs deceased from dropdown menu 
-    //***********************************
+    sex: {type: String, required: [true, "Please enter patient sex"]},
+    organType: {type: String, required: [true, "Please select an organ type"]},
+    bloodType: {type: String, required: [true, "Please select a blood type"]},
+    organType: {type: String, required: [true, "Please select an organ type"]},
+    deceased: {type: String, required: [true, "Is the donor deceased?"]},
 
 });
 
@@ -146,9 +142,7 @@ var recipientSchema = new Schema({
         street : {type: String, required: [true, "Street address is required"]},
         city: {type: String, required: [true, "City is required"]},
 
-        //******************************
-        //needs state from dropdown menu
-        //******************************
+        //state: {type: String, required: [true, "Please select a state"]},
 
         zip: {type: String, required: [true, "Zip code is required"]},
 
@@ -701,20 +695,23 @@ router.post('/doctor/api/donors', function(req, res) {
 
                 address : {street : request.street,
                 city : request.city,
-                state : request.state,
+                state : request.selectedState,
                 zip : request.zip},
 
 
 
                 dateAdded : new Date(Date.now()),
 
+                sex : request.selectedSex,
+                height : request.height,
+                weight : request.weight,
 
-                bloodType : request.bloodType,
+
+                organType : request.selectedOrganType,
+                bloodType : request.selectedBloodType,
                 HLAType : request.HLAType,
                 organSize : request.organSize,
-                deceased : request.deceased,
-                height : request.height,
-                weight : request.weight
+                deceased : request.selectedDeceased,
 
             });
 
