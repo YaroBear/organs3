@@ -73,6 +73,7 @@ var addHospital = angular.module('addHospital', [])
 				$scope.zipError = "";
 				$scope.phoneNumberError = "";
 				$scope.regionError = "";
+				$scope.phoneNumberError = "";
 
 
 				if (serverResponse.errors.validationError)

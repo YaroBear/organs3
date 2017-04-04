@@ -49,12 +49,17 @@
 					<label>State</label>
 					<select class="form-control" ng-model="formData.selectedState" ng-options="state for state in states">
 					</select>
-					<p>{{stateError}}</p>
+					<p class="error">{{stateError}}</p>
 				</div>
 				<div class= "form-group">
 					<label>Zip code</label>
 					<input type="text" class="form-control" id ="newRecipientZip" ng-model="formData.zip" placeholder="Zip Code">
 					<p class="error">{{zipError}}</p>
+				</div>
+				<div class= "form-group">
+					<label>Phone Number</label>
+					<input type="text" class="form-control" id ="newRecipientPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone number">
+					<p class="error">{{phoneNumberError}}</p>
 				</div>
 				</div>
 
@@ -66,7 +71,7 @@
 					<label>Organ Type</label>
 					<select class="form-control" ng-model="formData.selectedOrganType" ng-options="organType for organType in organTypes">
 					</select>
-					<p>{{organTypeError}}</p>
+					<p class="error">{{organTypeError}}</p>
 				</div>
 
 
@@ -75,7 +80,7 @@
 					<label>Sex</label>
 					<select class="form-control" ng-model="formData.selectedSex" ng-options="sex for sex in sexes">
 					</select>
-					<p>{{sexError}}</p>
+					<p class="error">{{sexError}}</p>
 				</div>
 				<div class= "form-group">
 					<label>Height</label>
@@ -91,13 +96,13 @@
 					<label>Urgency</label>
 					<select class="form-control" ng-model="formData.selectedUrgency" ng-options="urgency for urgency in urgencies">
 					</select>
-					<p>{{urgencyError}}</p>
+					<p class="error">{{urgencyError}}</p>
 				</div>
 				<div class= "form-group">
 					<label>Blood Type</label>
 					<select class="form-control" ng-model="formData.selectedBloodType" ng-options="bloodType for bloodType in bloodTypes">
 					</select>
-					<p>{{bloodTypeError}}</p>
+					<p class="error">{{bloodTypeError}}</p>
 				</div>
 				<div class= "form-group">
 					<label>HLA Type</label>
@@ -111,7 +116,7 @@
 				</div>
 				</div>
 
-				<a class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="doctor/addRecipient()">Submit</a>
+				<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addRecipient()">Submit</button>
 			</form>
 			<div ng-show="addedAlert">
 				<h1>Recipient Added Successfully!</h1>

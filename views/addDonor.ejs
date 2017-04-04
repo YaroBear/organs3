@@ -56,7 +56,11 @@
 					<input type="text" class="form-control" id ="newDonorZip" ng-model="formData.zip" placeholder="Zip Code">
 					<p class="error">{{zipError}}</p>
 				</div>
-
+				<div class= "form-group">
+					<label>Phone Number</label>
+					<input type="text" class="form-control" id ="newDonorPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone number">
+					<p class="error">{{phoneNumberError}}</p>
+				</div>
 				</div>
 
 				<div>
@@ -111,7 +115,7 @@
 				</div>
 				</div>
 
-				<a class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addDonor()">Submit</a>
+				<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addDonor()">Submit</button>
 			</form>
 			<div ng-show="addedAlert">
 				<h1>Donor Added Successfully!</h1>
