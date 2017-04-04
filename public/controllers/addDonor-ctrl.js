@@ -1,5 +1,5 @@
 var addDonor = angular.module('addDonor', [])
-	.controller("donorController", ["$scope", "$http", function donorController($scope, $http){
+	.controller("donorController", ["$scope", "$http", "$window", function donorController($scope, $http, $window){
 		$scope.formData = {};
 
 		$scope.showForm = true; //default to show form on page load
@@ -44,6 +44,10 @@ var addDonor = angular.module('addDonor', [])
 			console.log(serverResponse);
 			$scope.showForm = false;
 			$scope.addedAlert = true;
+
+			setTimeout(function(){
+					$window.location.href = "/doctor/home?token=" + token;
+			},2000);
 				
 
 			})
@@ -67,6 +71,7 @@ var addDonor = angular.module('addDonor', [])
 				$scope.HLAError = "";
 				$scope.organSizeError = "";
 				$scope.deceasedError = "";
+				$scope.phoneNumberError = "";
 
 				if (err.errors.validationError)
 				{
@@ -100,6 +105,11 @@ var addDonor = angular.module('addDonor', [])
 					if (errors["address.zip"])
 					{
 						$scope.zipError = errors["address.zip"].message;
+					}
+
+					if (errors.phoneNumber)
+					{
+						$scope.phoneNumberError = errors.phoneNumber.message;
 					}
 
 					if (errors.organType)

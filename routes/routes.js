@@ -70,10 +70,6 @@ var hospitalSchema = new Schema({
 
 
 //DONOR SCHEMA
-//issues:
-//-drop down menu values
-//-how do we associate doctors or hospitals with donors?
-//-do you think we need all of the attributes to be required? or are there any we let be NULL?
 var donorSchema = new Schema({
     ssn : {
         type: String,
@@ -95,20 +91,22 @@ var donorSchema = new Schema({
         street : {type: String, required: [true, "Street address is required"]},
         city: {type: String, required: [true, "City is required"]},
 
-        state: {type: String, required: [true, "Please choose a state"]},
+        state: {type: String, required: [true, "Please select a state"]},
         zip: {type: String, required: [true, "Zip code is required"]},
 
     },
+
+    phoneNumber:  {type: String, required: [false]},
 
     dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]},
-
+    organType: {type: String, required: [true, "Please select an organ type"]},
     sex: {type: String, required: [true, "Please enter patient sex"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
     bloodType: {type: String, required: [true, "Please select a blood type"]},
-    organType: {type: String, required: [true, "Please select an organ type"]},
+    organSize: {type: String, required: [true, "Please enter organ size"]},
     deceased: {type: String, required: [true, "Is the donor deceased?"]},
 
 });
@@ -116,11 +114,6 @@ var donorSchema = new Schema({
 
 
 //RECIPIENT SCHEMA
-//issues:
-//-drop down menu values
-//-how do we associate doctors or hospitals with recipients?
-//-should medical urgency be a 1-10 scale with a drop down menu or something else?
-//-do you think we need all of the attributes to be required? or are there any we let be NULL?
 var recipientSchema = new Schema({
     ssn : {
         type: String,
@@ -142,23 +135,24 @@ var recipientSchema = new Schema({
         street : {type: String, required: [true, "Street address is required"]},
         city: {type: String, required: [true, "City is required"]},
 
-        //state: {type: String, required: [true, "Please select a state"]},
+        state: {type: String, required: [true, "Please select a state"]},
 
         zip: {type: String, required: [true, "Zip code is required"]},
 
     },
 
+    phoneNumber:  {type: String, required: [false]},
+
     dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
-    weight: {type: String, required: [true, "weight is required"]}
-
-    //***********************************
-    //needs sex from dropdown menu
-    //needs bloodType from dropdown menu
-    //needs organType from dropdown menu
-    //needs medical urgency from dropdown menu
-    //***********************************
+    weight: {type: String, required: [true, "weight is required"]},
+    organType: {type: String, required: [true, "Please select an organ type"]},
+    sex: {type: String, required: [true, "Please enter patient sex"]},
+    organType: {type: String, required: [true, "Please select an organ type"]},
+    bloodType: {type: String, required: [true, "Please select a blood type"]},
+    organSize: {type: String, required: [true, "Please enter organ size"]},
+    urgency: {type: String, required: [true, "Please specify urgency"]},
 
 });
 
@@ -589,7 +583,7 @@ router.post('/doctor/api/recipients', function(req, res) {
 
     var errors = {};
 
-    Recipient.findOne({ssn : request.SSN})
+    Recipient.findOne({ssn : request.ssn})
         .then(function(ssn) {
             if (ssn)
             {
@@ -607,24 +601,24 @@ router.post('/doctor/api/recipients', function(req, res) {
                 firstName : request.firstName,
                 lastName : request.lastName},
 
-                address : {
-                street : request.street,
+                address : {street : request.street,
                 city : request.city,
-                //state : request.state,
+                state : request.selectedState,
                 zip : request.zip},
 
+                phoneNumber : request.phoneNumber,
 
                 dateAdded : new Date(Date.now()),
-
-
-
-                //bloodType : request.bloodType,
-                HLAType : request.HLAType,
-                organSize : request.organSize,
-                //urgency : request.urgency,
+                urgency : request.selectedUrgency,
+                sex : request.selectedSex,
                 height : request.height,
-                weight : request.weight
+                weight : request.weight,
 
+
+                organType : request.selectedOrganType,
+                bloodType : request.selectedBloodType,
+                HLAType : request.HLAType,
+                organSize : request.organSize
             });
 
             return newRecipient.validate().then(function() { return newRecipient; });
@@ -651,6 +645,11 @@ router.post('/doctor/api/recipients', function(req, res) {
         }).catch(function(err) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
+        }).then(function(newRecipient){
+            console.log(newRecipient);
+            res.status(201).send({ok: true, message: 'Recipient added successfully'});
+        }).catch(function(err) {
+            res.status(500).send({success: false, errors});
         });
     });
 
@@ -676,7 +675,7 @@ router.post('/doctor/api/donors', function(req, res) {
 
     var errors = {};
 
-    Donor.findOne({ssn : request.SSN})
+    Donor.findOne({ssn : request.ssn})
         .then(function(ssn) {
             if (ssn)
             {
@@ -698,7 +697,7 @@ router.post('/doctor/api/donors', function(req, res) {
                 state : request.selectedState,
                 zip : request.zip},
 
-
+                phoneNumber : request.phoneNumber,
 
                 dateAdded : new Date(Date.now()),
 
@@ -741,6 +740,11 @@ router.post('/doctor/api/donors', function(req, res) {
         }).catch(function(err) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
+        }).then(function(newDonor){
+            console.log(newDonor);
+            res.status(201).send({ok: true, message: 'Donor added successfully'});
+        }).catch(function(err) {
+            res.status(500).send({success: false, errors});
         });
     });
 

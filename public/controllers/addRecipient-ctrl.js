@@ -1,5 +1,5 @@
 var addRecipient = angular.module('addRecipient', [])
-	.controller("recipientController", ["$scope", "$http", function recipientController($scope, $http){
+	.controller("recipientController", ["$scope", "$http", "$window", function recipientController($scope, $http, $window){
 		$scope.formData = {};
 
 		$scope.showForm = true; //default to show form on page load
@@ -11,8 +11,11 @@ var addRecipient = angular.module('addRecipient', [])
 		//$scope.hospitals = [];
 
 		
-		$scope.states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
-		
+		$scope.states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 
+			'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 
+				'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 
+					'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 
+						'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
 		$scope.bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 		$scope.organTypes = [ 'Heart', 'Liver', 'Lung', 'Pancreas', 'Kidney'];
 		$scope.urgencies = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
@@ -25,17 +28,26 @@ var addRecipient = angular.module('addRecipient', [])
 		// 		console.log(err);
 		// 		$scope.hospitals = "Error retrieving hospitals";
 		// 	});
-
+		$scope.formData.doctor_id = localStorage.getItem("mongo_id");
 		$scope.addRecipient = function() {
 		//console.log($scope.formData.selectedRegion);
+		var token = localStorage.getItem("token");
 
-		$http.post('/doctor/api/recipients', $scope.formData)
-			.success(function(serverResponse) {
+		$http({
+			method : 'POST',
+			url : '/doctor/api/recipients',
+			headers: {"x-access-token": token},
+			data: $scope.formData
+		}).success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
 
 			console.log(serverResponse);
 			$scope.showForm = false;
 			$scope.addedAlert = true;
+
+			setTimeout(function(){
+					$window.location.href = "/doctor/home?token=" + token;
+			},2000);
 				
 
 			})
@@ -49,45 +61,69 @@ var addRecipient = angular.module('addRecipient', [])
 				$scope.ssnError = "";
 				$scope.streetError = "";
 				$scope.cityError = "";
+				$scope.stateError = "";
 				$scope.zipError = "";
-				$scope.HLAError = "";
+
+				$scope.organTypeError = "";
+				$scope.sexError = "";
 				$scope.heightError = "";
 				$scope.weightError = "";
+				$scope.bloodTypeError = "";
+				$scope.HLAError = "";
+				$scope.organSizeError = "";
+				$scope.urgencyError = "";
+				$scope.phoneNumberError = "";
 
 
 				if (err.errors.validationError)
 				{
 					var errors = err.errors.validationError.errors;
 
-					if (errors.firstName)
+					if (errors["name.firstName"])
 					{
-						$scope.firstNameError = errors.firstName.message;
+						$scope.firstNameError = errors["name.firstName"].message;
 					}
-					if (errors.lastName)
+					if (errors["name.lastName"])
 					{
-						$scope.lastNameError = errors.lastName.message;
+						$scope.lastNameError = errors["name.lastName"].message;
 					}
 					if (errors.ssn)
 					{
 						$scope.ssnError = errors.ssn.message;
 					}
-					if (errors.street)
+					if (errors["address.street"])
 					{
-						$scope.streetError = errors.street.message;
+						$scope.streetError = errors["address.street"].message;
 					}
-					if (errors.city)
+					if (errors["address.city"])
 					{
-						$scope.cityError = errors.city.message;
+						$scope.cityError = errors["address.city"].message;
 					}
-					if (errors.zip)
+					if (errors["address.state"])
 					{
-						$scope.zipError = errors.zip.message;
+						$scope.stateError = errors["address.state"].message;
 					}
 
-					if (errors.HLAType)
+					if (errors["address.zip"])
 					{
-						$scope.HLATypeError = errors.HLAType.message;
+						$scope.zipError = errors["address.zip"].message;
 					}
+
+					if (errors.phoneNumber)
+					{
+						$scope.phoneNumberError = errors.phoneNumber.message;
+					}
+
+					if (errors.organType)
+					{
+						$scope.organTypeError = errors.organType.message;
+					}
+					if (errors.sex)
+					{
+						$scope.sexError = errors.sex.message;
+					}
+
+
 					if (errors.height)
 					{
 						$scope.heightError = errors.height.message;
@@ -95,6 +131,22 @@ var addRecipient = angular.module('addRecipient', [])
 					if (errors.weight)
 					{
 						$scope.weightError = errors.weight.message;
+					}
+					if (errors.bloodType)
+					{
+						$scope.bloodTypeError = errors.bloodType.message;
+					}
+					if (errors.HLAType)
+					{
+						$scope.HLATypeError = errors.HLAType.message;
+					}
+					if (errors.organSize)
+					{
+						$scope.organSizeError = errors.organSize.message;
+					}
+					if (errors.urgency)
+					{
+						$scope.urgencyError = errors.urgency.message;
 					}
 				}
 
