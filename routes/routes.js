@@ -92,11 +92,21 @@ var donorSchema = new Schema({
         city: {type: String, required: [true, "City is required"]},
 
         state: {type: String, required: [true, "Please select a state"]},
-        zip: {type: String, required: [true, "Zip code is required"]},
+        zip: {type: String, validate: {
+            validator: function(v) {
+                return /\d{5}/.test(v);
+            },
+            message: "Please enter zip code as xxxxx"
+        }, required: [true, "Zip code is required"]},
 
     },
 
-    phoneNumber:  {type: String, required: [false]},
+    phoneNumber:  {type: String, validate: {
+            validator: function(v) {
+                return /\d{3}-\d{3}-\d{4}/.test(v);
+            },
+            message: "Please enter phone number as xxx-xxx-xxxx"
+        }, required: [false]},
 
     dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, required: [true, "HLA type is required"]},
@@ -137,11 +147,21 @@ var recipientSchema = new Schema({
 
         state: {type: String, required: [true, "Please select a state"]},
 
-        zip: {type: String, required: [true, "Zip code is required"]},
+        zip: {type: String, validate: {
+            validator: function(v) {
+                return /\d{5}/.test(v);
+            },
+            message: "Please enter zip code as xxxxx"
+        },required: [true, "Zip code is required"]},
 
     },
 
-    phoneNumber:  {type: String, required: [false]},
+    phoneNumber:  {type: String, validate: {
+            validator: function(v) {
+                return /\d{3}-\d{3}-\d{4}/.test(v);
+            },
+            message: "Please enter phone number as xxx-xxx-xxxx"
+        }, required: [false]},
 
     dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, required: [true, "HLA type is required"]},
