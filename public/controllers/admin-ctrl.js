@@ -1,22 +1,14 @@
 var admin = angular.module('admin', [])
-	.controller("adminController", ["$scope", "$http", function adminController($scope, $http){
+	.controller("adminController", ["$scope", "$http", "$window", function adminController($scope, $http, $window){
 
-		$scope.message = "";
-		var token = localStorage.getItem(token);
+		var token = localStorage.getItem("token");
 
-		$http({
-			method: "GET",
-			url: "/admin"
-			headers: {"x-access-token" : token}
+		$scope.addHospital = function()
+		{
+			$window.location.href = "/admin/addHospital" + "?token=" + token;
+		}
+		
+		
 
-		}).success(function(serverResponse) {
-			
-			$scope.message = "Yay you logged in!";
-
-			//display information and buttons
-
-		}).error(function(err) {
-
-			$scope.message = "You dont have access to this page";
-	});
+	
 }]);
