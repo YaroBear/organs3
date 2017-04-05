@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-
 //authentication
 var app = express();
 var jwt = require('jsonwebtoken');
@@ -18,6 +17,37 @@ var ObjectId = require('mongoose').Types.ObjectId;
 var mongodb_uri = process.env.MONGODB_URI;
 mongoose.connect(mongodb_uri);
 
+//matching functions
+var matchingFunctions = require("../matchingFunctions");
+var exampleDonor = {
+    "_id": {
+        "$oid": "58e339f0d7b36035f0c1d9fd"
+    },
+    "ssn": "111-66-8975",
+    "dateAdded": {
+        "$date": "2017-04-04T06:15:12.457Z"
+    },
+    "sex": "F",
+    "height": "186",
+    "weight": "86",
+    "organType": "Heart",
+    "bloodType": "A+",
+    "HLAType": "111000",
+    "organSize": "220",
+    "deceased": "Yes",
+    "address": {
+        "street": "321",
+        "city": "adfg",
+        "state": "AL",
+        "zip": "77777"
+    },
+    "name": {
+        "firstName": "a",
+        "lastName": "a"
+    },
+    "__v": 0
+};
+matchingFunctions.generateMatchforDonor(exampleDonor);
 
 
 
@@ -665,12 +695,14 @@ router.post('/doctor/api/recipients', function(req, res) {
         }).then(function(newRecipient){
             console.log(newRecipient);
             res.status(201).send({ok: true, message: 'Recipient added successfully'});
+            matchingFunctions.AddRecipientToWaitlist(newRecipient);
         }).catch(function(err) {
             res.status(500).send({success: false, errors});
         });
     });
 
-//ADD DONOR ROUTE
+
+//ADD Donors to donor list
 router.post('/doctor/api/donors', function(req, res) {
     //console.log(req.body);
     var Donor = mongoose.model('donors', donorSchema);
@@ -752,13 +784,13 @@ router.post('/doctor/api/donors', function(req, res) {
             error.errors = errors;
             throw error;
         }).then(function(newDonor) {
-            Doctors.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}}).then(function() {return Doctors});
+            Doctors.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}}).then(function(newDonor) {return newDonor});
         }).catch(function(err) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
         }).then(function(newDonor){
-            console.log(newDonor);
             res.status(201).send({ok: true, message: 'Donor added successfully'});
+            matchingFunctions.generateMatchforDonor(newDonor);
         }).catch(function(err) {
             res.status(500).send({success: false, errors});
         });
