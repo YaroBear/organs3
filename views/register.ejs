@@ -35,7 +35,7 @@
 				</div>
 				<div class= "form-group">
 					<label>Hospital</label>
-					<select class="form-control" ng-model="formData.selectedHospital" ng-options="hospital.name for hospital in hospitals">
+					<select class="form-control" ng-model="formData.selectedHospital" ng-options="hospital.name for hospital in hospitals | orderBy:'name'">
 					</select>
 					<p>{{hospital}}</p>
 				</div>

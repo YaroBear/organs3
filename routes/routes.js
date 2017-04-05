@@ -12,6 +12,7 @@ app.set('doctorSecret', process.env.DOCTOR_SECRET);
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 mongoose.Promise = Promise;
+var ObjectId = require('mongoose').Types.ObjectId; 
 
 // connecting to Mlab
 var mongodb_uri = process.env.MONGODB_URI;
@@ -282,7 +283,7 @@ router.post('/api/register', function(req, res) {
         	return newDoctor.save().then(function() {return newUser;});
         
         }).then(function(newUser) {
-        	Hospitals.findOneAndUpdate({"_id": request.selectedHospital._id}, {$push:{doctors: newUser._id}}).then(function() {return Hospitals});
+        	Hospitals.findOneAndUpdate({"_id": request.selectedHospital._id}, {$push: {doctors: {"_id" :newUser._id}}}).then(function() {return Hospitals});
         }).then(function(Hospitals){
             res.status(201).send({ok: true, message: 'Added user successfully'});
         }).catch(function(err) {
@@ -312,8 +313,6 @@ router.post('/api/authenticate', function(req, res) {
     }
 
     var errors = {};
-
-    console.log(request.username);
 
     if(request.username == null)
     {
@@ -479,8 +478,6 @@ router.post('/admin/api/hospitals', function(req, res) {
     }
 
     var errors = {};
-
-    console.log(request);
 
     Hospitals.findOne({
         $or: [
@@ -691,7 +688,6 @@ router.post('/doctor/api/donors', function(req, res) {
         request = req.body;
     }
 
-    console.log(request);
 
     var errors = {};
 
@@ -768,12 +764,20 @@ router.post('/doctor/api/donors', function(req, res) {
         });
     });
 
-router.get('/doctor/api/hospitals', function(req, res){
-    Hospitals.find(function(err, data){
-        if (err)
-            res.send(err);
-        else
-            res.json(data);
+router.get('/doctor/api/hospital-info/:doctor_id', function(req, res){
+    console.log(req.params.doctor_id);
+    Hospitals.findOne({"doctors" : { "_id" : ObjectId(req.params.doctor_id)}})
+        .then(function(hospital){
+            if (hospital)
+            {
+                res.status(201).send({success: true, hospital: hospital});
+            }
+            else
+            {
+                res.status(201).send({success: true, hospital: "Not found"});
+            }
+        }).catch(function(err){
+            res.status(500).send({success: false, error : err});
     });
 });
 

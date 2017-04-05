@@ -13,6 +13,7 @@ var register = angular.module('register', [])
 		$http.get("/api/hospitals/names")
 			.success(function(names){
 				$scope.hospitals = names;
+				console.log($scope.hospitals);
 			}).error(function(err){
 				console.log(err);
 				$scope.hospitals = "Error retrieving hospitals";
