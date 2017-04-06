@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="addHospital">
+<html ng-app="manageHospitals">
    <style>
       html,body {
       margin:0;
@@ -69,8 +69,8 @@
    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
    <script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
    <link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
-   <script src="controllers/addHospital-ctrl.js"></script>
-   <body ng-controller="hospitalController">
+   <script src="controllers/manageHospitals-ctrl.js"></script>
+   <body ng-controller="managehospitalsController">
       <div id="header">
          <table>
             <tr>
@@ -85,7 +85,7 @@
          </table>
       </div>
       <div id="container">
-      <body ng-controller="hospitalController">
+      <body ng-controller="managehospitalsController">
          <div id="left">
             <div class="btn-group">
                <a class="btn btn-primary btn-lg btn-block" ng-click = "addHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
