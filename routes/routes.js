@@ -534,6 +534,9 @@ router.post('/admin/api/hospitals', function(req, res) {
 router.get('/admin/addHospital', function(req, res, next) {
   res.render('addHospital');
 });
+router.get('/admin/manageHospitals', function(req, res, next) {
+  res.render('manageHospitals');
+});
 
 
 /* GET register page. */
