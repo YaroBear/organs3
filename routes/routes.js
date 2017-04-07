@@ -19,36 +19,6 @@ mongoose.connect(mongodb_uri);
 
 //matching functions
 var matchingFunctions = require("../matchingFunctions");
-var exampleDonor = {
-    "_id": {
-        "$oid": "58e339f0d7b36035f0c1d9fd"
-    },
-    "ssn": "111-66-8975",
-    "dateAdded": {
-        "$date": "2017-04-04T06:15:12.457Z"
-    },
-    "sex": "F",
-    "height": "186",
-    "weight": "86",
-    "organType": "Heart",
-    "bloodType": "A+",
-    "HLAType": "111000",
-    "organSize": "220",
-    "deceased": "Yes",
-    "address": {
-        "street": "321",
-        "city": "adfg",
-        "state": "AL",
-        "zip": "77777"
-    },
-    "name": {
-        "firstName": "a",
-        "lastName": "a"
-    },
-    "__v": 0
-};
-matchingFunctions.generateMatchforDonor(exampleDonor);
-
 
 
 //******************************
@@ -200,6 +170,7 @@ var recipientSchema = new Schema({
     weight: {type: String, required: [true, "weight is required"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
     sex: {type: String, required: [true, "Please enter patient sex"]},
+    dob: {type: Date, required: [true, "Please enter patient date of birth"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
     bloodType: {type: String, required: [true, "Please select a blood type"]},
     organSize: {type: String, required: [true, "Please enter organ size"]},
@@ -660,6 +631,7 @@ router.post('/doctor/api/recipients', function(req, res) {
                 sex : request.selectedSex,
                 height : request.height,
                 weight : request.weight,
+                dob : new Date(Date.parse(request.dob)),
 
 
                 organType : request.selectedOrganType,
@@ -693,14 +665,18 @@ router.post('/doctor/api/recipients', function(req, res) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
         }).then(function(newRecipient){
-            console.log(newRecipient);
+            if (newRecipient)
+            {
+                matchingFunctions.addRecipientToWaitlist(newRecipient);
+            }            
+        }).then(function(waitlist){
+            console.log(waitlist);
             res.status(201).send({ok: true, message: 'Recipient added successfully'});
-            matchingFunctions.AddRecipientToWaitlist(newRecipient);
         }).catch(function(err) {
+            console.log(err);
             res.status(500).send({success: false, errors});
         });
     });
-
 
 //ADD Donors to donor list
 router.post('/doctor/api/donors', function(req, res) {

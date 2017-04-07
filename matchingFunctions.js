@@ -4,8 +4,8 @@ mongoose.Promise = Promise;
 var ObjectId = require('mongoose').Types.ObjectId;
 
 var waitlistSchema = new Schema({
-    dateAdded: Date,
-    priority : Number
+    dateAdded: {type: Date, required: true},
+    priority : {type: Number, required: true}
 });
 
 var calculateAge = function(dob) //time object
@@ -30,34 +30,34 @@ var calculatePriority = function(recipient) {
 };
 
 var addRecipientToWaitlist = function(recipient) {
-    var waitlist = {};
+    var waitlist;
+
     if (recipient.organType == "Heart")
     {
-        waitlist = mongoose.model('heart_waitlist', waitlistSchema);
+        waitlist = mongoose.model('heart_waitlists', waitlistSchema);
     }
     else if (recipient.organType == "Liver")
     {
-        waitlist = mongoose.model('liver_waitlist', waitlistSchema);
+        waitlist = mongoose.model('liver_waitlists', waitlistSchema);
     }
     else if (recipient.organType == "Lung")
     {
-        waitlist = mongoose.model('lung_waitlist', waitlistSchema);
+        waitlist = mongoose.model('lung_waitlists', waitlistSchema);
     }
     else if (recipient.organType == "Pancreas")
     {
-        waitlist = mongoose.model('pancrease_waitlist', waitlistSchema);
+        waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
     }
     else if (recipient.organType == "Kidney")
     {
-        waitlist = mongoose.model('kidney_waitlist', waitlistSchema);
+        waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
     }
 
     var priority = calculatePriority(recipient);
 
-    waitlist.insert({"_id": recipient._id, "dateAdded" : recipient.dateAdded, "priority" : priority}, function(err, waitlist){
-        if (err) throw err;
-        else console.log("Added recipient to waitlist");
-    });
+    var targetWaitlist = new waitlist({"_id": recipient._id, "dateAdded" : recipient.dateAdded, "priority" : priority});
+
+    return targetWaitlist.save().then(function(){return waitlist});
 };
 
 
