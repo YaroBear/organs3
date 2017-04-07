@@ -5,6 +5,9 @@ var addHospital = angular.module('addHospital', [])
 		$scope.showForm = true; //default to show form on page load
 
 		$scope.addedAlert = false; //Success message is changed to true if form is filled out correctly
+		$scope.formData.region = "1"; //sets a default so the state field is starts expanded
+
+		var token = localStorage.getItem("token");
 
 
 		$scope.regions = {1: ['CT', 'ME', 'MA', 'NH', 'RI', ' EAST VT'],
@@ -35,6 +38,15 @@ var addHospital = angular.module('addHospital', [])
 		"Region 11: Kentucky, North Carolina, South Carolina, Tennessee, Virginia"
 
 		]; 
+
+		$scope.gotoaddHospital = function()
+		{
+			$window.location.href = "/admin/addHospital" + "?token=" + token;
+		}
+		$scope.gotomanageHospitals = function()
+		{
+			$window.location.href = "/admin/manageHospitals" + "?token=" + token;
+		}
 
 		$scope.addHospital = function() {
 		//console.log($scope.formData.region);
