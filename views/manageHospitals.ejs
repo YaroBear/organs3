@@ -63,6 +63,44 @@
       .btn-group button:hover {
       //background-color: #3e8e41;
       }
+      .btnsize{
+      width:225px !important; //!important forces it
+      }
+      .btnsize2{
+      width: 150px !important; //!important forces it
+      }
+      .btnsize3{
+      width:100px !important; //!important forces it
+      }
+      .fnt{
+         text-align:left;
+      }
+      .tableBorder{
+      border: 1px solid black;
+      }
+      .centered{
+         text-align: center;
+      }
+      .tile_div a {
+         display: block;
+         float: left;
+         height: 50px;
+         width: 100px;
+         margin-right: 5px;
+         background-image: url(./images/button_left.png);
+         background-color: #ccc;
+         text-align: center;
+         line-height: 50px;
+         text-decoration: none;
+      }
+
+.title_div a.last {
+    margin-right: 0;
+}
+
+.clear {
+    clear: both;
+}
    </style>
    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
@@ -79,7 +117,7 @@
                </th>
                <th>
                   <h1>Organ Network</h1>
-                  <h1>Add Hospital</h1>
+                  <h1>Manage Hospitals</h1>
                </th>
             </tr>
          </table>
@@ -88,76 +126,52 @@
       <body ng-controller="managehospitalsController">
          <div id="left">
             <div class="btn-group">
-               <a class="btn btn-primary btn-lg btn-block" ng-click = "addHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+               <a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+               <a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
                <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
                <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
             </div>
          </div>
          <div id="main">
+         <button class="btn btn-primary btn-lg btn-block btnsize" ng-confirm-click="test" ng-click="loadHospList()">Load Hospitals</button>
+         <table class="tableBorder">
+            <tr class="tableBorder">
+               <th class="tableBorder">Delete</th>
+               <th class="tableBorder">Name</th>
+               <th class="tableBorder">Phone</th>
+               <th class="tableBorder">Street</th>
+               <th class="tableBorder">City</th>
+               <th class="tableBorder">State</th>
+               <th class="tableBorder">Zip Code</th>
+               <th class="tableBorder">Region</th>
+            </tr>
+            <tr class="tableBorder" ng-repeat="hosp in hospitals">
+               <td class="tableBorder">
+                  <button ng-hide="hosp.delete" class="btn btn-primary btnsize2" ng-click="deletePrompt(hosp)"> <font class="fnt" size="1">Delete</font></button>
 
-         	<div id="left2">
-         		<form class="right" ng-show="showForm">
-               <div class= "form-group">
-                  <label>Name</label>
-                  <input type="text" size="50" class="form-control" id ="newHospitalName" ng-model="formData.name" placeholder="Hospital name">
-                  <p class="error">{{nameError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>Region</label>
-                  <select class="form-control" ng-model="formData.region" ng-options="region as region for (region, states) in regions">
-                  </select>
-                  <p class="error">{{regionError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>Street address</label>
-                  <input type="text" class="form-control" id ="newHospitalStreet" ng-model="formData.street" placeholder="Street address">
-                  <p class="error">{{streetError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>City</label>
-                  <input type="text" class="form-control" id ="newHospitalCity" ng-model="formData.city" placeholder="City">
-                  <p class="error">{{cityError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>State</label>
-                  <select class="form-control" ng-model="formData.state" ng-options="state as state for state in regions[formData.region]">
-                  </select>
-                  <p class="error">{{stateError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>Zip code</label>
-                  <input type="text" class="form-control" id ="newHospitalZip" ng-model="formData.zip" placeholder="Zip Code">
-                  <p class="error">{{zipError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>Phone Number</label>
-                  <input type="phoneNumber" class="form-control" id ="newHospitalPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone Number">
-                  <p class="error">{{phoneNumberError}}</p>
-               </div>
-               <div class="form-group">
-                  <button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addHospital()">Submit</button>
-               </div>
-               
-            </form>
-         	</div>
-         	<div id="main2">
-         		<div >
-                  <div class="panel panel-default">
-                     <div class="panel-heading">
-                        <h3 class="panel-title">Region information</h3>
-                     </div>
-                     <div class="panel-body">
-                        <ul ng-repeat="regionDescriptor in regionDescriptors">
-                           <li>{{regionDescriptor}}</li>
-                        </ul>
-                     </div>
+
+                  <div class="tile_div" ng-show="hosp.delete">
+
+                     <button  class="btn btn-primary btnsize3" ng-click="confirmDelete(hosp)"> <font class="fnt" size="1">Confirm Delete</font></button>
+                     <button  class="btn btn-primary btnsize3" ng-click="dontDelete(hosp)"> <font class="fnt" size="1">Do not Delete</font></button>
                   </div>
-               </div>
-         	</div>
-         	<!--
 
+
+               </td>
+               <td class="tableBorder">{{hosp.name}}</td>
+               <td class="tableBorder">{{hosp.phone}}</td>
+               <td class="tableBorder">{{hosp.address.street}}</td>
+               <td class="tableBorder centered">{{hosp.address.city}}</td>
+               <td class="tableBorder centered">{{hosp.address.state}}</td>
+               <td class="tableBorder centered">{{hosp.address.zip}}</td>
+               <td class="tableBorder centered">{{hosp.address.region}}</td>
+
+            </tr>
+         </table>
+         <table>
+            <tr ng-repeat="hosp in hospitals">{{hosp.name}}</tr>
+         </table>
             
-            -->
          </div>
 
          <div style="clear:both"></div>
