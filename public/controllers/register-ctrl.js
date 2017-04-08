@@ -13,6 +13,7 @@ var register = angular.module('register', [])
 		$http.get("/api/hospitals/names")
 			.success(function(names){
 				$scope.hospitals = names;
+				console.log($scope.hospitals);
 			}).error(function(err){
 				console.log(err);
 				$scope.hospitals = "Error retrieving hospitals";
@@ -21,7 +22,7 @@ var register = angular.module('register', [])
 		$scope.addDoctor = function() {
 		console.log($scope.formData.selectedHospital);
 
-		$http.post('/api/doctors', $scope.formData)
+		$http.post('/api/register', $scope.formData)
 			.success(function(serverResponse) {
 				//$scope.formData = {}; //clear form
 
