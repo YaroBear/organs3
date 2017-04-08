@@ -110,15 +110,58 @@ var donorsSchema = new Schema({
     created_on: { type: Date, required: [true, "Date is required"] }
 })
 
-var waitlistSchema = new Schema({
-    _id: {
-        type: Schema.Types.ObjectId
-            //, required: true
-    },
-    time_added: {
-        date: { type: Date, default: Date.now }
-    }
+var waitListSchema = new Schema({
+
+    user_id: { type: ObjectId }
+
 });
+
+var recipientSchema = new Schema({
+    ssn: {
+        type: String,
+        unique: true,
+        validate: {
+            validator: function(v) {
+                return /\d{3}-\d{2}-\d{4}/.test(v);
+            },
+            message: "Please enter your SSN as xxx-xx-xxxx"
+        },
+        required: [true, "Social Security number required"]
+    },
+    name: { type: String, required: [true, "Name is required"] },
+    status: { type: String, required: [true, "Is the donor alive?"] },
+    matching_info: {
+        organs: [{
+                name: { type: String, required: [true, "Organ Name is required"] },
+                measurement: Number,
+                measurement_type: { type: String, required: [true, "Volume or size?"] }
+
+            }
+
+        ]
+    },
+    health: {
+        sex: { type: String, required: [true, "Is the donor a Male of Female"] },
+        height: { type: String, required: [true, "How tall is the donor"] },
+        dob: {
+            type: String,
+            unique: false,
+            validate: {
+                validator: function(v) {
+                    return /\d{2}-\d{2}-\d{4}/.test(v);
+                },
+                message: "Please enter your DOB as xx-xx-xxxx"
+            },
+            required: [true, "Date of birth required"]
+        },
+        blood_type: { type: String, required: [true, "Blood type is required"] },
+        HLA_class: { type: Number, required: [true, "HLA class is required"] },
+        weight: { type: Number, required: [true, "Weight is required"] }
+    },
+    created_on: { type: Date, required: [true, "Date is required"] }
+});
+
+
 // API Routes
 
 var Hospitals = mongoose.model('hospitals', hospitalSchema);
@@ -294,10 +337,12 @@ router.post('/api/authenticate', function(req, res) {
 
 
 var Donors = mongoose.model('donors', donorsSchema);
-var Heart_Waitlist = mongoose.model('heart_waitlist', waitlistSchema);
-var Kidney_Waitlist = mongoose.model('kidney_waitlist', waitlistSchema);
-var Lung_Waitlist = mongoose.model('lung_waitlist', waitlistSchema);
+var Heart_Waitlist = mongoose.model('heart_waitlists', waitListSchema);
+var Kidney_Waitlist = mongoose.model('kidney_waitlists', waitListSchema);
+var Lung_Waitlist = mongoose.model('lung_waitlists', waitListSchema);
+var All_Waitlist = mongoose.model('all_waitlists', waitListSchema);
 
+var Recipents = mongoose.model('recipients', recipientSchema);
 //get donors on waitlist
 router.get('/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
     var organType = req.params.organ;
@@ -349,7 +394,74 @@ router.get('/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, res) => 
         }
     }
 
-})
+});
+
+router.get('/api/recipents/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
+    var organ = req.params.organ;
+    var start_date = req.params.start_date;
+    var end_date = req.params.end_date;
+
+    if (organ == "heart") {
+        Heart_Waitlist.find((err, data) => {
+            if (err) {
+                res.send(err);
+            } else {
+                for (var idx in data) {
+                    Recipents.find({ _id: data[idx]["user_id"] }, (err, data) => {
+                        res.json(data);
+
+                    })
+                }
+            }
+        });
+    }
+    if (organ == "kidney") {
+        Kidney_Waitlist.find((err, data) => {
+            if (err) {
+                res.send(err);
+            } else {
+                for (var idx in data) {
+                    Recipents.find({ _id: data[idx]["user_id"] }, (err, data) => {
+                        res.json(data);
+
+                    })
+                }
+            }
+        });
+    }
+    if (organ == "lungs") {
+        Lung_Waitlist.find((err, data) => {
+            if (err) {
+                res.send(err);
+            } else {
+                for (var idx in data) {
+                    Recipents.find({ _id: data[idx]["user_id"] }, (err, data) => {
+                        res.json(data);
+
+                    })
+                }
+            }
+        });
+    }
+    if (organ == "all") {
+        var finalData = [];
+        All_Waitlist.find((err, data) => {
+            if (err) {
+                res.send(err);
+            } else {
+                for (var idx in data) {
+                    Recipents.find({ _id: data[idx]["user_id"] }, (err, data) => {
+                        finalData.push(data[idx]);
+
+                    })
+                    res.send(finalData);
+                }
+            }
+        });
+
+
+    }
+});
 
 //Angular Routes
 
@@ -370,18 +482,6 @@ router.get('/authenticate', function(req, res, next) {
 });
 
 router.get('/statistics', function(req, res, next) {
-    // var data = [{ x: [0, 1, 2], y: [3, 2, 1], type: 'bar' }];
-    // var layout = { fileopt: "overwrite", filename: "simple-node-example" };
-
-    // var data = [{
-    //     x: ["2013-10-04 22:23:00", "2013-11-04 22:23:00", "2013-12-04 22:23:00"],
-    //     y: [1, 3, 6],
-    //     type: "scatter"
-    // }];
-    // var graphOptions = { filename: "statisticsMatching", fileopt: "overwrite" };
-    // plotly.plot(data, graphOptions, function(err, msg) {
-    //     console.log(msg);
-    // });
     res.render('statisticsMatching');
 })
 
@@ -433,4 +533,4 @@ router.get('/admin', function(req, res, next) {
 //app.use('/api', router);
 
 
-module.exports = router
+module.exports = router;
