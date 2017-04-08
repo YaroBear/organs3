@@ -1,0 +1,28 @@
+body {
+	background-color: #74828F;
+}
+
+.logo {
+	display: block;
+}
+
+.body-content {
+	background-color: #96C0CE;
+}
+
+
+.top-banner {
+	background-color: #B88EB9;
+}
+
+.body-text {
+	font-size: 1.3em;
+}
+
+.register-form {
+
+}
+
+.error {
+	color: red;
+}
