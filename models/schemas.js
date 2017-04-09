@@ -57,6 +57,51 @@ var hospitalSchema = new Schema({
 
 
 //DONOR SCHEMA
+var doctorSchema = new Schema({
+    name : {
+        type: String,
+        required: [true, "A name is required"]
+    },
+    patients : []
+});
+
+
+var userSchema = new Schema({
+    ssn : {
+        type: String,
+        unique: true,
+        validate: {
+            validator: function(v) {
+                return /\d{3}-\d{2}-\d{4}/.test(v);
+            },
+            message: "Please enter your SSN as xxx-xx-xxxx"
+        },
+        required: [true, "Social Security number required"]
+    },
+    name: {type: String, required: [true, "Name is required"]},
+    username : {type: String, required: [true, "Username is required"], unique: true},
+    password : {type: String, required: [true, "Password is required"]},
+    admin : Boolean
+});
+
+
+//HOSPITAL SCHEMA
+var hospitalSchema = new Schema({
+    name: {type: String, required: [true, "Please provide the hospital name"]},
+    address : {
+        street : {type: String, required: [true, "Please provide the hospital street address"]},
+        city: {type: String, required: [true, "Please provide the hospital city"]},
+        state: {type: String, required: [true, "Please select a state"]},
+        zip: {type: String, required: [true, "Please provide the hospital zipcode"]},
+        region: {type: String, required: [true, "Please select a region"]},
+    },
+    phone : {type: String, required: [true, "Please provide the hospital phone number"]},
+    procedures : Array,
+    doctors : Array
+});
+
+
+//DONOR SCHEMA
 var donorSchema = new Schema({
     ssn : {
         type: String,
@@ -96,10 +141,16 @@ var donorSchema = new Schema({
         }, required: [false]},
 
     dateAdded: {type: Date, required: [true, "Date is required"]},
-    HLAType: {type: String, required: [true, "HLA type is required"]},
+    HLAType: {type: String, validate: {
+            validator: function(v) {
+                return /\d{6}/.test(v);
+            },
+            message: "Please enter HLA matching criteria as xxxxxx"
+        }, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
+    dob: {type: Date, required: [true, "Please enter patient date of birth"]},
     sex: {type: String, required: [true, "Please enter patient sex"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
     bloodType: {type: String, required: [true, "Please select a blood type"]},
@@ -151,7 +202,12 @@ var recipientSchema = new Schema({
         }, required: [false]},
 
     dateAdded: {type: Date, required: [true, "Date is required"]},
-    HLAType: {type: String, required: [true, "HLA type is required"]},
+    HLAType: {type: String, validate: {
+            validator: function(v) {
+                return /\d{6}/.test(v);
+            },
+            message: "Please enter HLA matching criteria as xxxxxx"
+        }, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
