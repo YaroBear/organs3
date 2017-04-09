@@ -7,10 +7,70 @@ var manageHospitals = angular.module('manageHospitals', [])
 		$scope.addedAlert = false; //Success message is changed to true if form is filled out correctly
 		var token = localStorage.getItem("token");
 
+		$scope.enableMove = function (hosp)
+		{
+			hosp.movedoc = true;
+
+		}
+		$scope.doMove = function (hosp)
+		{
+			$scope.moveData = {};
+			$scope.moveData.docid = hosp.docid;
+			$scope.moveData.destHosp = hosp.destHosp;
+			$scope.moveData.oldHosp = hosp._id;
+			console.log("moveData: ", $scope.moveData);
+
+			if ("undefined" === typeof $scope.moveData.docid)
+			{
+				//error occured
+				console.log("Doctor undefined");
+				console.log($scope.moveData.docid);
+			}
+			else if ("undefined" === typeof $scope.moveData.destHosp) 
+			{
+				//error occured
+				console.log("Destination Hospital undefined");
+				console.log(scope.moveData.destHosp);
+			}
+			else if ("undefined" === typeof $scope.moveData.oldHosp)
+			{
+				//error occured
+				console.log("Old Hospital undefined");
+				console.log($scope.moveData.oldHost);
+			}
+
+			else
+			{
+				$http({
+				method : 'POST',
+				url : '/admin/api/hospital/moveDoctors',
+				headers: {"x-access-token": token},
+				data: $scope.moveData
+				})
+				.success(function(serverResponse) {
+					//alert("Doctor Moved Successfully")
+					console.log("Doctor Moved Successfully");
+				})
+				.error(function(serverResponse) {
+					console.log("Error: ", serverResponse);
+				});
+			}
+
+
+			hosp.movedoc = false;
+		}
+
 		$scope.deletePrompt = function (hosp)
 		{
 			//console.log(hosp.name);
-			hosp.delete = true;
+			if (hosp.doctors.length != 0)
+			{
+				alert("Doctors exist in this hospital, fire or transfer them before removing the hospital");
+			}
+			else
+			{
+				hosp.delete = true;
+			}
 		}
 		$scope.dontDelete = function (hosp)
 		{
@@ -61,6 +121,17 @@ var manageHospitals = angular.module('manageHospitals', [])
 			    // when the response is available
 			    //console.log(response.data[0].address.street);
 			    $scope.hospitals = response.data;
+			    console.log($scope.hospitals[0]);
+				for (var hospital in $scope.hospitals)
+			    {
+			    	console.log("doing hospital: " , hospital.name);
+			    	for (doc in hospital.doctors)
+			    	{
+				    	hospital.doctorslen = doc.length;
+				    	console.log("set ", hospital.name , " to " , hospital.doctorslen, " when it was ", doc.length);
+			    		
+			    	}
+			    }
 			}, function errorCallback(response) {
 			    // called asynchronously if an error occurs
 			    // or server returns response with an error status.
