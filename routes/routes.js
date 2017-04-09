@@ -8,183 +8,20 @@ app.set('superSecret', process.env.SECRET);
 app.set('doctorSecret', process.env.DOCTOR_SECRET);
 
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-mongoose.Promise = Promise;
-var ObjectId = require('mongoose').Types.ObjectId; 
-
-// connecting to Mlab
-var mongodb_uri = process.env.MONGODB_URI;
-mongoose.connect(mongodb_uri);
-
 //matching functions
 var matchingFunctions = require("../matchingFunctions");
 
+var schemas = require("../models/schemas");
 
-//******************************
-//******************************
-//***********SCHEMAS************
-//******************************
-//******************************
-var doctorSchema = new Schema({
-	name : {
-		type: String,
-		required: [true, "A name is required"]
-	},
-	patients : []
-});
+var Hospital = schemas.Hospital;
 
+var Doctor = schemas.Doctor;
 
-var userSchema = new Schema({
-	ssn : {
-		type: String,
-		unique: true,
-		validate: {
-			validator: function(v) {
-				return /\d{3}-\d{2}-\d{4}/.test(v);
-			},
-			message: "Please enter your SSN as xxx-xx-xxxx"
-		},
-		required: [true, "Social Security number required"]
-	},
-	name: {type: String, required: [true, "Name is required"]},
-	username : {type: String, required: [true, "Username is required"], unique: true},
-	password : {type: String, required: [true, "Password is required"]},
-	admin : Boolean
-});
+var Donor = schemas.Donor;
 
+var Recipient = schemas.Recipient;
 
-//HOSPITAL SCHEMA
-var hospitalSchema = new Schema({
-	name: {type: String, required: [true, "Please provide the hospital name"]},
-	address : {
-		street : {type: String, required: [true, "Please provide the hospital street address"]},
-		city: {type: String, required: [true, "Please provide the hospital city"]},
-		state: {type: String, required: [true, "Please select a state"]},
-		zip: {type: String, required: [true, "Please provide the hospital zipcode"]},
-		region: {type: String, required: [true, "Please select a region"]},
-	},
-	phone : {type: String, required: [true, "Please provide the hospital phone number"]},
-	procedures : Array,
-	doctors : Array
-});
-
-
-//DONOR SCHEMA
-var donorSchema = new Schema({
-    ssn : {
-        type: String,
-        unique: true,
-        validate: {
-            validator: function(v) {
-                return /\d{3}-\d{2}-\d{4}/.test(v);
-            },
-            message: "Please enter your SSN as xxx-xx-xxxx"
-        },
-        required: [true, "Social Security number required"]
-    },
-    name: {
-        firstName : {type: String, required: [true, "First name is required"]},
-        lastName: {type: String, required: [true, "Last Name is required"]}
-    },
-
-    address : {
-        street : {type: String, required: [true, "Street address is required"]},
-        city: {type: String, required: [true, "City is required"]},
-
-        state: {type: String, required: [true, "Please select a state"]},
-        zip: {type: String, validate: {
-            validator: function(v) {
-                return /\d{5}/.test(v);
-            },
-            message: "Please enter zip code as xxxxx"
-        }, required: [true, "Zip code is required"]},
-
-    },
-
-    phoneNumber:  {type: String, validate: {
-            validator: function(v) {
-                return /\d{3}-\d{3}-\d{4}/.test(v);
-            },
-            message: "Please enter phone number as xxx-xxx-xxxx"
-        }, required: [false]},
-
-    dateAdded: {type: Date, required: [true, "Date is required"]},
-    HLAType: {type: String, required: [true, "HLA type is required"]},
-    height: {type: String, required: [true, "height is required"]},
-    weight: {type: String, required: [true, "weight is required"]},
-    organType: {type: String, required: [true, "Please select an organ type"]},
-    sex: {type: String, required: [true, "Please enter patient sex"]},
-    organType: {type: String, required: [true, "Please select an organ type"]},
-    bloodType: {type: String, required: [true, "Please select a blood type"]},
-    organSize: {type: String, required: [true, "Please enter organ size"]},
-    deceased: {type: String, required: [true, "Is the donor deceased?"]},
-
-});
-
-
-
-//RECIPIENT SCHEMA
-var recipientSchema = new Schema({
-    ssn : {
-        type: String,
-        unique: true,
-        validate: {
-            validator: function(v) {
-                return /\d{3}-\d{2}-\d{4}/.test(v);
-            },
-            message: "Please enter your SSN as xxx-xx-xxxx"
-        },
-        required: [true, "Social Security number required"]
-    },
-    name: {
-        firstName : {type: String, required: [true, "First name is required"]},
-        lastName: {type: String, required: [true, "Last Name is required"]}
-    },
-
-    address : {
-        street : {type: String, required: [true, "Street address is required"]},
-        city: {type: String, required: [true, "City is required"]},
-
-        state: {type: String, required: [true, "Please select a state"]},
-
-        zip: {type: String, validate: {
-            validator: function(v) {
-                return /\d{5}/.test(v);
-            },
-            message: "Please enter zip code as xxxxx"
-        },required: [true, "Zip code is required"]},
-
-    },
-
-    phoneNumber:  {type: String, validate: {
-            validator: function(v) {
-                return /\d{3}-\d{3}-\d{4}/.test(v);
-            },
-            message: "Please enter phone number as xxx-xxx-xxxx"
-        }, required: [false]},
-
-    dateAdded: {type: Date, required: [true, "Date is required"]},
-    HLAType: {type: String, required: [true, "HLA type is required"]},
-    height: {type: String, required: [true, "height is required"]},
-    weight: {type: String, required: [true, "weight is required"]},
-    organType: {type: String, required: [true, "Please select an organ type"]},
-    sex: {type: String, required: [true, "Please enter patient sex"]},
-    dob: {type: Date, required: [true, "Please enter patient date of birth"]},
-    organType: {type: String, required: [true, "Please select an organ type"]},
-    bloodType: {type: String, required: [true, "Please select a blood type"]},
-    organSize: {type: String, required: [true, "Please enter organ size"]},
-    urgency: {type: String, required: [true, "Please specify urgency"]},
-
-});
-
-var Hospitals = mongoose.model('hospitals', hospitalSchema);
-
-var Doctors = mongoose.model('doctors', doctorSchema);
-
-var Donors = mongoose.model('donors', donorSchema);
-
-var Recipients = mongoose.model('recipients', recipientSchema);
+var User = schemas.User;
 
 
 //******************************
@@ -194,7 +31,7 @@ var Recipients = mongoose.model('recipients', recipientSchema);
 //******************************
 
 router.get('/api/hospitals/names', function(req, res){
-    Hospitals.find({}, {name: 1}, function(err, data){
+    Hospital.find({}, {name: 1}, function(err, data){
         if (err)
             res.send(err);
         else
@@ -205,7 +42,6 @@ router.get('/api/hospitals/names', function(req, res){
 
 router.post('/api/register', function(req, res) {
     //console.log(req.body);
-    var User = mongoose.model('users', userSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -298,7 +134,6 @@ router.post('/api/register', function(req, res) {
 //user authentication
 router.post('/api/authenticate', function(req, res) {
     console.log(req.body);
-    var User = mongoose.model('users', userSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -452,7 +287,7 @@ router.use('/admin/',function(req, res, next) {
 // put apis you want to secure with admin token here VVVVVVV
 
 router.get('/admin/api/hospitals', function(req, res){
-    Hospitals.find(function(err, data){
+    Hospital.find(function(err, data){
         if (err)
             res.send(err);
         else
@@ -463,7 +298,6 @@ router.get('/admin/api/hospitals', function(req, res){
 //ADD HOSPITAL ROUTE
 router.post('/admin/api/hospitals', function(req, res) {
     //console.log(req.body);
-    var Hospital = mongoose.model('hospitals', hospitalSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -480,7 +314,7 @@ router.post('/admin/api/hospitals', function(req, res) {
 
     var errors = {};
 
-    Hospitals.findOne({
+    Hospital.findOne({
         $or: [
             {address : {street: request.street}},
             {name: request.name}
@@ -584,7 +418,6 @@ router.use('/doctor/', function(req, res, next) {
 //ADD RECIPIENT ROUTE
 router.post('/doctor/api/recipients', function(req, res) {
     //console.log(req.body);
-    var Recipient = mongoose.model('recipients', recipientSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -681,7 +514,6 @@ router.post('/doctor/api/recipients', function(req, res) {
 //ADD Donors to donor list
 router.post('/doctor/api/donors', function(req, res) {
     //console.log(req.body);
-    var Donor = mongoose.model('donors', donorSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -760,7 +592,7 @@ router.post('/doctor/api/donors', function(req, res) {
             error.errors = errors;
             throw error;
         }).then(function(newDonor) {
-            Doctors.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}}).then(function(newDonor) {return newDonor});
+            Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}}).then(function(newDonor) {return newDonor});
         }).catch(function(err) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
@@ -774,7 +606,7 @@ router.post('/doctor/api/donors', function(req, res) {
 
 router.get('/doctor/api/hospital-info/:doctor_id', function(req, res){
     console.log(req.params.doctor_id);
-    Hospitals.findOne({"doctors" : { "_id" : ObjectId(req.params.doctor_id)}})
+    Hospital.findOne({"doctors" : { "_id" : ObjectId(req.params.doctor_id)}})
         .then(function(hospital){
             if (hospital)
             {
@@ -825,12 +657,12 @@ router.get('/doctor/api/view-patients/:doctor_id', function(req, res) {
     var recipientPatients = [];
     var patient_ids = [];
 
-    Doctors.findOne({_id : req.params.doctor_id})
+    Doctor.findOne({_id : req.params.doctor_id})
         .then(function(doctor){
             patient_ids  = doctor.patients;
             return patient_ids;
         }).then(function(patient_ids){
-            return Donors.find({_id : {$in : patient_ids}}).then(function(donors) {return donors;});
+            return Donor.find({_id : {$in : patient_ids}}).then(function(donors) {return donors;});
 
         }).then(function(donors){
             if (donors)
@@ -838,7 +670,7 @@ router.get('/doctor/api/view-patients/:doctor_id', function(req, res) {
             donorPatients = donors;
             patients.donorPatients = donorPatients;
             }
-            return Recipients.find({_id : {$in : patient_ids}}).then(function(recipients) {return recipients;});
+            return Recipient.find({_id : {$in : patient_ids}}).then(function(recipients) {return recipients;});
         }).then(function(recipients){
             if (recipients)
             {
