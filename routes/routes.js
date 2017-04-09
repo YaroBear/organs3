@@ -423,12 +423,6 @@ router.post('/admin/api/hospital/moveDoctors', function(req, res) {
     }
 
     var errors = {};
-    /*
-    need token?
-    desthosp_id, oldhosp_id, and doc_id
-    */
-    //Hospitals.findOneAndUpdate({"_id": request.destHosp}, {$push: {doctors: {"_id" :request.docid}}});
-    //Hospitals.findOneAndUpdate({"_id": request.oldHosp}, {$pull: {doctors: {"_id" :request.docid}}});
     var ObjectId = require('mongoose').Types.ObjectId;
 
     Hospitals.findOneAndUpdate({"_id": request.destHosp}, {$push: {doctors: {"_id" :request.docid}}})
