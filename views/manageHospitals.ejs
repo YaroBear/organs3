@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html ng-app="manageHospitals">
-   <style>
+<html ng-app = "manageHospitals">
+	<body>
+	<style>
       html,body {
       margin:0;
       padding:0;
@@ -20,27 +21,6 @@
       float:left;
       width:200px;
       //background-color:#cfc;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
-      #main {
-      position:relative;
-      margin-left:200px;
-      //background-color:#ffc;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
-      #left2 {
-      float:left;
-      width:60%;
-      //background-color: RoyalBlue ;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
-      #main2 {
-      position:relative;
-      margin-left:60%;
-      //background-color: Orange;
       padding-bottom:9999px;
       margin-bottom:-9999px;
       }
@@ -101,38 +81,42 @@
 .clear {
     clear: both;
 }
+#wgtmsr{
+ width:150px;   
+}
+.selectbox{
+   width:200px;
+}
    </style>
-   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-   <script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
-   <script src="controllers/manageHospitals-ctrl.js"></script>
-   <body ng-controller="managehospitalsController">
-      <div id="header">
-         <table>
-            <tr>
-               <th>
-                  <img src="images/cardiogram.svg" class="logo" style="width:100px;height:100px;"></img>
-               </th>
-               <th>
-                  <h1>Organ Network</h1>
-                  <h1>Manage Hospitals</h1>
-               </th>
-            </tr>
-         </table>
-      </div>
-      <div id="container">
-      <body ng-controller="managehospitalsController">
-         <div id="left">
-            <div class="btn-group">
-               <a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
-               <a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
-               <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
-               <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
-            </div>
-         </div>
-         <div id="main">
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+		<script src="controllers/manageHospitals-ctrl.js"></script>
+
+		<div class="body-content">
+			<div class="jumbotron top-banner row text-center">
+				<div class="col-xs-2">
+					<img src="images/cardiogram.svg" class="logo"></img>
+				</div>
+				<div class="col-xs-10">
+					<h1>Organ Network</h1>
+					<h2>Manage Hospitals</h2>
+				</div>
+			</div>
+			<div class="row" ng-controller="managehospitalsController">
+				<div class="col-xs-4 col-md-2 left-banner left">
+
+					<a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+               		<a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
+               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+				</div>
+				<div class="col-xs-8 col-md-9">
+				<!--  Main Content Here  -->
+					<div id="main">
          <button class="btn btn-primary btn-lg btn-block btnsize" ng-confirm-click="test" ng-click="loadHospList()">Load Hospitals</button>
          <table class="tableBorder">
             <tr class="tableBorder">
@@ -144,6 +128,9 @@
                <th class="tableBorder">State</th>
                <th class="tableBorder">Zip Code</th>
                <th class="tableBorder">Region</th>
+               <th class="tableBorder">Doctors</th>
+               <th class="tableBorder">Move Doc</th>
+
             </tr>
             <tr class="tableBorder" ng-repeat="hosp in hospitals">
                <td class="tableBorder">
@@ -165,7 +152,17 @@
                <td class="tableBorder centered">{{hosp.address.state}}</td>
                <td class="tableBorder centered">{{hosp.address.zip}}</td>
                <td class="tableBorder centered">{{hosp.address.region}}</td>
-
+               <td class="tableBorder centered">{{hosp.doctors.length}}</td>
+               <td class="tableBorder">
+                  <button nf-ig="hosp.doctors.length" ng-hide="hosp.movedoc" ng-click="enableMove(hosp)">Move</button>
+                  <select ng-if="hosp.movedoc" ng-model="hosp.docid" class="selectbox" ng-show="hosp.movedoc">
+                    <option  value="{{doc._id}}" ng-repeat="doc in hosp.doctors">{{doc._id}}</option>
+                  </select>
+                  <button ng-show="hosp.movedoc" ng-click="doMove(hosp)">Move Doctor to</button>
+                  <select ng-if="hosp.movedoc" ng-model="hosp.destHosp" class="selectbox" ng-show="hosp.movedoc">
+                    <option  value="{{newhosp._id}}" ng-repeat="newhosp in hospitals">{{newhosp.name}}</option>
+                  </select>
+               </td>
             </tr>
          </table>
          <table>
@@ -176,8 +173,8 @@
 
          <div style="clear:both"></div>
       </div>
-      </body>
-
-      <div id="footer">FOOTER</div>
-   </body>
+				<!--  End Main Content  -->
+				</div>
+			</div>
+	</body>
 </html>

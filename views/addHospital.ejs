@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html ng-app="addHospital">
-   <style>
+<html ng-app = "addHospital">
+	<body>
+	<style>
       html,body {
       margin:0;
       padding:0;
@@ -23,27 +24,6 @@
       padding-bottom:9999px;
       margin-bottom:-9999px;
       }
-      #main {
-      position:relative;
-      margin-left:200px;
-      //background-color:#ffc;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
-      #left2 {
-      float:left;
-      width:60%;
-      //background-color: RoyalBlue ;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
-      #main2 {
-      position:relative;
-      margin-left:60%;
-      //background-color: Orange;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
       #footer {
       //background-color:#fcc;
       }
@@ -63,41 +43,86 @@
       .btn-group button:hover {
       //background-color: #3e8e41;
       }
-   </style>
-   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-   <script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
-   <script src="controllers/addHospital-ctrl.js"></script>
-   <body ng-controller="hospitalController">
-      <div id="header">
-         <table>
-            <tr>
-               <th>
-                  <img src="images/cardiogram.svg" class="logo" style="width:100px;height:100px;"></img>
-               </th>
-               <th>
-                  <h1>Organ Network</h1>
-                  <h1>Add Hospital</h1>
-               </th>
-            </tr>
-         </table>
-      </div>
-      <div id="container">
-      <body ng-controller="hospitalController">
-         <div id="left">
-            <div class="btn-group">
-               <a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
-               <a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
-               <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
-               <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
-            </div>
-         </div>
-         <div id="main">
+      .btnsize{
+      width:225px !important; //!important forces it
+      }
+      .btnsize2{
+      width: 150px !important; //!important forces it
+      }
+      .btnsize3{
+      width:100px !important; //!important forces it
+      }
+      .fnt{
+         text-align:left;
+      }
+      .tableBorder{
+      border: 1px solid black;
+      }
+      .centered{
+         text-align: center;
+      }
+      .tile_div a {
+         display: block;
+         float: left;
+         height: 50px;
+         width: 100px;
+         margin-right: 5px;
+         background-image: url(./images/button_left.png);
+         background-color: #ccc;
+         text-align: center;
+         line-height: 50px;
+         text-decoration: none;
+      }
 
-         	<div id="left2">
-         		<form class="right" ng-show="showForm">
+.title_div a.last {
+    margin-right: 0;
+}
+
+.clear {
+    clear: both;
+}
+#wgtmsr{
+ width:150px;   
+}
+.selectbox{
+   width:200px;
+}
+   </style>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+		<script src="controllers/addHospital-ctrl.js"></script>
+
+		<div class="body-content">
+			<div class="jumbotron top-banner row text-center">
+				<div class="col-xs-2">
+					<img src="images/cardiogram.svg" class="logo"></img>
+				</div>
+				<div class="col-xs-10">
+					<h1>Organ Network</h1>
+					<h2>Add Hospital</h2>
+				</div>
+			</div>
+			<div class="row" ng-controller="hospitalController">
+			
+				<div class="col-xs-4 col-md-2 left-banner left">
+
+					<a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+               		<a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
+               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+				</div>
+				<div class="col-xs-8 col-md-9">
+				<!--  Main Content Here  -->
+               <div id="body-content2">
+               <div ng-show="addedAlert">
+				<h1>Hospital Added Successfully!</h1>
+			</div>
+
+               <form class="right" ng-show="showForm">
                <div class= "form-group">
                   <label>Name</label>
                   <input type="text" size="50" class="" id ="newHospitalName" ng-model="formData.name" placeholder="Hospital name">
@@ -140,9 +165,9 @@
                </div>
                
             </form>
-         	</div>
-         	<div id="main2">
-         		<div >
+            </div>
+            <div id="main2">
+               <div >
                   <div class="panel panel-default">
                      <div class="panel-heading">
                         <h3 class="panel-title">Region information</h3>
@@ -154,17 +179,13 @@
                      </div>
                   </div>
                </div>
-         	</div>
-         	<!--
+            <!--
 
             
             -->
          </div>
-
-         <div style="clear:both"></div>
-      </div>
-      </body>
-
-      <div id="footer">FOOTER</div>
-   </body>
+				<!--  End Main Content  -->
+				</div>
+			</div>
+	</body>
 </html>
