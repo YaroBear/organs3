@@ -482,11 +482,16 @@ router.post('/doctor/api/recipients', function(req, res) {
             errors.validationError = err;
             res.status(500).send({success: false, errors});
         }).then(function(newRecipient){
+            Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newRecipient._id}
+
+        }).then(function(newRecipient) {return newRecipient});
             if (newRecipient){
                 return matchingFunctions.addRecipientToWaitlist(newRecipient);
             }
+        })
 
-        }).then(function(waitlist){
+
+        .then(function(waitlist){
             if (waitlist)
             {
                 res.status(201).send({ok: true, message: 'Recipient added successfully'});
