@@ -556,6 +556,48 @@ router.post('/admin/api/deletehospital', function(req, res) {
     });
 });
 
+//Move Doctors
+router.post('/admin/api/hospital/moveDoctors', function(req, res) {
+    var Hospital = mongoose.model('hospitals', hospitalSchema);
+    var request = {};
+    // if req.body is empty (form is empty), use query parameters 
+    // to test API without front end via Postman or regular xmlhttprequest
+    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
+    {    
+        console.log("using req.query");
+        request = req.query;
+    }
+    else
+    {
+        console.log("using req.body")
+        request = req.body;
+    }
+
+    var errors = {};
+    /*
+    need token?
+    desthosp_id, oldhosp_id, and doc_id
+    */
+    //Hospitals.findOneAndUpdate({"_id": request.destHosp}, {$push: {doctors: {"_id" :request.docid}}});
+    //Hospitals.findOneAndUpdate({"_id": request.oldHosp}, {$pull: {doctors: {"_id" :request.docid}}});
+    var ObjectId = require('mongoose').Types.ObjectId;
+
+    Hospitals.findOneAndUpdate({"_id": request.destHosp}, {$push: {doctors: {"_id" :request.docid}}})
+    .catch(function(err){
+        console.log(err);
+    }).then(function(mongoResponse){
+        console.log(mongoResponse);
+        return Hospitals.findOneAndUpdate({"_id": request.oldHosp}, {$pull: {doctors: {"_id" :ObjectId(request.docid)}}});
+    }).catch(function(err){
+        console.log(err);
+        res.status(500).send({success: false, message: err});
+    }).then(function(mongoResponse){
+        if (mongoResponse)
+         { res.status(201).send({success: true, message: "The hospital doctor list was successfully updated!"}); }
+    });
+
+    });
+
 //list hospitals
 router.get('/admin/api/listHosp', function(req, res) {
     //console.log(req.body);

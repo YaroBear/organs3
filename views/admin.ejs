@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html ng-app="admin">
-   <style>
+<html ng-app = "admin">
+	<body>
+	<style>
       html,body {
       margin:0;
       padding:0;
@@ -23,27 +24,6 @@
       padding-bottom:9999px;
       margin-bottom:-9999px;
       }
-      #main {
-      position:relative;
-      margin-left:200px;
-      //background-color:#ffc;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
-      #left2 {
-      float:left;
-      width:60%;
-      //background-color: RoyalBlue ;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
-      #main2 {
-      position:relative;
-      margin-left:60%;
-      //background-color: Orange;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
       #footer {
       //background-color:#fcc;
       }
@@ -63,88 +43,82 @@
       .btn-group button:hover {
       //background-color: #3e8e41;
       }
+      .btnsize{
+      width:225px !important; //!important forces it
+      }
+      .btnsize2{
+      width: 150px !important; //!important forces it
+      }
+      .btnsize3{
+      width:100px !important; //!important forces it
+      }
+      .fnt{
+         text-align:left;
+      }
+      .tableBorder{
+      border: 1px solid black;
+      }
+      .centered{
+         text-align: center;
+      }
+      .tile_div a {
+         display: block;
+         float: left;
+         height: 50px;
+         width: 100px;
+         margin-right: 5px;
+         background-image: url(./images/button_left.png);
+         background-color: #ccc;
+         text-align: center;
+         line-height: 50px;
+         text-decoration: none;
+      }
+
+.title_div a.last {
+    margin-right: 0;
+}
+
+.clear {
+    clear: both;
+}
+#wgtmsr{
+ width:150px;   
+}
+.selectbox{
+   width:200px;
+}
    </style>
-   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-   <script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-   <link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
-   <script src="controllers/admin-ctrl.js"></script>
-   <body ng-controller="adminController">
-      <div id="header">
-         <table>
-            <tr>
-               <th>
-                  <img src="images/cardiogram.svg" class="logo" style="width:100px;height:100px;"></img>
-               </th>
-               <th>
-                  <h1>Organ Network</h1>
-                  <h1>Admin Page</h1>
-               </th>
-            </tr>
-         </table>
-      </div>
-      <div id="container">
-         <div id="left">
-            <div class="btn-group">
-               <a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
-               <a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
-               <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
-               <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
-            </div>
-         </div>
-         <div id="main">
 
-         	<div id="left2">
-         		<form class="right" ng-show="showForm">
-               <div class= "form-group">
-                  <label>Name</label>
-                  <input type="text" size="50" class="form-control" id ="newHospitalName" ng-model="formData.name" placeholder="Hospital name">
-                  <p class="error">{{nameError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>Region</label>
-                  <select class="form-control" ng-model="formData.region" ng-options="region as region for (region, states) in regions">
-                  </select>
-                  <p class="error">{{regionError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>Street address</label>
-                  <input type="text" class="form-control" id ="newHospitalStreet" ng-model="formData.street" placeholder="Street address">
-                  <p class="error">{{streetError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>City</label>
-                  <input type="text" class="form-control" id ="newHospitalCity" ng-model="formData.city" placeholder="City">
-                  <p class="error">{{cityError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>State</label>
-                  <select class="form-control" ng-model="formData.state" ng-options="state as state for state in regions[formData.region]">
-                  </select>
-                  <p class="error">{{stateError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>Zip code</label>
-                  <input type="text" class="form-control" id ="newHospitalZip" ng-model="formData.zip" placeholder="Zip Code">
-                  <p class="error">{{zipError}}</p>
-               </div>
-               <div class= "form-group">
-                  <label>Phone Number</label>
-                  <input type="phoneNumber" class="form-control" id ="newHospitalPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone Number">
-                  <p class="error">{{phoneNumberError}}</p>
-               </div>
-               <div class="form-group">
-                  <button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addHospital()">Submit</button>
-               </div>
-               
-            </form>
-         	</div>
-         </div>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+		<script src="controllers/admin-ctrl.js"></script>
 
-         <div style="clear:both"></div>
-      </div>
+		<div class="body-content">
+			<div class="jumbotron top-banner row text-center">
+				<div class="col-xs-2">
+					<img src="images/cardiogram.svg" class="logo"></img>
+				</div>
+				<div class="col-xs-10">
+					<h1>Organ Network</h1>
+					<h2>Doctor home</h2>
+				</div>
+			</div>
+			<div class="row" ng-controller="adminController">
+				<div class="col-xs-4 col-md-2 left-banner left">
 
-      <div id="footer">FOOTER</div>
-   </body>
+					<a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+               		<a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
+               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+				</div>
+				<div class="col-xs-8 col-md-9">
+				<!--  Main Content Here  -->
+
+				<!--  End Main Content  -->
+				</div>
+			</div>
+	</body>
 </html>
