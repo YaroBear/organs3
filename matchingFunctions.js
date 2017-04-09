@@ -30,6 +30,9 @@ var calculatePriority = function(recipient) {
 };
 
 var addRecipientToWaitlist = function(recipient) {
+
+	console.log("Adding recipient to correct waitlist");
+	
     var waitlist;
 
     if (recipient.organType == "Heart")

@@ -7,6 +7,8 @@ var jwt = require('jsonwebtoken');
 app.set('superSecret', process.env.SECRET);
 app.set('doctorSecret', process.env.DOCTOR_SECRET);
 
+var ObjectId = require('mongoose').Types.ObjectId; 
+
 
 //matching functions
 var matchingFunctions = require("../matchingFunctions");
@@ -120,7 +122,7 @@ router.post('/api/register', function(req, res) {
         	return newDoctor.save().then(function() {return newUser;});
         
         }).then(function(newUser) {
-        	Hospitals.findOneAndUpdate({"_id": request.selectedHospital._id}, {$push: {doctors: {"_id" :newUser._id}}}).then(function() {return Hospitals});
+        	Hospital.findOneAndUpdate({"_id": request.selectedHospital._id}, {$push: {doctors: {"_id" :newUser._id}}}).then(function() {return Hospital});
         }).then(function(Hospitals){
             res.status(201).send({ok: true, message: 'Added user successfully'});
         }).catch(function(err) {
@@ -133,7 +135,7 @@ router.post('/api/register', function(req, res) {
 
 //user authentication
 router.post('/api/authenticate', function(req, res) {
-    console.log(req.body);
+    //console.log(req.body);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -473,41 +475,25 @@ router.post('/doctor/api/recipients', function(req, res) {
                 organSize : request.organSize
             });
 
-            return newRecipient.validate().then(function() { return newRecipient; });
+            console.log(request.dob);
+
+            return newRecipient.save().then(function() { return newRecipient; });
         }).catch(function(err) {
             errors.validationError = err;
-        }).then(function(newRecipient) {
-            if(errors.validationError) {
-                var error = {};
-                error.message = 'Failed to add recipient';
-                error.code = 400;
-                error.errors = errors;
-                throw error;
-            }
-            else
-            {
-                return newRecipient.save().then(function() {return newRecipient;});
-            }
-        }).catch(function(err){
-            var error = {};
-            error.message = err.message;
-            error.code = 400;
-            error.errors = errors;
-            throw error;
-        }).catch(function(err) {
-            var errorCode = err.code || 500;
-            res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
+            res.status(500).send({success: false, errors});
         }).then(function(newRecipient){
-            if (newRecipient)
-            {
-                matchingFunctions.addRecipientToWaitlist(newRecipient);
-            }            
+            if (newRecipient){
+                return matchingFunctions.addRecipientToWaitlist(newRecipient);
+            }
+
         }).then(function(waitlist){
-            console.log(waitlist);
-            res.status(201).send({ok: true, message: 'Recipient added successfully'});
+            if (waitlist)
+            {
+                res.status(201).send({ok: true, message: 'Recipient added successfully'});
+            }
         }).catch(function(err) {
             console.log(err);
-            res.status(500).send({success: false, errors});
+            res.status(500).send({success: false, err});
         });
     });
 
