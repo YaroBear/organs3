@@ -110,10 +110,16 @@ var donorSchema = new Schema({
         }, required: [false]},
 
     dateAdded: {type: Date, required: [true, "Date is required"]},
-    HLAType: {type: String, required: [true, "HLA type is required"]},
+    HLAType: {type: String, validate: {
+            validator: function(v) {
+                return /\d{6}/.test(v);
+            },
+            message: "Please enter HLA matching criteria as xxxxxx"
+        }, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
+    dob: {type: Date, required: [true, "Please enter patient date of birth"]},
     sex: {type: String, required: [true, "Please enter patient sex"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
     bloodType: {type: String, required: [true, "Please select a blood type"]},
@@ -165,7 +171,12 @@ var recipientSchema = new Schema({
         }, required: [false]},
 
     dateAdded: {type: Date, required: [true, "Date is required"]},
-    HLAType: {type: String, required: [true, "HLA type is required"]},
+    HLAType: {type: String, validate: {
+            validator: function(v) {
+                return /\d{6}/.test(v);
+            },
+            message: "Please enter HLA matching criteria as xxxxxx"
+        }, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]},
     organType: {type: String, required: [true, "Please select an organ type"]},
@@ -661,7 +672,13 @@ router.post('/doctor/api/recipients', function(req, res) {
             error.code = 400;
             error.errors = errors;
             throw error;
-        }).catch(function(err) {
+        })
+
+        // .then(function(newRecipient) {
+        //     Doctors.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newRecipient._id}}).then(function(newRecipient) {return newRecipient;});
+        // })
+
+        .catch(function(err) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
         }).then(function(newRecipient){
@@ -728,7 +745,7 @@ router.post('/doctor/api/donors', function(req, res) {
                 sex : request.selectedSex,
                 height : request.height,
                 weight : request.weight,
-
+                dob : new Date(Date.parse(request.dob)),
 
                 organType : request.selectedOrganType,
                 bloodType : request.selectedBloodType,

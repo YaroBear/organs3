@@ -72,6 +72,7 @@ var addDonor = angular.module('addDonor', [])
 				$scope.organSizeError = "";
 				$scope.deceasedError = "";
 				$scope.phoneNumberError = "";
+				$scope.dobError = "";
 
 				if (err.errors.validationError)
 				{
@@ -145,6 +146,10 @@ var addDonor = angular.module('addDonor', [])
 					if (errors.deceased)
 					{
 						$scope.deceasedError = errors.deceased.message;
+					}
+					if (errors.dob)
+					{
+						$scope.dobError = errors.dob.message;
 					}
 				}
 
