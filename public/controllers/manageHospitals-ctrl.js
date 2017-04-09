@@ -7,7 +7,6 @@ var manageHospitals = angular.module('manageHospitals', [])
 		$scope.addedAlert = false; //Success message is changed to true if form is filled out correctly
 		var token = localStorage.getItem("token");
 
-
 		$scope.enableMove = function (hosp)
 		{
 			hosp.movedoc = true;
