@@ -483,7 +483,6 @@ router.post('/doctor/api/recipients', function(req, res) {
             res.status(500).send({success: false, errors});
         }).then(function(newRecipient){
             Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newRecipient._id}
-
         }).then(function(newRecipient) {return newRecipient});
             if (newRecipient){
                 return matchingFunctions.addRecipientToWaitlist(newRecipient);
@@ -561,38 +560,22 @@ router.post('/doctor/api/donors', function(req, res) {
 
             });
 
-            return newDonor.validate().then(function() { return newDonor; });
+            return newDonor.save().then(function() { return newDonor; });
         }).catch(function(err) {
             errors.validationError = err;
-        }).then(function(newDonor) {
-            if(errors.validationError) {
-                var error = {};
-                error.message = 'Failed to add user';
-                error.code = 400;
-                error.errors = errors;
-                throw error;
-            }
-            else
-            {
-                return newDonor.save().then(function() {return newDonor;});
-            }
-        }).catch(function(err){
-            var error = {};
-            error.message = err.message;
-            error.code = 400;
-            error.errors = errors;
-            throw error;
-        }).then(function(newDonor) {
-            Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}}).then(function(newDonor) {return newDonor});
-        }).catch(function(err) {
-            var errorCode = err.code || 500;
-            res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
-        }).then(function(newDonor){
-            res.status(201).send({ok: true, message: 'Donor added successfully'});
-            matchingFunctions.generateMatchforDonor(newDonor);
-        }).catch(function(err) {
             res.status(500).send({success: false, errors});
+        }).then(function(newDonor){
+            Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}
+        }).then(function(newDonor){
+            if (newDonor)
+            {
+                res.status(201).send({ok: true, message: 'Donor added successfully'});
+            }
+        }).catch(function(err) {
+            console.log(err);
+            res.status(500).send({success: false, err});
         });
+    })
     });
 
 router.get('/doctor/api/hospital-info/:doctor_id', function(req, res){
