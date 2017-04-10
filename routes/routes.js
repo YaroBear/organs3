@@ -577,10 +577,8 @@ router.post('/doctor/api/recipients', function(req, res) {
             if (newRecipient){
                 return matchingFunctions.addRecipientToWaitlist(newRecipient);
             }
-        })
-
-
-        .then(function(waitlist){
+      
+        }).then(function(waitlist){
             if (waitlist)
             {
                 res.status(201).send({ok: true, message: 'Recipient added successfully'});
@@ -610,10 +608,7 @@ router.post('/doctor/api/donors', function(req, res) {
         console.log("using req.body")
         request = req.body;
     }
-
-
     var errors = {};
-
     Donor.findOne({ssn : request.ssn})
         .then(function(ssn) {
             if (ssn)
@@ -621,8 +616,6 @@ router.post('/doctor/api/donors', function(req, res) {
                 errors.ssnExists = "A donor with that SSN already exists";
             }
         }).then(function(){
-
-
             // create a new donor
             //drop down attributes not working
             var newDonor = Donor({
@@ -630,45 +623,28 @@ router.post('/doctor/api/donors', function(req, res) {
                 name : {
                 firstName : request.firstName,
                 lastName : request.lastName},
-
                 address : {street : request.street,
                 city : request.city,
                 state : request.selectedState,
                 zip : request.zip},
-
                 phoneNumber : request.phoneNumber,
-
                 dateAdded : new Date(Date.now()),
-
                 sex : request.selectedSex,
                 height : request.height,
                 weight : request.weight,
                 dob : new Date(Date.parse(request.dob)),
-
                 organType : request.selectedOrganType,
                 bloodType : request.selectedBloodType,
                 HLAType : request.HLAType,
                 organSize : request.organSize,
                 deceased : request.selectedDeceased,
-
             });
-
             return newDonor.save().then(function() { return newDonor; });
         }).catch(function(err) {
             errors.validationError = err;
             res.status(500).send({success: false, errors});
         }).then(function(newDonor){
-            Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}
-        }).then(function(newDonor){
-            if (newDonor)
-            {
-                res.status(201).send({ok: true, message: 'Donor added successfully'});
-            }
-        }).catch(function(err) {
-            errors.validationError = err;
-            res.status(500).send({success: false, errors});
-        }).then(function(newDonor){
-            Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}
+            return Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}});
         }).then(function(newDonor){
             if (newDonor)
             {
@@ -678,9 +654,7 @@ router.post('/doctor/api/donors', function(req, res) {
             console.log(err);
             res.status(500).send({success: false, err});
         });
-    })
     });
-
 
 router.get('/doctor/api/hospital-info/:doctor_id', function(req, res){
     console.log(req.params.doctor_id);
