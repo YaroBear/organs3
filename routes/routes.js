@@ -32,6 +32,17 @@ var User = schemas.User;
 //******************************
 //******************************
 
+
+Recipient.findOne()
+    .then(function(recip)
+    {
+
+        return matchingFunctions.generateMatchforRecipient(recip).then(function(score){return score;});
+    }).then(function(score){
+        console.log ("The score is: " + score);
+    });
+
+
 router.get('/api/hospitals/names', function(req, res){
     Hospital.find({}, {name: 1}, function(err, data){
         if (err)
@@ -114,7 +125,7 @@ router.post('/api/register', function(req, res) {
             error.errors = errors;
             throw error;
         }).then(function(newUser) {
-        	var newDoctor = new Doctors({
+        	var newDoctor = new Doctor({
         		_id : newUser._id,
         		name : newUser.name
         	});
@@ -133,7 +144,7 @@ router.post('/api/register', function(req, res) {
 
 
 
-//user authentication
+//user
 router.post('/api/authenticate', function(req, res) {
     //console.log(req.body);
     var request = {};
@@ -417,6 +428,82 @@ router.use('/doctor/', function(req, res, next) {
     }
 });
 
+var mapsKey = process.env.GOOGLE_MAPS;
+var googleMapsClient = require('@google/maps').createClient({
+  key: mapsKey
+});
+
+
+router.post('/doctor/api/testDistanceMatrix', function(req, res){
+    var request = {};
+    // if req.body is empty (form is empty), use query parameters 
+    // to test API without front end via Postman or regular xmlhttprequest
+    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
+    {    
+        console.log("using req.query");
+        request = req.query;
+    }
+    else
+    {
+        console.log("using req.body");
+    }
+
+    var donor = {}
+    var recipient = {};
+
+    recipient._id = "58e49b10a96f6d3248954f42";
+    donor._id = "58e800a296ea8409bc38cf50";
+
+    Doctor.findOne({"patients": ObjectId(recipient._id)})
+        .catch(function(err)
+        {
+            console.log(err);
+        })
+        .then(function(doctor){
+            console.log("Found recipient in doctors list");
+
+            var recipientDoctor = {};
+            recipientDoctor.id = doctor._id;
+
+            return Hospital.findOne({"doctors": {"_id" : ObjectId(recipientDoctor.id)}}).then(function(hospital) {return hospital;});
+        }).catch(function(err){
+            console.log(err);
+        }).then(function(hospital){
+            recipientHospitalAddress = hospital.address;
+
+            return Doctor.findOne({"patients": ObjectId(donor._id)}).then(function(doctor) {return doctor;})
+        }).catch(function(err){
+            console.log(err);
+        }).then(function(doctor){
+            console.log("Found donor in doctors list");
+
+            var donorDoctor = {};
+            donorDoctor.id = doctor._id;
+
+            return Hospital.findOne({"doctors": {"_id" : ObjectId(donorDoctor.id)}}).then(function(hospital) {return hospital;});
+        }).catch(function(err){
+            console.log(err);
+        }).then(function(hospital){
+            donorHospitalAddress = hospital.address;
+
+            return googleMapsClient.distanceMatrix({
+                origins: recipientHospitalAddress.street + " " + recipientHospitalAddress.zip,
+                destinations: "2400 Holly Hall Street, Houston TX 77054"
+                    }, function(err, response) {
+                        if (err){
+                            console.log(err)
+                        }
+                        else
+                        {
+                            console.log(response);
+                            res.json(response);
+                        }
+            });
+        });
+
+     
+});
+
 //ADD RECIPIENT ROUTE
 router.post('/doctor/api/recipients', function(req, res) {
     //console.log(req.body);
@@ -435,6 +522,8 @@ router.post('/doctor/api/recipients', function(req, res) {
     }
 
     var errors = {};
+
+    var newRecipient;
 
     Recipient.findOne({ssn : request.ssn})
         .then(function(ssn) {
@@ -482,6 +571,7 @@ router.post('/doctor/api/recipients', function(req, res) {
             errors.validationError = err;
             res.status(500).send({success: false, errors});
         }).then(function(newRecipient){
+            newRecipient = newRecipient;
             Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newRecipient._id}
 
         }).then(function(newRecipient) {return newRecipient});
@@ -495,10 +585,13 @@ router.post('/doctor/api/recipients', function(req, res) {
             if (waitlist)
             {
                 res.status(201).send({ok: true, message: 'Recipient added successfully'});
+                return matchingFunctions.generateMatchforRecipient(newRecipient);
             }
         }).catch(function(err) {
             console.log(err);
             res.status(500).send({success: false, err});
+        }).then(function(){
+            //
         });
     });
 
@@ -589,7 +682,7 @@ router.post('/doctor/api/donors', function(req, res) {
             res.status(errorCode).send({ok: false, message: err.message, errors: err.errors});
         }).then(function(newDonor){
             res.status(201).send({ok: true, message: 'Donor added successfully'});
-            matchingFunctions.generateMatchforDonor(newDonor);
+            //matchingFunctions.generateMatchforDonor(newDonor);
         }).catch(function(err) {
             res.status(500).send({success: false, errors});
         });
@@ -614,7 +707,7 @@ router.get('/doctor/api/hospital-info/:doctor_id', function(req, res){
 
 
 router.get('/doctor/api/doctors', function(req, res) {
-    Doctors.find(function(err, data){
+    Doctor.find(function(err, data){
         if(err)
             res.send(err);
         else
@@ -624,7 +717,7 @@ router.get('/doctor/api/doctors', function(req, res) {
 
 
 router.get('/doctor/api/donors', function(req, res) {
-    Donors.find(function(err, data){
+    Donor.find(function(err, data){
         if(err)
             res.send(err);
         else

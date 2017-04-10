@@ -12,6 +12,10 @@ mongoose.connect(mongodb_uri);
 //***********SCHEMAS************
 //******************************
 //******************************
+
+var doctorNotificationSchema = new Schema({
+});
+
 var doctorSchema = new Schema({
     name : {
         type: String,
@@ -56,7 +60,7 @@ var hospitalSchema = new Schema({
 });
 
 
-//DONOR SCHEMA
+//DOCTOR SCHEMA
 var doctorSchema = new Schema({
     name : {
         type: String,
@@ -235,3 +239,5 @@ exports.Donor = mongoose.model('donors', donorSchema);
 exports.Recipient = mongoose.model('recipients', recipientSchema);
 
 exports.User = mongoose.model('users', userSchema);
+
+exports.DoctorNotifications = mongoose.model('doctor_notifications', doctorNotificationSchema);
