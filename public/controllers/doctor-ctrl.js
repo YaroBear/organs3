@@ -102,5 +102,10 @@ var doctor = angular.module('doctor', [])
 			$scope.recipientsPanel = true;
 		};
 
+		$scope.logout = function() {
+			localStorage.setItem('token', '');
+			$window.location.href = "/";
+		};
+
 		
 }]);

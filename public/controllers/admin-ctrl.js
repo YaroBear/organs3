@@ -8,7 +8,10 @@ var admin = angular.module('admin', [])
 			$window.location.href = "/admin/addHospital" + "?token=" + token;
 		}
 		
-		
+		$scope.logout = function() {
+			localStorage.setItem('token', '');
+			$window.location.href = "/";
+		};
 
 	
 }]);
