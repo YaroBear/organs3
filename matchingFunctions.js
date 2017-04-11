@@ -91,13 +91,15 @@ var addRecipientToWaitlist = function(recipient) {
 var getMatchingScore = function(donor, recipient) {
     return new Promise(function(resolve, reject){
         var scoreDetails = {};
+        var zeroScore = {totalScore : 0};
         var score = 0;
 
         console.log("Comparing organs");
         if (donor.organType !== recipient.organType)
         {
             console.log("Organ doesn't match");
-            return score;
+            resolve(zeroScore);
+            return score; //0
         }
 
         // region hard check
@@ -105,6 +107,7 @@ var getMatchingScore = function(donor, recipient) {
         if (donor.region != recipient.region)
         {
             console.log("Region doesn't match");
+            resolve(zeroScore);
             return score; // 0
         }
 
@@ -127,6 +130,7 @@ var getMatchingScore = function(donor, recipient) {
             if (!bloodMatch[recipient.bloodType].includes(donor.bloodType))
             {
                 console.log("Incompatible blood type");
+                resolve(zeroScore);
                 return score; // 0
             }
         }
@@ -151,6 +155,7 @@ var getMatchingScore = function(donor, recipient) {
         if (HLAscore == 0)
         {
             console.log("Zero HLA match");
+            resolve(zeroScore);
             return score; //0
         }
         else
@@ -194,7 +199,8 @@ var getMatchingScore = function(donor, recipient) {
         if (organTimeScore == 0)
         {
             //kick donor off the list
-            return 0; // next candidate
+            resolve(zeroScore); // next candidate
+            return 0;
         }
 
         score += organTimeScore;
@@ -236,6 +242,10 @@ var getMatchingScore = function(donor, recipient) {
             scoreDetails.pediatricBonus = 10;
             score += 10;
         }
+        else
+        {
+            scoreDetails.pediatricBonus = 0;
+        }
 
         // check kidney living status
         //
@@ -245,6 +255,10 @@ var getMatchingScore = function(donor, recipient) {
             console.log("Adding living donor kidney bonus: 9");
             scoreDetails.kidneyBonus = 9;
             score += 9;
+        }
+        else
+        {
+            scoreDetails.kidneyBonus = 0;
         }
 
         var donorHospitalAddress = "";
@@ -369,34 +383,48 @@ var generateMatchforDonor = function(donor) {
 };
 
 
-var notifyRecipientDoctor = function(scoreDetails) {
-    var newDoctorNotification = new DoctorNotifications({"_id": ObjectId(scoreDetails.doctor),
-        "donor": ObjectId(scoreDetails.donor), "recipient" : ObjectId(scoreDetails.recipient), "HLAscore": scoreDetails.HLAscore,
-        "sizeScore": scoreDetails.sizeScore, "travelScore": scoreDetails.travelScore, "totalScore": scoreDetails.totalScore});
-    newDoctorNotification.save(function(err, doc){
-        console.log(err);
-        console.log(doc);
+var notifyRecipientDoctor = function(scoresArray) {
+    var scoreCompare = function(a,b){
+      return b.totalScore - a.totalScore; 
+    };
+
+    var sortedScoresArray = scoresArray.sort(scoreCompare);
+
+    var winner = sortedScoresArray[0];
+
+    if (winner.totalScore > 60)
+    {
+        console.log("Notifiying Doctor of donor match");
+        var newDoctorNotification = new DoctorNotifications({"_id": ObjectId(winner.doctor),
+        "donor": ObjectId(winner.donor), "recipient" : ObjectId(winner.recipient), scores : {"HLAscore": winner.HLAscore,
+        "sizeScore": winner.sizeScore, "travelScore": winner.travelScore, "expireScore": winner.expireScore, "totalScore": winner.totalScore,
+        "kidneyBonus" : winner.kidneyBonus, "pediatricBonus" :winner.pediatricBonus}});
+
+        newDoctorNotification.save(function(err, doc){
+            if (err) console.log(err);
+            console.log(doc);
     });
+    }
 };
 
 var generateMatchforRecipient = function(recipient) {
     Donor.find()
         .then(function(donorCollection){
             var donorCollection = donorCollection;
+            var scorePromises = [];
             
 
             for (var i = 0; i < donorCollection.length; i++)
             {
                 console.log("Matching recip against donor: ", donorCollection[i]);
-                getMatchingScore(donorCollection[i], recipient)
-                    .then(function(scoreDetails){
-                        console.log(scoreDetails);
-                        if (scoreDetails.totalScore > 60)
-                        {
-                           notifyRecipientDoctor(scoreDetails);
-                        }
-                    });
+                
+                var scorePromise = new getMatchingScore(donorCollection[i], recipient);
+                scorePromises.push(scorePromise);
             }
+
+            Promise.all(scorePromises).then(function(scoresArray){
+                notifyRecipientDoctor(scoresArray);
+            });
         });
 
 };

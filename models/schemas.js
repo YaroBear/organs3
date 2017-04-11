@@ -14,6 +14,18 @@ mongoose.connect(mongodb_uri);
 //******************************
 
 var doctorNotificationSchema = new Schema({
+    donor: {type: String, required: true},
+    recipient : {type: String, required: true},
+    scores: {
+        HLAscore: {type: Number, required: true},
+        sizeScore: {type: Number, required: true},
+        travelScore: {type : Number, required: true},
+        kidneyBonus: {type :Number, required: true},
+        pediatricBonus : {type :Number, required: true},
+        expireScore: {type: Number, required: true},
+        totalScore: {type: Number, required: true}
+    },
+    responded: {type: Boolean, default: false}
 });
 
 var doctorSchema = new Schema({

@@ -25,6 +25,8 @@ var Recipient = schemas.Recipient;
 
 var User = schemas.User;
 
+var DoctorNotifications = schemas.DoctorNotifications;
+
 
 //******************************
 //******************************
@@ -32,16 +34,15 @@ var User = schemas.User;
 //******************************
 //******************************
 
-
+/*
 Recipient.findOne()
     .then(function(recip)
     {
 
-        return matchingFunctions.generateMatchforRecipient(recip).then(function(score){return score;});
-    }).then(function(score){
-        console.log ("The score is: " + score);
+        return matchingFunctions.generateMatchforRecipient(recip);
+        
     });
-
+*/
 
 router.get('/api/hospitals/names', function(req, res){
     Hospital.find({}, {name: 1}, function(err, data){
@@ -428,81 +429,6 @@ router.use('/doctor/', function(req, res, next) {
     }
 });
 
-var mapsKey = process.env.GOOGLE_MAPS;
-var googleMapsClient = require('@google/maps').createClient({
-  key: mapsKey
-});
-
-
-router.post('/doctor/api/testDistanceMatrix', function(req, res){
-    var request = {};
-    // if req.body is empty (form is empty), use query parameters 
-    // to test API without front end via Postman or regular xmlhttprequest
-    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
-    {    
-        console.log("using req.query");
-        request = req.query;
-    }
-    else
-    {
-        console.log("using req.body");
-    }
-
-    var donor = {}
-    var recipient = {};
-
-    recipient._id = "58e49b10a96f6d3248954f42";
-    donor._id = "58e800a296ea8409bc38cf50";
-
-    Doctor.findOne({"patients": ObjectId(recipient._id)})
-        .catch(function(err)
-        {
-            console.log(err);
-        })
-        .then(function(doctor){
-            console.log("Found recipient in doctors list");
-
-            var recipientDoctor = {};
-            recipientDoctor.id = doctor._id;
-
-            return Hospital.findOne({"doctors": {"_id" : ObjectId(recipientDoctor.id)}}).then(function(hospital) {return hospital;});
-        }).catch(function(err){
-            console.log(err);
-        }).then(function(hospital){
-            recipientHospitalAddress = hospital.address;
-
-            return Doctor.findOne({"patients": ObjectId(donor._id)}).then(function(doctor) {return doctor;})
-        }).catch(function(err){
-            console.log(err);
-        }).then(function(doctor){
-            console.log("Found donor in doctors list");
-
-            var donorDoctor = {};
-            donorDoctor.id = doctor._id;
-
-            return Hospital.findOne({"doctors": {"_id" : ObjectId(donorDoctor.id)}}).then(function(hospital) {return hospital;});
-        }).catch(function(err){
-            console.log(err);
-        }).then(function(hospital){
-            donorHospitalAddress = hospital.address;
-
-            return googleMapsClient.distanceMatrix({
-                origins: recipientHospitalAddress.street + " " + recipientHospitalAddress.zip,
-                destinations: "2400 Holly Hall Street, Houston TX 77054"
-                    }, function(err, response) {
-                        if (err){
-                            console.log(err)
-                        }
-                        else
-                        {
-                            console.log(response);
-                            res.json(response);
-                        }
-            });
-        });
-
-     
-});
 
 //ADD RECIPIENT ROUTE
 router.post('/doctor/api/recipients', function(req, res) {
@@ -523,7 +449,7 @@ router.post('/doctor/api/recipients', function(req, res) {
 
     var errors = {};
 
-    var newRecipient;
+    var recip;
 
     Recipient.findOne({ssn : request.ssn})
         .then(function(ssn) {
@@ -571,24 +497,23 @@ router.post('/doctor/api/recipients', function(req, res) {
             errors.validationError = err;
             res.status(500).send({success: false, errors});
         }).then(function(newRecipient){
-            newRecipient = newRecipient;
+            recip = newRecipient;
             Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newRecipient._id}
         }).then(function(newRecipient) {return newRecipient});
             if (newRecipient){
                 return matchingFunctions.addRecipientToWaitlist(newRecipient);
             }
       
-        }).then(function(waitlist){
-            if (waitlist)
-            {
-                res.status(201).send({ok: true, message: 'Recipient added successfully'});
-                return matchingFunctions.generateMatchforRecipient(newRecipient);
-            }
+        }).then(function(){
+        	
+            matchingFunctions.generateMatchforRecipient(recip);
+            
+        }).then(function(){
+        	res.status(201).send({ok: true, message: 'Recipient added successfully'});
+
         }).catch(function(err) {
             console.log(err);
             res.status(500).send({success: false, err});
-        }).then(function(){
-            //
         });
     });
 
@@ -649,6 +574,7 @@ router.post('/doctor/api/donors', function(req, res) {
             if (newDonor)
             {
                 res.status(201).send({ok: true, message: 'Donor added successfully'});
+                return matchingFunctions.generateMatchforDonor(newDonor);
             }
         }).catch(function(err) {
             console.log(err);
@@ -671,6 +597,19 @@ router.get('/doctor/api/hospital-info/:doctor_id', function(req, res){
         }).catch(function(err){
             res.status(500).send({success: false, error : err});
     });
+});
+
+router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res){
+
+	DoctorNotifications.findOne({"_id" : ObjectId(req.params.doctor_id)})
+		.then(function(notification){
+			if (notification)
+			{
+				res.status(201).send({success: true, hasNotification: true, notification});
+			}
+		}).catch(function(err){
+            res.status(500).send({success: false, error : err});	
+		});
 });
 
 
@@ -732,6 +671,41 @@ router.get('/doctor/api/view-patients/:doctor_id', function(req, res) {
             res.status(201).send({success: true, patients});
         });
     
+});
+
+router.post('/doctor/api/view-recipient-donor-info', function(req,res){
+    var request = {};
+    var response = {};
+    // if req.body is empty (form is empty), use query parameters 
+    // to test API without front end via Postman or regular xmlhttprequest
+    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
+    {    
+        console.log("using req.query");
+        request = req.query;
+    }
+    else
+    {
+        console.log("using req.body")
+        request = req.body;
+    }
+
+    console.log(request);
+
+    Recipient.findOne({"_id" : ObjectId(request.recipient_id)})
+    	.then(function(recipient){
+    		response.recipient = recipient;
+
+    		return Donor.findOne({"_id": ObjectId(request.donor_id)});
+    	}).then(function(donorInfo){
+    		var donor = {};
+    		donor.organType = donorInfo.organType;
+    		donor.HLAType = donorInfo.HLAType;
+    		donor.bloodType = donorInfo.bloodType;
+    		donor.organSize = donorInfo.organSize;
+    		response.donor = donor;
+
+    		res.status(201).send({success:true, response});
+    	});
 });
 
           
