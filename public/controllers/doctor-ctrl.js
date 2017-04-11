@@ -66,5 +66,10 @@ var doctor = angular.module('doctor', [])
 			$scope.donorsPanel = false;
 			$scope.recipientsPanel = true;
 		};
+
+		$scope.logout = function() {
+			localStorage.setItem('token', '');
+			$window.location.href = "/";
+		};
 		
 }]);
