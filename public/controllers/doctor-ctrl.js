@@ -18,6 +18,7 @@ var doctor = angular.module('doctor', [])
 		$scope.patientView = false;
 		$scope.donorsPanel = false;
 		$scope.recipientsPanel = false;
+		$scope.matchFound = false;
 
 		$http({
 			method: "GET",
@@ -25,6 +26,40 @@ var doctor = angular.module('doctor', [])
 			headers: {"x-access-token": token}
 		}).success(function(serverResponse){
 			$scope.hospital_info = serverResponse.hospital;
+		}).error(function(err){
+			console.log("Error:", err);
+		});
+
+		$http({
+			method: "GET",
+			url : '/doctor/api/doctor-notification/' + doctor_id,
+			headers: {"x-access-token": token}
+		}).success(function(serverResponse){
+
+			$scope.matchFound = true;
+			$scope.score_info = serverResponse.notification.scores;
+
+			if (serverResponse.hasNotification)
+			{
+				var request = {};
+				request.recipient_id = serverResponse.notification.recipient;
+				request.donor_id = serverResponse.notification.donor;
+				$http({
+					method: "POST",
+					url : '/doctor/api/view-recipient-donor-info/',
+					headers: {"x-access-token": token},
+					data: JSON.stringify(request)
+				}).success(function(serverResponse){
+					console.log(serverResponse);
+					$scope.recipient_info = serverResponse.response.recipient;
+					$scope.donor_info = serverResponse.response.donor;
+				}).error(function(err){
+					console.log("Error:", err);
+				});
+
+				console.log(serverResponse);
+			}
+
 		}).error(function(err){
 			console.log("Error:", err);
 		});
@@ -66,5 +101,11 @@ var doctor = angular.module('doctor', [])
 			$scope.donorsPanel = false;
 			$scope.recipientsPanel = true;
 		};
+
+		$scope.logout = function() {
+			localStorage.setItem('token', '');
+			$window.location.href = "/";
+		};
+
 		
 }]);

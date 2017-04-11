@@ -69,11 +69,11 @@ var addRecipient = angular.module('addRecipient', [])
 				$scope.heightError = "";
 				$scope.weightError = "";
 				$scope.bloodTypeError = "";
-				$scope.HLAError = "";
+				$scope.HLATypeError = "";
 				$scope.organSizeError = "";
 				$scope.urgencyError = "";
 				$scope.phoneNumberError = "";
-
+				$scope.dobError = "";
 
 				if (err.errors.validationError)
 				{
@@ -147,6 +147,10 @@ var addRecipient = angular.module('addRecipient', [])
 					if (errors.urgency)
 					{
 						$scope.urgencyError = errors.urgency.message;
+					}
+					if (errors.dob)
+					{
+						$scope.dobError = errors.dob.message;
 					}
 				}
 

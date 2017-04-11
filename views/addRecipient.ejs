@@ -98,6 +98,15 @@
 					</select>
 					<p class="error">{{urgencyError}}</p>
 				</div>
+				<div class= "form-inline">
+					<label>Date of Birth</label>
+					<p></p>
+	
+					<input type="date" class="form-control" ng-model="formData.dob">
+					</input>
+			
+					<p class="error">{{dobError}}</p>
+				</div>
 				<div class= "form-group">
 					<label>Blood Type</label>
 					<select class="form-control" ng-model="formData.selectedBloodType" ng-options="bloodType for bloodType in bloodTypes">
