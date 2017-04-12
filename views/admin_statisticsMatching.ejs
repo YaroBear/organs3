@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html ng-app="admin_statistics">
+	<body>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+		<script src="controllers/admin_statistics-ctrl.js"></script>
+
+		<div class="container-fluid-fluid body-content">
+			<div class="jumbotron top-banner row text-center">
+				<div class="col-xs-2">
+					<img src="images/cardiogram.svg" class="logo"></img>
+				</div>
+				<div class="col-xs-10">
+					<h1>Organ Network</h1>
+					<h2>Admin home</h2>
+				</div>
+			</div>
+			<div class="row" ng-controller="admin_statisticsController">
+				<div class="col-xs-4 col-md-3 left-banner">
+				<a class="btn btn-primary btn-lg btn-block" ng-click = "addHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+
+				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+
+				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+			</div>
+
+        <form style="margin-bottom: 5%; padding-left: 5%" ng-submit="generateReport(report)">
+            <div class="form-group">
+                <label for="reportName">What collection stats would you like?</label>
+                <select class="form-control" id="reportName" ng-model="report.name" style="width:58%;" required>
+                    <option value = ""></option>
+                    <option value = "lung_waitlists">lung_waitlists</option>
+                    <option value = "pancreas_waitlists">pancreas_waitlists</option>
+                    <option value = "doctor_notifications">doctor_notifications</option>
+                    <option value = "users">users</option>
+                    <option value = "liver_waitlists">liver_waitlists</option>
+                    <option value = "matches">matches</option>
+                    <option value = "recipients">recipients</option>
+                    <option value = "heart_waitlists">heart_waitlists</option>
+                    <option value = "kidney_waitlists">kidney_waitlists</option>
+                    <option value = "hospitals">hospitals</option>
+                    <option value = "donors">donors</option>
+                    <option value = "doctors">doctors</option>
+                    <option value = "wasted_organs">wasted_organs</option>
+                </select>
+            </div>
+
+            <input type="submit" class="btn btn-primary"></input>
+        </form>
+
+        <table class="table table-striped table-hover .table-bordered" >
+            <tbody ng-repeat="(key,val) in tableVals">
+                <tr><td>{{key}}</td><td>{{val}}</td></tr>
+                
+            </tbody>
+        </table>
+	</body>
+</html>

@@ -27,6 +27,7 @@
                 <option value = "donors">Donors</option>
                 <option value = "recipients_WL" >Recipients on wait list</option>
                 <option value = "people_matched">People matched</option>
+                <option value = "wasted_organs">Wasted Organs</option>
             </select>
         </div>
         <div class="form-group">
@@ -45,10 +46,13 @@
             <label for="organType">What organ wait list would you like?</label>
             <select class="form-control" id="organType" ng-model="report.organ" style="width:58%;" required>
                 <option value = ""></option>
-                <option value = "heart" >Heart</option>
-                <option value = "kidney">Kidney</option>
-                <option value = "lungs">Lungs</option>
-                <option value = "all" >I want all organs</option>
+                <option value = "Heart" >Heart</option>
+                <option value = "Kidney">Kidney</option>
+                <option value = "Lung">Lungs</option>
+                <option value = "Liver">Liver</option>
+                <option value = "Pancreas">Pancreas</option>
+                
+              <!--  <option value = "all" >I want all organs</option> -->
             </select>
         </div>
 

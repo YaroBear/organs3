@@ -23,7 +23,7 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 // connecting to Mlab
 var mongodb_uri = process.env.MONGODB_URI;
-mongoose.connect(mongodb_uri);
+var db = mongoose.connect(mongodb_uri);
 
 //matching functions
 var matchingFunctions = require("../matchingFunctions");
@@ -140,7 +140,6 @@ var donorSchema = new Schema({
 });
 
 
-
 //RECIPIENT SCHEMA
 var recipientSchema = new Schema({
     ssn: {
@@ -202,14 +201,66 @@ var recipientSchema = new Schema({
     urgency: { type: String, required: [true, "Please specify urgency"] }
 });
 
+//ON_WAITLIST SCHEMA
+var waitlistSchema = new Schema({
+
+    dateAdded: { type: Date },
+    priority: { type: Number },
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipents' }
+});
+
+//MATCHES AND WASTED ORGAN SCHEMA
+var matchesAndWastedSchema = new Schema({
+    _id: {
+        type: Date
+    },
+    organs: {
+        heart: Number,
+        kidney: Number,
+        liver: Number,
+        Lung: Number,
+        pancreas: Number
+    }
+});
+
+var doctorNotificationSchema = new Schema({
+    donor: { type: String, required: true },
+    recipient: { type: String, required: true },
+    scores: {
+        HLAscore: { type: Number, required: true },
+        sizeScore: { type: Number, required: true },
+        travelScore: { type: Number, required: true },
+        kidneyBonus: { type: Number, required: true },
+        pediatricBonus: { type: Number, required: true },
+        expireScore: { type: Number, required: true },
+        totalScore: { type: Number, required: true }
+    },
+    responded: { type: Boolean, default: false }
+});
+
 var Hospitals = mongoose.model('hospitals', hospitalSchema);
 
 var Doctors = mongoose.model('doctors', doctorSchema);
 
 var Donors = mongoose.model('donors', donorSchema);
 
+var Heart_Waitlist = mongoose.model('heart_waitlists', waitlistSchema);
+
+var Kidney_Waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
+
+var Lung_Waitlist = mongoose.model('lung_waitlists', waitlistSchema);
+
+var Liver_Waitlist = mongoose.model('liver_waitlists', waitlistSchema);
+
+var Pancreas_Waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
+
 var Recipients = mongoose.model('recipients', recipientSchema);
 
+var Doctor_Notifications = mongoose.model('doctor_notifications', doctorNotificationSchema);
+
+var Matches = mongoose.model("matches", matchesAndWastedSchema);
+
+var Wasted = mongoose.model("wasted_organs", matchesAndWastedSchema);
 
 //******************************
 //******************************
@@ -337,6 +388,7 @@ router.post('/api/authenticate', function(req, res) {
 
 
     if (request.username && request.password) {
+        console.log(request);
 
         User.findOne({
             username: request.username
@@ -395,132 +447,6 @@ router.post('/api/authenticate', function(req, res) {
 });
 
 
-var Heart_Waitlist = mongoose.model('heart_waitlists', waitListSchema);
-var Kidney_Waitlist = mongoose.model('kidney_waitlists', waitListSchema);
-var Lung_Waitlist = mongoose.model('lung_waitlists', waitListSchema);
-var All_Waitlist = mongoose.model('all_waitlists', waitListSchema);
-
-var Recipents = mongoose.model('recipients', recipientSchema);
-//get donors on waitlist
-router.get('/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
-    var organType = req.params.organ;
-    var start_date = req.params.start_date;
-    var end_date = req.params.end_date;
-
-    if (organType == "all") {
-        if (start_date == undefined || end_date == undefined) {
-
-            Donors.find((err, data) => {
-                if (err)
-                    res.send(err)
-                else {
-                    res.json(data);
-
-
-                }
-            })
-        } else {
-            Donors.find({ "created_on": { "$gte": start_date, "$lte": end_date } }, (err, data) => {
-                if (err)
-                    res.send(err)
-                else
-                    res.json(data);
-            })
-        }
-    } else {
-        if (start_date == undefined || end_date == undefined) {
-            Donors.find({
-                    "matching_info.organs.name": organType
-                },
-                (err, data) => {
-                    if (err)
-                        res.send(err)
-                    else {
-                        res.json(data);
-
-                    }
-                })
-        } else {
-            Donors.find({ created_on: { "$gte": start_date, "$lt": end_date }, "matching_info.organs.name": organType }, (err, data) => {
-                if (err)
-                    res.send(err)
-                else {
-
-                    res.json(data);
-                }
-            })
-        }
-    }
-
-});
-
-router.get('/api/recipents/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
-    var organ = req.params.organ;
-    var start_date = req.params.start_date;
-    var end_date = req.params.end_date;
-
-    if (organ == "heart") {
-        Heart_Waitlist.find((err, data) => {
-            if (err) {
-                res.send(err);
-            } else {
-                for (var idx in data) {
-                    Recipents.find({ _id: data[idx]["user_id"] }, (err, data) => {
-                        res.json(data);
-
-                    })
-                }
-            }
-        });
-    }
-    if (organ == "kidney") {
-        Kidney_Waitlist.find((err, data) => {
-            if (err) {
-                res.send(err);
-            } else {
-                for (var idx in data) {
-                    Recipents.find({ _id: data[idx]["user_id"] }, (err, data) => {
-                        res.json(data);
-
-                    })
-                }
-            }
-        });
-    }
-    if (organ == "lungs") {
-        Lung_Waitlist.find((err, data) => {
-            if (err) {
-                res.send(err);
-            } else {
-                for (var idx in data) {
-                    Recipents.find({ _id: data[idx]["user_id"] }, (err, data) => {
-                        res.json(data);
-
-                    })
-                }
-            }
-        });
-    }
-    if (organ == "all") {
-        var finalData = [];
-        All_Waitlist.find((err, data) => {
-            if (err) {
-                res.send(err);
-            } else {
-                for (var idx in data) {
-                    Recipents.find({ _id: data[idx]["user_id"] }, (err, data) => {
-                        finalData.push(data[idx]);
-
-                    })
-                    res.send(finalData);
-                }
-            }
-        });
-
-
-    }
-});
-
 //Angular Routes
 
 //******************************
@@ -547,8 +473,11 @@ router.get('/authenticate', function(req, res, next) {
 
 router.get('/statistics', function(req, res, next) {
     res.render('statisticsMatching');
-})
+});
 
+router.get('/admin/statistics', function(req, res, next) {
+    res.render('admin_statisticsMatching');
+});
 
 
 //******************************
@@ -660,6 +589,134 @@ router.post('/admin/api/hospitals', function(req, res) {
     });
 });
 
+//GET COLLECTION STATS
+router.get("/admin/api/collection/stats/:collectionName", (req, res) => {
+    var cName = req.params.collectionName;
+    if (cName == 'lung_waitlists') {
+        Lung_Waitlist.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'pancreas_waitlists') {
+        Pancreas_Waitlist.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+
+    if (cName == 'doctor_notifications') {
+        Doctor_Notifications.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'users') {
+        var User = mongoose.model('users', userSchema);
+
+        User.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'liver_waitlists') {
+        Liver_Waitlist.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'matches') {
+        Matches.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'recipients') {
+        Recipients.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'heart_waitlists') {
+        Heart_Waitlist.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'kidney_waitlists') {
+        Kidney_Waitlist.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'hospitals') {
+        Hospitals.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'donors') {
+        Donors.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'doctors') {
+        Doctors.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+    if (cName == 'wasted_organs') {
+        Wasted.collection.stats(function(err, results) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
+
+
+
+
+});
 
 
 /*GET addHospital page. */
@@ -673,7 +730,6 @@ router.get('/admin/addHospital', function(req, res, next) {
 router.get('/admin/home', function(req, res, next) {
     res.render('admin');
 });
-
 
 
 //******************************
@@ -968,10 +1024,234 @@ router.get('/doctor/api/view-patients/:doctor_id', function(req, res) {
 
 });
 
+//get donors on waitlist
+router.get('/doctor/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
+    var organType = req.params.organ;
+    var start_date = req.params.start_date;
+    var end_date = req.params.end_date;
+
+    if (organType == "all") {
+        if (start_date == undefined || end_date == undefined) {
+
+            Donors.find((err, data) => {
+                if (err)
+                    res.send(err)
+                else {
+                    res.json(data);
+
+
+                }
+            })
+        } else {
+            Donors.find({ "created_on": { "$gte": start_date, "$lte": end_date } }, (err, data) => {
+                if (err)
+                    res.send(err)
+                else
+                    res.json(data);
+            })
+        }
+    } else {
+        if (start_date == undefined || end_date == undefined) {
+            Donors.find({
+                    "organType": organType
+                },
+                (err, data) => {
+                    if (err)
+                        res.send(err)
+                    else {
+                        res.json(data);
+
+                    }
+                })
+        } else {
+            Donors.find({ dateAdded: { "$gte": start_date, "$lt": end_date }, "organType": organType }, (err, data) => {
+                if (err)
+                    res.send(err)
+                else {
+
+                    res.json(data);
+                }
+            })
+        }
+    }
+
+});
+
+router.get('/doctor/api/recipents/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
+    var organ = req.params.organ;
+    var start_date = req.params.start_date;
+    var end_date = req.params.end_date;
+    console.log(start_date, end_date);
+    if (start_date != undefined && end_date != undefined) {
+        if (organ == "Heart") {
+            Heart_Waitlist.find({ dateAdded: { "$gte": start_date, "$lt": end_date } }, (err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+        if (organ == "Kidney") {
+            Kidney_Waitlist.find({ dateAdded: { "$gte": start_date, "$lt": end_date } }, (err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+        if (organ == "Lung") {
+            Lung_Waitlist.find({ dateAdded: { "$gte": start_date, "$lt": end_date } }, (err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    console.log(data);
+                    res.json(data);
+
+                }
+            });
+        }
+        if (organ == "Liver") {
+            Liver_Waitlist.find({ dateAdded: { "$gte": start_date, "$lt": end_date } }, (err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+        if (organ == "Pancreas") {
+            Pancreas_Waitlist.find({ dateAdded: { "$gte": start_date, "$lt": end_date } }, (err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+    } else {
+        if (organ == "Heart") {
+            Heart_Waitlist.find((err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+        if (organ == "Kidney") {
+            Kidney_Waitlist.find((err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+        if (organ == "Lung") {
+            Lung_Waitlist.find((err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+        if (organ == "Liver") {
+            Liver_Waitlist.find((err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+        if (organ == "Pancreas") {
+            Pancreas_Waitlist.find((err, data) => {
+                if (err) {
+                    res.send(err);
+                } else {
+                    res.json(data);
+
+                }
+            });
+        }
+    }
+
+});
+
+router.get('/doctor/api/matches/:organ/:start_date?/:end_date?', (req, res) => {
+    var organName = req.params.organ.toLowerCase();
+    var start_date = req.params.start_date;
+    var end_date = req.params.end_date;
+    var selectCommand = 'organs.' + organName;
+    if (start_date != undefined && end_date != undefined) {
+        Matches.find({ _id: { "$gte": start_date, "$lte": end_date } }).select(selectCommand).exec((err, data) => {
+            if (err)
+                res.send(err);
+            else {
+                res.json(data);
+            }
+        });
+    } else {
+        Matches.find().select(selectCommand).exec((err, data) => {
+            if (err)
+                res.send(err);
+            else {
+                res.json(data);
+            }
+        });
+    }
+});
+
+router.get('/doctor/api/wasted_organs/:organ/:start_date?/:end_date?', (req, res) => {
+    var organName = req.params.organ.toLowerCase();
+    var start_date = req.params.start_date;
+    var end_date = req.params.end_date;
+    var selectCommand = 'organs.' + organName;
+    if (start_date != undefined && end_date != undefined) {
+        Wasted.find({ _id: { "$gte": start_date, "$lte": end_date } }).select(selectCommand).exec((err, data) => {
+            if (err)
+                res.send(err);
+            else {
+                res.json(data);
+            }
+        });
+    } else {
+        Wasted.find().select(selectCommand).exec((err, data) => {
+            if (err)
+                res.send(err);
+            else {
+                res.json(data);
+            }
+        });
+    }
+});
+
+
+router.get("/doctor/api/recipentsByID/:id", (req, res) => {
+    var id = req.params.id;
+    Recipients.findOne({ _id: ObjectId(id) }, (err, data) => {
+        if (err) {
+            res.send(err);
+        } else {
+            res.json(data);
+        }
+    });
+});
 
 
 /*GET addDonor page. */
-router.get('/doctor/addDonor', function(req, res, next) {
+router.get('/doctor/doctor/addDonor', function(req, res, next) {
     res.render('addDonor');
 });
 
