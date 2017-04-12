@@ -136,7 +136,7 @@
 							</div>
 							<div class="panel-body">
 								<div  class="col-xs-5 col-md-6">
-									<label>Personal information</label>	
+									<h3 style="color:gray;">Personal information</h3>
 									<div class= "form-group">
 										<label>First Name</label>
 										<input type="text" class="form-control" id ="newDonorFirstName" ng-model="formData.firstName" placeholder="First Name">
@@ -182,7 +182,7 @@
 
 
 								<div  class="col-xs-5 col-md-6">
-									<label>Medical information</label>
+									<h3 style="color:gray;">Medical information</h3>
 									<div class= "form-group">
 										<label>Organ Type</label>
 										<select class="form-control" ng-model="formData.selectedOrganType" ng-options="organType for organType in organTypes">
@@ -237,6 +237,9 @@
 										<p class="error">{{deceasedError}}</p>
 									</div>
 									<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addDonor()">Submit</button>
+									<div ng-show="donorAddedAlert">
+										<h2 style="color:red;">Donor Added Successfully!</h2>
+									</div>
 								</div>
 								<br>
 							</div>
@@ -252,7 +255,7 @@
 							</div>
 							<div class="panel-body">
 								<div  class="col-xs-5 col-md-6">
-									<label>Personal information</label>	
+									<h3 style="color:gray;">Personal information</h3>	
 									<div class= "form-group">
 										<label>First Name</label>
 										<input type="text" class="form-control" id ="newDonorFirstName" ng-model="formData.firstName" placeholder="First Name">
@@ -298,7 +301,7 @@
 
 
 								<div  class="col-xs-5 col-md-6">
-									<label>Medical information</label>
+									<h3 style="color:gray;">Medical information</h3>
 									<div class= "form-group">
 										<label>Organ Type</label>
 										<select class="form-control" ng-model="formData.selectedOrganType" ng-options="organType for organType in organTypes">
@@ -332,7 +335,6 @@
 										<p></p>
 										<input type="date" class="form-control" ng-model="formData.dob">
 										</input>
-								
 										<p class="error">{{dobError}}</p>
 									</div>
 									<div class= "form-group">
@@ -352,6 +354,9 @@
 										<p class="error">{{organSizeError}}</p>
 									</div>
 									<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addRecipient()">Submit</button>
+									<div ng-show="recipientAddedAlert">
+										<h2 style="color:red;">Recipient Added Successfully!</h2>
+									</div>
 								</div>
 								<br>
 							</div>

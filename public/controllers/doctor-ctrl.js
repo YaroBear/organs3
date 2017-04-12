@@ -147,11 +147,9 @@ var doctor = angular.module('doctor', [])
 
 		$scope.showForm = true; //default to show form on page load
 
-		$scope.addedAlert = false; //Success message is changed to true if form is filled out correctly
+		$scope.donorAddedAlert = false; //Success message is changed to true if form is filled out correctly
 
 		$scope.ssnError;
-
-		//$scope.hospitals = [];
 
 		
 		$scope.states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 
@@ -163,14 +161,9 @@ var doctor = angular.module('doctor', [])
 		$scope.bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 		$scope.deceasedTypes = ['Yes', 'No'];
 		$scope.sexes = ['F', 'M'];
+		$scope.urgencies = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
 
-		// $http.get("/api/hospitals/names")
-		// 	.success(function(names){
-		// 		$scope.hospitals = names;
-		// 	}).error(function(err){
-		// 		console.log(err);
-		// 		$scope.hospitals = "Error retrieving hospitals";
-		// 	});
+
 		$scope.formData.doctor_id = localStorage.getItem("mongo_id");
 		$scope.addDonor = function() {
 		//console.log($scope.formData.selectedRegion);
@@ -186,10 +179,14 @@ var doctor = angular.module('doctor', [])
 
 			console.log(serverResponse);
 			$scope.showForm = false;
-			$scope.addedAlert = true;
+			$scope.donorAddedAlert = true;
 
 			setTimeout(function(){
 					$window.location.href = "/doctor/home?token=" + token;
+					//$scope.defaultView = true;
+					// $scope.patientView = false;
+					// $scope.addDonorsPanel = false;
+					//$scope.addDonorsPanel = false;
 			},2000);
 				
 
@@ -306,41 +303,8 @@ var doctor = angular.module('doctor', [])
 
 
 
-
-
-
-
-
-
-
-		// $scope.formData = {};
-
-		// $scope.showForm = true; //default to show form on page load
-
-		// $scope.addedAlert = false; //Success message is changed to true if form is filled out correctly
-
-		// $scope.ssnError;
-
-		// //$scope.hospitals = [];
-
+		$scope.recipientAddedAlert = false; //Success message is changed to true if form is filled out correctly
 		
-		// $scope.states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 
-		// 	'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 
-		// 		'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 
-		// 			'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 
-		// 				'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY'];
-		// $scope.bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-		// $scope.organTypes = [ 'Heart', 'Liver', 'Lung', 'Pancreas', 'Kidney'];
-		$scope.urgencies = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
-		//$scope.sexes = ['F', 'M'];
-
-		// $http.get("/api/hospitals/names")
-		// 	.success(function(names){
-		// 		$scope.hospitals = names;
-		// 	}).error(function(err){
-		// 		console.log(err);
-		// 		$scope.hospitals = "Error retrieving hospitals";
-		// 	});
 		$scope.formData.doctor_id = localStorage.getItem("mongo_id");
 		$scope.addRecipient = function() {
 		//console.log($scope.formData.selectedRegion);
@@ -356,10 +320,14 @@ var doctor = angular.module('doctor', [])
 
 			console.log(serverResponse);
 			$scope.showForm = false;
-			$scope.addedAlert = true;
+			$scope.recipientAddedAlert = true;
 
 			setTimeout(function(){
 					$window.location.href = "/doctor/home?token=" + token;
+					//$scope.defaultView = true;
+					// $scope.patientView = false;
+					// $scope.addDonorsPanel = false;
+					//$scope.addRecipientsPanel = false;
 			},2000);
 				
 
