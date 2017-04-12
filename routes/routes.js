@@ -34,15 +34,19 @@ var DoctorNotifications = schemas.DoctorNotifications;
 //******************************
 //******************************
 
-/*
-Recipient.findOne()
+
+Recipient.findOne({"_id" : ObjectId("58ee78e6976b8c332c7ac2ef")})
     .then(function(recip)
     {
+    	if (recip)
+    	{
+    		return matchingFunctions.generateMatchforRecipient(recip);
+    	}
 
-        return matchingFunctions.generateMatchforRecipient(recip);
+        
         
     });
-*/
+
 
 router.get('/api/hospitals/names', function(req, res){
     Hospital.find({}, {name: 1}, function(err, data){

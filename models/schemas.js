@@ -14,6 +14,7 @@ mongoose.connect(mongodb_uri);
 //******************************
 
 var doctorNotificationSchema = new Schema({
+    createdAt : {type : Date, expires: 3600},
     donor: {type: String, required: true},
     recipient : {type: String, required: true},
     scores: {
@@ -26,6 +27,17 @@ var doctorNotificationSchema = new Schema({
         totalScore: {type: Number, required: true}
     },
     responded: {type: Boolean, default: false}
+});
+
+var wastedOrgansSchema = new Schema({
+    _id: Date,
+    organs: {
+        heart: Number,
+        kidney: Number,
+        liver: Number,
+        lung: Number,
+        pancreas: Number
+    }
 });
 
 var doctorSchema = new Schema({
@@ -253,3 +265,5 @@ exports.Recipient = mongoose.model('recipients', recipientSchema);
 exports.User = mongoose.model('users', userSchema);
 
 exports.DoctorNotifications = mongoose.model('doctor_notifications', doctorNotificationSchema);
+
+exports.WastedOrgans = mongoose.model('wasted_organs', wastedOrgansSchema);
