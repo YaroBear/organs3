@@ -184,13 +184,13 @@ router.post('/api/authenticate', function(req, res) {
             if(err) throw err;
 
             if(!user){
-                errors.usernameError = { message: 'Authentication failed. User not found.' };
+                errors.usernameError = { message: 'Authentication failed.' };
                 res.status(401).send({success: false, errors});
             } else if (user) {
 
                 //check password
                 if (user.password != request.password){
-                    errors.passwordError = { message: 'Authentication failed. Wrong password.' };
+                    errors.passwordError = { message: 'Authentication failed.' };
                    res.status(401).send({success: false, errors});
                 } else {
 
