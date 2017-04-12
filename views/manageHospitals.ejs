@@ -44,13 +44,13 @@
       //background-color: #3e8e41;
       }
       .btnsize{
-      width:225px !important; //!important forces it
+      width:150px !important; //!important forces it
       }
       .btnsize2{
-      width: 150px !important; //!important forces it
+      width: 85px !important; //!important forces it
       }
       .btnsize3{
-      width:100px !important; //!important forces it
+      width: 85px !important; //!important forces it
       }
       .fnt{
          text-align:left;
@@ -112,7 +112,13 @@
 </div>
 <div class="col-xs-8 col-md-9">
 <!--  Main Content Here  -->
-<div>
+<div class="panel panel-primary">
+   <div class="panel-heading">
+      <h3 class="panel-title ng-binding">Manage Hospitals</h3>
+   </div>
+   <div class="panel-body">
+      <!-- table here -->
+      <div>
 <button class="btn btn-primary btn-lg btn-block btnsize" ng-confirm-click="test" ng-click="loadHospList()">Load Hospitals</button>
 <table class="tableBorder">
 <tr class="tableBorder">
@@ -152,6 +158,7 @@
                   <select ng-if="hosp.movedoc" ng-model="hosp.destHosp" class="selectbox" ng-show="hosp.movedoc">
                         <option  value="{{newhosp._id}}" ng-repeat="newhosp in hospitals">{{newhosp.name}}</option>
                   </select>
+                  <button ng-show="hosp.movedoc" ng-click="cancel(hosp)">Cancel</button>
             </td>
       </tr>
 </table>
@@ -159,6 +166,9 @@
       <tr ng-repeat="hosp in hospitals">{{hosp.name}}</tr>
 </table>
          </div>
+   </div>
+</div>
+
 
          <div style="clear:both"></div>
       </div>

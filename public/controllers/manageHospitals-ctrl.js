@@ -59,6 +59,11 @@ var manageHospitals = angular.module('manageHospitals', [])
 
 			hosp.movedoc = false;
 		}
+		$scope.cancel = function (hosp)
+		{
+			$scope.moveData = {};
+			hosp.movedoc = false;
+		}
 
 		$scope.deletePrompt = function (hosp)
 		{
