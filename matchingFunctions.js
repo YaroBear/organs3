@@ -448,10 +448,10 @@ var notifyRecipientDoctor = function(scoresArray) {
 
     var winner = sortedScoresArray[0];
 
-    if (winner.totalScore > 60)
+    if (winner && winner.totalScore > 60)
     {
         console.log("Notifiying Doctor of donor match");
-        var newDoctorNotification = new DoctorNotifications({"_id": ObjectId(winner.doctor),
+        var newDoctorNotification = new DoctorNotifications({"_id": ObjectId(winner.doctor), "createdAt" : new Date(),
         "donor": ObjectId(winner.donor), "recipient" : ObjectId(winner.recipient), scores : {"HLAscore": winner.HLAscore,
         "sizeScore": winner.sizeScore, "travelScore": winner.travelScore, "expireScore": winner.expireScore, "totalScore": winner.totalScore,
         "kidneyBonus" : winner.kidneyBonus, "pediatricBonus" :winner.pediatricBonus}});
