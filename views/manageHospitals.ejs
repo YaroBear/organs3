@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html ng-app = "manageHospitals">
+	<body>
+	<style>
+      html,body {
+      margin:0;
+      padding:0;
+      height:100%;
+      //background-color:#ccc;
+      }
+      #header {
+      //background-color:#ccf;
+      }
+      #container {
+      position:relative;
+      min-height:80%;
+      //border:4px solid red;
+      overflow:hidden;
+      }
+      #left {
+      float:left;
+      width:200px;
+      //background-color:#cfc;
+      padding-bottom:9999px;
+      margin-bottom:-9999px;
+      }
+      #footer {
+      //background-color:#fcc;
+      }
+      .btn-group button {
+      //background-color: #4CAF50; /* Green background */
+      border: 1px solid green; /* Green border */
+      color: white; /* White text */
+      padding: 10px 24px; /* Some padding */
+      cursor: pointer; /* Pointer/hand icon */
+      width: 50%; /* Set a width if needed */
+      display: block; /* Make the buttons appear below each other */
+      }
+      .btn-group button:not(:last-child) {
+      border-bottom: none; /* Prevent double borders */
+      }
+      /* Add a background color on hover */
+      .btn-group button:hover {
+      //background-color: #3e8e41;
+      }
+      .btnsize{
+      width:225px !important; //!important forces it
+      }
+      .btnsize2{
+      width: 150px !important; //!important forces it
+      }
+      .btnsize3{
+      width:100px !important; //!important forces it
+      }
+      .fnt{
+         text-align:left;
+      }
+      .tableBorder{
+      border: 1px solid black;
+      }
+      .centered{
+         text-align: center;
+      }
+      .tile_div a {
+         display: block;
+         float: left;
+         height: 50px;
+         width: 100px;
+         margin-right: 5px;
+         background-image: url(./images/button_left.png);
+         background-color: #ccc;
+         text-align: center;
+         line-height: 50px;
+         text-decoration: none;
+      }
+
+.title_div a.last {
+    margin-right: 0;
+}
+
+.clear {
+    clear: both;
+}
+#wgtmsr{
+ width:150px;   
+}
+.selectbox{
+   width:200px;
+}</style>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+<script src="controllers/manageHospitals-ctrl.js"></script>
+<div class="body-content">
+<div class="jumbotron top-banner row text-center">
+   <div class="col-xs-2">
+      <img src="images/cardiogram.svg" class="logo"></img>
+   </div>
+   <div class="col-xs-10">
+      <h1>Organ Network</h1>
+      <h2>Manage Hospitals</h2>
+   </div>
+</div>
+<div class="row" ng-controller="managehospitalsController">
+<div class="col-xs-4 col-md-2 left-banner left">
+   <a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+   <a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
+   <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+   <a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+</div>
+<div class="col-xs-8 col-md-9">
+<!--  Main Content Here  -->
+<div>
+<button class="btn btn-primary btn-lg btn-block btnsize" ng-confirm-click="test" ng-click="loadHospList()">Load Hospitals</button>
+<table class="tableBorder">
+<tr class="tableBorder">
+   <th class="tableBorder">Delete</th>
+   <th class="tableBorder">Name</th>
+   <th class="tableBorder">Phone</th>
+   <th class="tableBorder">Street</th>
+   <th class="tableBorder">City</th>
+   <th class="tableBorder">State</th>
+   <th class="tableBorder">Zip Code</th>
+   <th class="tableBorder">Region</th>
+   <th class="tableBorder">Doctors</th>
+   <th class="tableBorder">Move Doc</th>
+</tr>
+<tr class="tableBorder" ng-repeat="hosp in hospitals">
+   <td class="tableBorder">
+                  <button ng-hide="hosp.delete" class="btn btn-primary btnsize2" ng-click="deletePrompt(hosp)"> <font class="fnt" size="1">Delete</font></button>
+                  <div class="tile_div" ng-show="hosp.delete">
+                        <button  class="btn btn-primary btnsize3" ng-click="confirmDelete(hosp)"> <font class="fnt" size="1">Confirm Delete</font></button>
+                        <button  class="btn btn-primary btnsize3" ng-click="dontDelete(hosp)"> <font class="fnt" size="1">Do not Delete</font></button>
+                  </div>
+            </td>
+            <td class="tableBorder">{{hosp.name}}</td>
+            <td class="tableBorder">{{hosp.phone}}</td>
+            <td class="tableBorder">{{hosp.address.street}}</td>
+            <td class="tableBorder centered">{{hosp.address.city}}</td>
+            <td class="tableBorder centered">{{hosp.address.state}}</td>
+            <td class="tableBorder centered">{{hosp.address.zip}}</td>
+            <td class="tableBorder centered">{{hosp.address.region}}</td>
+            <td class="tableBorder centered">{{hosp.doctors.length}}</td>
+            <td class="tableBorder">
+                  <button nf-ig="hosp.doctors.length" ng-hide="hosp.movedoc" ng-click="enableMove(hosp)">Move</button>
+                  <select ng-if="hosp.movedoc" ng-model="hosp.docid" class="selectbox" ng-show="hosp.movedoc">
+                        <option  value="{{doc._id}}" ng-repeat="doc in hosp.doctors">{{doc._id}}</option>
+                  </select>
+                  <button ng-show="hosp.movedoc" ng-click="doMove(hosp)">Move Doctor to</button>
+                  <select ng-if="hosp.movedoc" ng-model="hosp.destHosp" class="selectbox" ng-show="hosp.movedoc">
+                        <option  value="{{newhosp._id}}" ng-repeat="newhosp in hospitals">{{newhosp.name}}</option>
+                  </select>
+            </td>
+      </tr>
+</table>
+<table>
+      <tr ng-repeat="hosp in hospitals">{{hosp.name}}</tr>
+</table>
+         </div>
+
+         <div style="clear:both"></div>
+      </div>
+				<!--  End Main Content  -->
+				</div>
+			</div>
+	</body>
+</html>

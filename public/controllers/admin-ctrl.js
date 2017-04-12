@@ -3,9 +3,13 @@ var admin = angular.module('admin', [])
 
 		var token = localStorage.getItem("token");
 
-		$scope.addHospital = function()
+		$scope.gotoaddHospital = function()
 		{
 			$window.location.href = "/admin/addHospital" + "?token=" + token;
+		}
+		$scope.gotomanageHospitals = function()
+		{
+			$window.location.href = "/admin/manageHospitals" + "?token=" + token;
 		}
 		
 		$scope.logout = function() {
