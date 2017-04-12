@@ -34,7 +34,7 @@ var DoctorNotifications = schemas.DoctorNotifications;
 //******************************
 //******************************
 
-/*
+
 Recipient.findOne()
     .then(function(recip)
     {
@@ -42,7 +42,7 @@ Recipient.findOne()
         return matchingFunctions.generateMatchforRecipient(recip);
         
     });
-*/
+
 
 router.get('/api/hospitals/names', function(req, res){
     Hospital.find({}, {name: 1}, function(err, data){

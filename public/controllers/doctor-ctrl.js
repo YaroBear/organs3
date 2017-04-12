@@ -52,11 +52,10 @@ var doctor = angular.module('doctor', [])
 			headers: {"x-access-token": token}
 		}).success(function(serverResponse){
 
-			$scope.matchFound = true;
-			$scope.score_info = serverResponse.notification.scores;
-
 			if (serverResponse.hasNotification)
 			{
+				$scope.matchFound = true;
+				$scope.score_info = serverResponse.notification.scores;
 				var request = {};
 				request.recipient_id = serverResponse.notification.recipient;
 				request.donor_id = serverResponse.notification.donor;
