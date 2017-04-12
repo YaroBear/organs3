@@ -195,43 +195,43 @@
 									<div class= "form-group">
 										<label>First Name</label>
 										<input type="text" class="form-control" id ="newDonorFirstName" ng-model="formData.firstName" placeholder="First Name">
-										<p class="error">{{firstNameError}}</p>
+										<p class="error">{{donorFirstNameError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Last Name</label>
 										<input type="text" class="form-control" id ="newDonorLastName" ng-model="formData.lastName" placeholder="Last Name">
-										<p class="error">{{lastNameError}}</p>
+										<p class="error">{{donorLastNameError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>SSN</label>
 										<input type="text" class="form-control" id ="newDonorSSN" ng-model="formData.ssn" placeholder="Social securty number">
-										<p class="error">{{ssnError}}</p>
+										<p class="error">{{donorssnError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Street address</label>
 										<input type="text" class="form-control" id ="newDonorStreet" ng-model="formData.street" placeholder="Street address">
-										<p class="error">{{streetError}}</p>
+										<p class="error">{{donorStreetError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>City</label>
 										<input type="text" class="form-control" id ="newHDonorCity" ng-model="formData.city" placeholder="City">
-										<p class="error">{{cityError}}</p>
+										<p class="error">{{donorCityError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>State</label>
 										<select class="form-control" ng-model="formData.selectedState" ng-options="state for state in states">
 										</select>
-										<p class="error">{{stateError}}</p>
+										<p class="error">{{donorStateError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Zip code</label>
 										<input type="text" class="form-control" id ="newDonorZip" ng-model="formData.zip" placeholder="Zip Code">
-										<p class="error">{{zipError}}</p>
+										<p class="error">{{donorZipError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Phone Number</label>
 										<input type="text" class="form-control" id ="newDonorPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone number">
-										<p class="error">{{phoneNumberError}}</p>
+										<p class="error">{{donorPhoneNumberError}}</p>
 									</div>
 								</div>
 
@@ -242,23 +242,23 @@
 										<label>Organ Type</label>
 										<select class="form-control" ng-model="formData.selectedOrganType" ng-options="organType for organType in organTypes">
 										</select>
-										<p class="error">{{organTypeError}}</p>
+										<p class="error">{{donorOrganTypeError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Sex</label>
 										<select class="form-control" ng-model="formData.selectedSex" ng-options="sex for sex in sexes">
 										</select>
-										<p class="error">{{sexError}}</p>
+										<p class="error">{{donorSexError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Height</label>
 										<input type="text" class="form-control" id ="newDonorHeight" ng-model="formData.height" placeholder="Height (cm)">
-										<p class="error">{{heightError}}</p>
+										<p class="error">{{donorHeightError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Weight</label>
 										<input type="text" class="form-control" id ="newDonorWeight" ng-model="formData.weight" placeholder="Weight (kg)">
-										<p class="error">{{weightError}}</p>
+										<p class="error">{{donorWeightError}}</p>
 									</div>
 									<div class= "form-inline">
 										<label>Date of Birth</label>
@@ -267,29 +267,29 @@
 										<input type="date" class="form-control" ng-model="formData.dob">
 										</input>
 								
-										<p class="error">{{dobError}}</p>
+										<p class="error">{{donordobError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Blood Type</label>
 										<select class="form-control" ng-model="formData.selectedBloodType" ng-options="bloodType for bloodType in bloodTypes">
 										</select>
-										<p class="error">{{bloodTypeError}}</p>
+										<p class="error">{{donorBloodTypeError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>HLA Type</label>
 										<input type="text" class="form-control" id ="newDonorHLAType" ng-model="formData.HLAType" placeholder="HLA markers">
-										<p class="error">{{HLATypeError}}</p>
+										<p class="error">{{donorHLATypeError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Organ Size</label>
 										<input type="text" class="form-control" id ="newDonorOrganSize" ng-model="formData.organSize" placeholder="Organ Size (g)">
-										<p class="error">{{organSizeError}}</p>
+										<p class="error">{{donorOrganSizeError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Deceased?</label>
 										<select class="form-control" ng-model="formData.selectedDeceased" ng-options="deceased for deceased in deceasedTypes">
 										</select>
-										<p class="error">{{deceasedError}}</p>
+										<p class="error">{{donorDeceasedError}}</p>
 									</div>
 									<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addDonor()">Submit</button>
 									<div ng-show="donorAddedAlert">
@@ -314,43 +314,43 @@
 									<div class= "form-group">
 										<label>First Name</label>
 										<input type="text" class="form-control" id ="newDonorFirstName" ng-model="formData.firstName" placeholder="First Name">
-										<p class="error">{{firstNameError}}</p>
+										<p class="error">{{recipientFirstNameError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Last Name</label>
 										<input type="text" class="form-control" id ="newDonorLastName" ng-model="formData.lastName" placeholder="Last Name">
-										<p class="error">{{lastNameError}}</p>
+										<p class="error">{{recipientLastNameError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>SSN</label>
 										<input type="text" class="form-control" id ="newDonorSSN" ng-model="formData.ssn" placeholder="Social securty number">
-										<p class="error">{{ssnError}}</p>
+										<p class="error">{{recipientssnError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Street address</label>
 										<input type="text" class="form-control" id ="newDonorStreet" ng-model="formData.street" placeholder="Street address">
-										<p class="error">{{streetError}}</p>
+										<p class="error">{{recipientStreetError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>City</label>
 										<input type="text" class="form-control" id ="newHDonorCity" ng-model="formData.city" placeholder="City">
-										<p class="error">{{cityError}}</p>
+										<p class="error">{{recipientCityError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>State</label>
 										<select class="form-control" ng-model="formData.selectedState" ng-options="state for state in states">
 										</select>
-										<p class="error">{{stateError}}</p>
+										<p class="error">{{recipientStateError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Zip code</label>
 										<input type="text" class="form-control" id ="newDonorZip" ng-model="formData.zip" placeholder="Zip Code">
-										<p class="error">{{zipError}}</p>
+										<p class="error">{{recipientZipError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Phone Number</label>
 										<input type="text" class="form-control" id ="newDonorPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone number">
-										<p class="error">{{phoneNumberError}}</p>
+										<p class="error">{{recipientPhoneNumberError}}</p>
 									</div>
 								</div>
 
@@ -361,52 +361,52 @@
 										<label>Organ Type</label>
 										<select class="form-control" ng-model="formData.selectedOrganType" ng-options="organType for organType in organTypes">
 										</select>
-										<p class="error">{{organTypeError}}</p>
+										<p class="error">{{recipientOrganTypeError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Sex</label>
 										<select class="form-control" ng-model="formData.selectedSex" ng-options="sex for sex in sexes">
 										</select>
-										<p class="error">{{sexError}}</p>
+										<p class="error">{{recipientSexError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Height</label>
 										<input type="text" class="form-control" id ="newDonorHeight" ng-model="formData.height" placeholder="Height (cm)">
-										<p class="error">{{heightError}}</p>
+										<p class="error">{{recipientHeightError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Weight</label>
 										<input type="text" class="form-control" id ="newDonorWeight" ng-model="formData.weight" placeholder="Weight (kg)">
-										<p class="error">{{weightError}}</p>
+										<p class="error">{{recipientWeightError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Urgency</label>
 										<select class="form-control" ng-model="formData.selectedUrgency" ng-options="urgency for urgency in urgencies">
 										</select>
-										<p class="error">{{urgencyError}}</p>
+										<p class="error">{{recipientUrgencyError}}</p>
 									</div>
 									<div class= "form-inline">
 										<label>Date of Birth</label>
 										<p></p>
 										<input type="date" class="form-control" ng-model="formData.dob">
 										</input>
-										<p class="error">{{dobError}}</p>
+										<p class="error">{{recipientdobError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Blood Type</label>
 										<select class="form-control" ng-model="formData.selectedBloodType" ng-options="bloodType for bloodType in bloodTypes">
 										</select>
-										<p class="error">{{bloodTypeError}}</p>
+										<p class="error">{{recipientBloodTypeError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>HLA Type</label>
 										<input type="text" class="form-control" id ="newDonorHLAType" ng-model="formData.HLAType" placeholder="HLA markers">
-										<p class="error">{{HLATypeError}}</p>
+										<p class="error">{{recipientHLATypeError}}</p>
 									</div>
 									<div class= "form-group">
 										<label>Organ Size</label>
 										<input type="text" class="form-control" id ="newDonorOrganSize" ng-model="formData.organSize" placeholder="Organ Size (g)">
-										<p class="error">{{organSizeError}}</p>
+										<p class="error">{{recipientOrganSizeError}}</p>
 									</div>
 									<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addRecipient()">Submit</button>
 									<div ng-show="recipientAddedAlert">

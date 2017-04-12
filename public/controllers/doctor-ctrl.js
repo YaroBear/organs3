@@ -195,24 +195,24 @@ var doctor = angular.module('doctor', [])
 				console.log("Error: ", err);
 
 				// reset error code messages
-				$scope.firstNameError = "";
-				$scope.lastNameError = "";
-				$scope.ssnError = "";
-				$scope.streetError = "";
-				$scope.cityError = "";
-				$scope.stateError = "";
-				$scope.zipError = "";
+				$scope.donorFirstNameError = "";
+				$scope.donorLastNameError = "";
+				$scope.donorssnError = "";
+				$scope.donorStreetError = "";
+				$scope.donorCityError = "";
+				$scope.donorStateError = "";
+				$scope.donorZipError = "";
 
-				$scope.organTypeError = "";
-				$scope.sexError = "";
-				$scope.heightError = "";
-				$scope.weightError = "";
-				$scope.bloodTypeError = "";
-				$scope.HLAError = "";
-				$scope.organSizeError = "";
-				$scope.deceasedError = "";
-				$scope.phoneNumberError = "";
-				$scope.dobError = "";
+				$scope.donorOrganTypeError = "";
+				$scope.donorSexError = "";
+				$scope.donorHeightError = "";
+				$scope.donorWeightError = "";
+				$scope.donorBloodTypeError = "";
+				$scope.donorHLAError = "";
+				$scope.donorOrganSizeError = "";
+				$scope.donorDeceasedError = "";
+				$scope.donorPhoneNumberError = "";
+				$scope.donordobError = "";
 
 				if (err.errors.validationError)
 				{
@@ -220,82 +220,82 @@ var doctor = angular.module('doctor', [])
 
 					if (errors["name.firstName"])
 					{
-						$scope.firstNameError = errors["name.firstName"].message;
+						$scope.donorFirstNameError = errors["name.firstName"].message;
 					}
 					if (errors["name.lastName"])
 					{
-						$scope.lastNameError = errors["name.lastName"].message;
+						$scope.donorLastNameError = errors["name.lastName"].message;
 					}
 					if (errors.ssn)
 					{
-						$scope.ssnError = errors.ssn.message;
+						$scope.donorssnError = errors.ssn.message;
 					}
 					if (errors["address.street"])
 					{
-						$scope.streetError = errors["address.street"].message;
+						$scope.donorStreetError = errors["address.street"].message;
 					}
 					if (errors["address.city"])
 					{
-						$scope.cityError = errors["address.city"].message;
+						$scope.donorCityError = errors["address.city"].message;
 					}
 					if (errors["address.state"])
 					{
-						$scope.stateError = errors["address.state"].message;
+						$scope.donorStateError = errors["address.state"].message;
 					}
 
 					if (errors["address.zip"])
 					{
-						$scope.zipError = errors["address.zip"].message;
+						$scope.donorZipError = errors["address.zip"].message;
 					}
 
 					if (errors.phoneNumber)
 					{
-						$scope.phoneNumberError = errors.phoneNumber.message;
+						$scope.donorPhoneNumberError = errors.phoneNumber.message;
 					}
 
 					if (errors.organType)
 					{
-						$scope.organTypeError = errors.organType.message;
+						$scope.donorOrganTypeError = errors.organType.message;
 					}
 					if (errors.sex)
 					{
-						$scope.sexError = errors.sex.message;
+						$scope.donorSexError = errors.sex.message;
 					}
 
 
 					if (errors.height)
 					{
-						$scope.heightError = errors.height.message;
+						$scope.donorHeightError = errors.height.message;
 					}
 					if (errors.weight)
 					{
-						$scope.weightError = errors.weight.message;
+						$scope.donorWeightError = errors.weight.message;
 					}
 					if (errors.bloodType)
 					{
-						$scope.bloodTypeError = errors.bloodType.message;
+						$scope.donorBloodTypeError = errors.bloodType.message;
 					}
 					if (errors.HLAType)
 					{
-						$scope.HLATypeError = errors.HLAType.message;
+						$scope.donorHLATypeError = errors.HLAType.message;
 					}
 					if (errors.organSize)
 					{
-						$scope.organSizeError = errors.organSize.message;
+						$scope.donorOrganSizeError = errors.organSize.message;
 					}
 					if (errors.deceased)
 					{
-						$scope.deceasedError = errors.deceased.message;
+						$scope.donorDeceasedError = errors.deceased.message;
 					}
 					if (errors.dob)
 					{
-						$scope.dobError = errors.dob.message;
+						$scope.donordobError = errors.dob.message;
 					}
 				}
 
 				if (err.errors.ssnExists)
 				{
-					$scope.ssnError = err.errors.ssnExists;
+					$scope.donorssnError = err.errors.ssnExists;
 				}
 
 			});
@@ -337,24 +337,24 @@ var doctor = angular.module('doctor', [])
 
 				// reset error code messages
 
-				$scope.firstNameError = "";
-				$scope.lastNameError = "";
-				$scope.ssnError = "";
-				$scope.streetError = "";
-				$scope.cityError = "";
-				$scope.stateError = "";
-				$scope.zipError = "";
+				$scope.recipientFirstNameError = "";
+				$scope.recipientLastNameError = "";
+				$scope.recipientssnError = "";
+				$scope.recipientStreetError = "";
+				$scope.recipientCityError = "";
+				$scope.recipientStateError = "";
+				$scope.recipientZipError = "";
 
-				$scope.organTypeError = "";
-				$scope.sexError = "";
-				$scope.heightError = "";
-				$scope.weightError = "";
-				$scope.bloodTypeError = "";
-				$scope.HLATypeError = "";
-				$scope.organSizeError = "";
-				$scope.urgencyError = "";
-				$scope.phoneNumberError = "";
-				$scope.dobError = "";
+				$scope.recipientOrganTypeError = "";
+				$scope.recipientSexError = "";
+				$scope.recipientHeightError = "";
+				$scope.recipientWeightError = "";
+				$scope.recipientBloodTypeError = "";
+				$scope.recipientHLATypeError = "";
+				$scope.recipientOrganSizeError = "";
+				$scope.recipientUrgencyError = "";
+				$scope.recipientPhoneNumberError = "";
+				$scope.recipientdobError = "";
 
 				if (err.errors.validationError)
 				{
@@ -362,82 +362,82 @@ var doctor = angular.module('doctor', [])
 
 					if (errors["name.firstName"])
 					{
-						$scope.firstNameError = errors["name.firstName"].message;
+						$scope.recipientFirstNameError = errors["name.firstName"].message;
 					}
 					if (errors["name.lastName"])
 					{
-						$scope.lastNameError = errors["name.lastName"].message;
+						$scope.recipientLastNameError = errors["name.lastName"].message;
 					}
 					if (errors.ssn)
 					{
-						$scope.ssnError = errors.ssn.message;
+						$scope.recipientssnError = errors.ssn.message;
 					}
 					if (errors["address.street"])
 					{
-						$scope.streetError = errors["address.street"].message;
+						$scope.recipientStreetError = errors["address.street"].message;
 					}
 					if (errors["address.city"])
 					{
-						$scope.cityError = errors["address.city"].message;
+						$scope.recipientCityError = errors["address.city"].message;
 					}
 					if (errors["address.state"])
 					{
-						$scope.stateError = errors["address.state"].message;
+						$scope.recipientStateError = errors["address.state"].message;
 					}
 
 					if (errors["address.zip"])
 					{
-						$scope.zipError = errors["address.zip"].message;
+						$scope.recipientZipError = errors["address.zip"].message;
 					}
 
 					if (errors.phoneNumber)
 					{
-						$scope.phoneNumberError = errors.phoneNumber.message;
+						$scope.recipientPhoneNumberError = errors.phoneNumber.message;
 					}
 
 					if (errors.organType)
 					{
-						$scope.organTypeError = errors.organType.message;
+						$scope.recipientOrganTypeError = errors.organType.message;
 					}
 					if (errors.sex)
 					{
-						$scope.sexError = errors.sex.message;
+						$scope.recipientSexError = errors.sex.message;
 					}
 
 
 					if (errors.height)
 					{
-						$scope.heightError = errors.height.message;
+						$scope.recipientHeightError = errors.height.message;
 					}
 					if (errors.weight)
 					{
-						$scope.weightError = errors.weight.message;
+						$scope.recipientWeightError = errors.weight.message;
 					}
 					if (errors.bloodType)
 					{
-						$scope.bloodTypeError = errors.bloodType.message;
+						$scope.recipientBloodTypeError = errors.bloodType.message;
 					}
 					if (errors.HLAType)
 					{
-						$scope.HLATypeError = errors.HLAType.message;
+						$scope.recipientHLATypeError = errors.HLAType.message;
 					}
 					if (errors.organSize)
 					{
-						$scope.organSizeError = errors.organSize.message;
+						$scope.recipientOrganSizeError = errors.organSize.message;
 					}
 					if (errors.urgency)
 					{
-						$scope.urgencyError = errors.urgency.message;
+						$scope.recipientUrgencyError = errors.urgency.message;
 					}
 					if (errors.dob)
 					{
-						$scope.dobError = errors.dob.message;
+						$scope.recipientdobError = errors.dob.message;
 					}
 				}
 
 				if (err.errors.ssnExists)
 				{
-					$scope.ssnError = err.errors.ssnExists;
+					$scope.recipientssnError = err.errors.ssnExists;
 				}
 
 			});
