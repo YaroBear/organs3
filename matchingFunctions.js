@@ -20,6 +20,8 @@ var User = schemas.User;
 
 var DoctorNotifications = schemas.DoctorNotifications;
 
+var WastedOrgans = schemas.WastedOrgans;
+
 
 var googleMapsClient = require('@google/maps').createClient({
   key: mapsKey,
@@ -94,6 +96,99 @@ var getMatchingScore = function(donor, recipient) {
         var zeroScore = {totalScore : 0};
         var score = 0;
 
+        // organ age check
+        //
+        console.log("Determining donor organ age compatability");
+        var preservationTimes = {
+            "Kidney" : 36,
+            "Pancreas": 18,
+            "Liver": 12,
+            "Heart": 6,
+            "Lungs": 6
+        };
+
+        var getOrganTimeScore = function() {
+            var diffMs = (Date.now() - donor.dateAdded);
+            var diffHours = diffMs/(60*60*1000);
+            var hoursLeft = preservationTimes[donor.organType] - diffHours;
+            var percentageLeft = hoursLeft/preservationTimes[donor.organType];
+
+            if (percentageLeft <= 0)
+            {
+                return 0;
+            }
+            else
+            {
+                console.log("Organ expire time score: " + (percentageLeft * 15));
+                scoreDetails.expireScore = (percentageLeft * 15);
+                return (percentageLeft * 15); // max 15
+            }
+        };
+
+        var organTimeScore = getOrganTimeScore();
+
+        if (organTimeScore == 0)
+        {
+            //kick donor off the list
+            resolve(zeroScore); // next candidate
+            var today = new Date();
+
+            WastedOrgans.findOne({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)})
+                .then(function(date)
+                {
+                    if (date == null)
+                    {
+                        var wastedDoc = new WastedOrgans({
+                            _id: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0 ,0),
+                            organs: {
+                                heart: 0,
+                                kidney: 0,
+                                liver: 0,
+                                lung: 0,
+                                pancreas: 0
+                            }
+                        });
+                        return wastedDoc.save();
+                    }
+
+                }).then(function(update){
+                    console.log("Updating wasted organ collection");
+                    if (donor.organType == "Heart")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.heart": 1}});
+                    }
+                    else if (donor.organType == "Kidney")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.kidney": 1}});
+                    }
+                    else if (donor.organType == "Pancreas")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.pancreas": 1}});
+                    }
+                    else if (donor.organType == "Lung")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.lung": 1}});
+                    }
+                    else if (donor.organType == "Liver")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.heart": 1}});
+                    }
+                }).then(function(update){
+                    console.log(update);
+                    return Donor.findOneAndRemove({"_id" : ObjectId(donor._id)})
+                }).then(function(update){
+                    console.log("Expired donor deleted");
+                });
+            return 0;
+        }
+
+        score += organTimeScore;
+
         console.log("Comparing organs");
         if (donor.organType !== recipient.organType)
         {
@@ -165,45 +260,6 @@ var getMatchingScore = function(donor, recipient) {
             score += HLAscore;
         }
 
-        // organ age check
-        //
-        console.log("Determining donor organ age compatability");
-        var preservationTimes = {
-            "Kidney" : 36,
-            "Pancreas": 18,
-            "Liver": 12,
-            "Heart": 6,
-            "Lungs": 6
-        };
-
-        var getOrganTimeScore = function() {
-            var diffMs = (Date.now() - donor.dateAdded);
-            var diffHours = diffMs/(60*60*1000);
-            var hoursLeft = preservationTimes[donor.organType] - diffHours;
-            var percentageLeft = hoursLeft/preservationTimes[donor.organType];
-
-            if (percentageLeft <= 0)
-            {
-                return 0;
-            }
-            else
-            {
-                console.log("Organ expire time score: " + (percentageLeft * 15));
-                scoreDetails.expireScore = (percentageLeft * 15);
-                return (percentageLeft * 15); // max 15
-            }
-        };
-
-        var organTimeScore = getOrganTimeScore();
-
-        if (organTimeScore == 0)
-        {
-            //kick donor off the list
-            resolve(zeroScore); // next candidate
-            return 0;
-        }
-
-        score += organTimeScore;
 
         //organ size check
         //

@@ -28,6 +28,17 @@ var doctorNotificationSchema = new Schema({
     responded: {type: Boolean, default: false}
 });
 
+var wastedOrgansSchema = new Schema({
+    _id: Date,
+    organs: {
+        heart: Number,
+        kidney: Number,
+        liver: Number,
+        lung: Number,
+        pancreas: Number
+    }
+});
+
 var doctorSchema = new Schema({
     name : {
         type: String,
@@ -253,3 +264,5 @@ exports.Recipient = mongoose.model('recipients', recipientSchema);
 exports.User = mongoose.model('users', userSchema);
 
 exports.DoctorNotifications = mongoose.model('doctor_notifications', doctorNotificationSchema);
+
+exports.WastedOrgans = mongoose.model('wasted_organs', wastedOrgansSchema);
