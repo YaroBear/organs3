@@ -43,39 +43,39 @@
       <form class="right" ng-show="showForm">
                <div class= "form-group">
                   <label>Name</label>
-                  <input type="text" size="50" class="" id ="newHospitalName" ng-model="formData.name" placeholder="Hospital name">
+                  <input type="text" size="50" class="form-control" id ="newHospitalName" ng-model="formData.name" placeholder="Hospital name">
                   <p class="error">{{nameError}}</p>
                </div>
                <div class= "form-group">
                   <label>Region</label>
-                  <select class="" ng-model="formData.region" ng-options="region as region for (region, states) in regions">
+                  <select class="form-control" ng-model="formData.region" ng-options="region as region for (region, states) in regions">
                   </select>
                   <p class="error">{{regionError}}</p>
                </div>
                <div class= "form-group">
                   <label>Street address</label>
-                  <input type="text" class="" id ="newHospitalStreet" ng-model="formData.street" placeholder="Street address">
+                  <input type="text" class="form-control" id ="newHospitalStreet" ng-model="formData.street" placeholder="Street address">
                   <p class="error">{{streetError}}</p>
                </div>
                <div class= "form-group">
                   <label>City</label>
-                  <input type="text" class="" id ="newHospitalCity" ng-model="formData.city" placeholder="City">
+                  <input type="text" class="form-control" id ="newHospitalCity" ng-model="formData.city" placeholder="City">
                   <p class="error">{{cityError}}</p>
                </div>
                <div class= "form-group">
                   <label>State</label>
-                  <select class="" ng-model="formData.state" ng-options="state as state for state in regions[formData.region]">
+                  <select class="form-control" ng-model="formData.state" ng-options="state as state for state in regions[formData.region]">
                   </select>
                   <p class="error">{{stateError}}</p>
                </div>
                <div class= "form-group">
                   <label>Zip code</label>
-                  <input type="text" class="" id ="newHospitalZip" ng-model="formData.zip" placeholder="Zip Code">
+                  <input type="text" class="form-control" id ="newHospitalZip" ng-model="formData.zip" placeholder="Zip Code">
                   <p class="error">{{zipError}}</p>
                </div>
                <div class= "form-group">
                   <label>Phone Number</label>
-                  <input type="phoneNumber" class="" id ="newHospitalPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone Number">
+                  <input type="phoneNumber" class="form-control" id ="newHospitalPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone Number">
                   <p class="error">{{phoneNumberError}}</p>
                </div>
                <div class="form-group">
