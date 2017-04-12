@@ -399,6 +399,8 @@ router.post('/admin/api/deletehospital', function(req, res) {
 
     var errors = {};
 
+    var ObjectId = require('mongoose').Types.ObjectId;
+
     Hospital.remove({"_id" : ObjectId(request.id)}, function(err, success){
         if (err) console.log("error: ", err);
         else console.log("success: ", success);
