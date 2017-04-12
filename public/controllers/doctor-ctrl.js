@@ -45,7 +45,7 @@ var doctor = angular.module('doctor', [])
 		}).error(function(err){
 			console.log("Error:", err);
 		});
-
+		
 		$http({
 			method: "GET",
 			url : '/doctor/api/doctor-notification/' + doctor_id,

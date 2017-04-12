@@ -55,6 +55,61 @@
 							</div>
 						</div>
 					</div>
+					<div ng-show="matchFound">
+						<div class="panel panel-danger">
+							<div class="panel-heading">
+								<h3 class="panel-title">One of your patients has a donor match!</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table">
+									<tr>
+										<th>Patient Name</th>
+										<th>Organ Type</th>
+										<th>HLA Type</th>
+										<th>Blood Type</th>
+										<th>Organ Size</th>
+
+									</tr>
+									<tr>
+										<td>{{recipient_info.name.firstName}} {{recipient_info.name.lastName}}</td>
+										<td>{{recipient_info.organType}}</td>
+										<td>{{recipient_info.HLAType}}</td>
+										<td>{{recipient_info.bloodType}}</td>
+										<td>{{recipient_info.organSize}}</td>
+									</tr>
+									<tr>
+										<td>Anonymous Donor</td>
+										<td>{{donor_info.organType}}</td>
+										<td>{{donor_info.HLAType}}</td>
+										<td>{{donor_info.bloodType}}</td>
+										<td>{{donor_info.organSize}}</td>
+									</tr>
+								</table>
+								<table class="table">
+									<tr>
+										<th>HLA Score</th>
+										<th>Organ Age Score</th>
+										<th>Organ Size Score</th>
+										<th>Distance Score</th>
+										<th>Pediatric Bonus</th>
+										<th>Living Kidney Bonus</th>
+										<th>Total Score</th>
+									</tr>
+									<tr>
+										<td>{{score_info.HLAscore}}/36</td>
+										<td>{{score_info.expireScore.toFixed(2)}}/15</td>
+										<td>{{score_info.sizeScore.toFixed(2)}}/15</td>
+										<td>{{score_info.travelScore.toFixed(2)}}/15</td>
+										<td>{{score_info.pediatricBonus}}/10</td>
+										<td>{{score_info.kidneyBonus}}/9</td>
+										<td>{{score_info.totalScore.toFixed(3)}}/100</td>
+									</tr>
+								</table>
+								<button class="btn pull-right btn-danger btn-lg">Reject</button>
+								<button class="btn pull-right btn-success btn-lg">Accept</button>
+							</div>
+						</div>
+					</div>
 					<div ng-show="patientView">
 						<div class="panel panel-primary">
 							<div class="panel-heading">
