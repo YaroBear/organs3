@@ -26,12 +26,11 @@
 
 					<button class="btn btn-primary btn-lg btn-block" ng-click="viewPatients()" role="button"><span class="glyphicon glyphicon-user"></span> View Patients</button>
 
-					<button class="btn btn-primary btn-lg btn-block" ng-click="addDonor()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Donor</button>
+					<button class="btn btn-primary btn-lg btn-block" ng-click="addDonorView()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Donor</button>
 
-					<button class="btn btn-primary btn-lg btn-block" ng-click="addRecipient()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Recipient</button>
+					<button class="btn btn-primary btn-lg btn-block" ng-click="addRecipientView()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Recipient</button>
 
 					<button class="btn btn-primary btn-lg btn-block" ng-click="logout()" role="button"><span class="glyphicon glyphicon-remove"></span> Logout</a>
-
 				</div>
 				<div class="col-xs-8 col-md-9">
 					<div ng-show="defaultView">
@@ -52,61 +51,7 @@
 										<td>{{hospital_info.phone}}</td>
 									</tr>
 								</table>
-							</div>
-						</div>
-					</div>
-					<div ng-show="matchFound">
-						<div class="panel panel-danger">
-							<div class="panel-heading">
-								<h3 class="panel-title">One of your patients has a donor match!</h3>
-							</div>
-							<div class="panel-body">
-								<table class="table">
-									<tr>
-										<th>Patient Name</th>
-										<th>Organ Type</th>
-										<th>HLA Type</th>
-										<th>Blood Type</th>
-										<th>Organ Size</th>
 
-									</tr>
-									<tr>
-										<td>{{recipient_info.name.firstName}} {{recipient_info.name.lastName}}</td>
-										<td>{{recipient_info.organType}}</td>
-										<td>{{recipient_info.HLAType}}</td>
-										<td>{{recipient_info.bloodType}}</td>
-										<td>{{recipient_info.organSize}}</td>
-									</tr>
-									<tr>
-										<td>Anonymous Donor</td>
-										<td>{{donor_info.organType}}</td>
-										<td>{{donor_info.HLAType}}</td>
-										<td>{{donor_info.bloodType}}</td>
-										<td>{{donor_info.organSize}}</td>
-									</tr>
-								</table>
-								<table class="table">
-									<tr>
-										<th>HLA Score</th>
-										<th>Organ Age Score</th>
-										<th>Organ Size Score</th>
-										<th>Distance Score</th>
-										<th>Pediatric Bonus</th>
-										<th>Living Kidney Bonus</th>
-										<th>Total Score</th>
-									</tr>
-									<tr>
-										<td>{{score_info.HLAscore}}/36</td>
-										<td>{{score_info.expireScore.toFixed(2)}}/15</td>
-										<td>{{score_info.sizeScore.toFixed(2)}}/15</td>
-										<td>{{score_info.travelScore.toFixed(2)}}/15</td>
-										<td>{{score_info.pediatricBonus}}/10</td>
-										<td>{{score_info.kidneyBonus}}/9</td>
-										<td>{{score_info.totalScore.toFixed(3)}}/100</td>
-									</tr>
-								</table>
-								<button class="btn pull-right btn-danger btn-lg">Reject</button>
-								<button class="btn pull-right btn-success btn-lg">Accept</button>
 							</div>
 						</div>
 					</div>
@@ -181,7 +126,238 @@
 							</div>
 						</div>
 					</div>
-				</div>
+
+
+
+					<div ng-show="addDonorsPanel">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Enter Donor Information</h3>
+							</div>
+							<div class="panel-body">
+								<div  class="col-xs-5 col-md-6">
+									<label>Personal information</label>	
+									<div class= "form-group">
+										<label>First Name</label>
+										<input type="text" class="form-control" id ="newDonorFirstName" ng-model="formData.firstName" placeholder="First Name">
+										<p class="error">{{firstNameError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Last Name</label>
+										<input type="text" class="form-control" id ="newDonorLastName" ng-model="formData.lastName" placeholder="Last Name">
+										<p class="error">{{lastNameError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>SSN</label>
+										<input type="text" class="form-control" id ="newDonorSSN" ng-model="formData.ssn" placeholder="Social securty number">
+										<p class="error">{{ssnError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Street address</label>
+										<input type="text" class="form-control" id ="newDonorStreet" ng-model="formData.street" placeholder="Street address">
+										<p class="error">{{streetError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>City</label>
+										<input type="text" class="form-control" id ="newHDonorCity" ng-model="formData.city" placeholder="City">
+										<p class="error">{{cityError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>State</label>
+										<select class="form-control" ng-model="formData.selectedState" ng-options="state for state in states">
+										</select>
+										<p class="error">{{stateError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Zip code</label>
+										<input type="text" class="form-control" id ="newDonorZip" ng-model="formData.zip" placeholder="Zip Code">
+										<p class="error">{{zipError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Phone Number</label>
+										<input type="text" class="form-control" id ="newDonorPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone number">
+										<p class="error">{{phoneNumberError}}</p>
+									</div>
+								</div>
+
+
+								<div  class="col-xs-5 col-md-6">
+									<label>Medical information</label>
+									<div class= "form-group">
+										<label>Organ Type</label>
+										<select class="form-control" ng-model="formData.selectedOrganType" ng-options="organType for organType in organTypes">
+										</select>
+										<p class="error">{{organTypeError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Sex</label>
+										<select class="form-control" ng-model="formData.selectedSex" ng-options="sex for sex in sexes">
+										</select>
+										<p class="error">{{sexError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Height</label>
+										<input type="text" class="form-control" id ="newDonorHeight" ng-model="formData.height" placeholder="Height (cm)">
+										<p class="error">{{heightError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Weight</label>
+										<input type="text" class="form-control" id ="newDonorWeight" ng-model="formData.weight" placeholder="Weight (kg)">
+										<p class="error">{{weightError}}</p>
+									</div>
+									<div class= "form-inline">
+										<label>Date of Birth</label>
+										<p></p>
+						
+										<input type="date" class="form-control" ng-model="formData.dob">
+										</input>
+								
+										<p class="error">{{dobError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Blood Type</label>
+										<select class="form-control" ng-model="formData.selectedBloodType" ng-options="bloodType for bloodType in bloodTypes">
+										</select>
+										<p class="error">{{bloodTypeError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>HLA Type</label>
+										<input type="text" class="form-control" id ="newDonorHLAType" ng-model="formData.HLAType" placeholder="HLA markers">
+										<p class="error">{{HLATypeError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Organ Size</label>
+										<input type="text" class="form-control" id ="newDonorOrganSize" ng-model="formData.organSize" placeholder="Organ Size (g)">
+										<p class="error">{{organSizeError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Deceased?</label>
+										<select class="form-control" ng-model="formData.selectedDeceased" ng-options="deceased for deceased in deceasedTypes">
+										</select>
+										<p class="error">{{deceasedError}}</p>
+									</div>
+									<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addDonor()">Submit</button>
+								</div>
+								<br>
+							</div>
+							<br>
+						</div>
+					</div>
+
+
+					<div ng-show="addRecipientsPanel">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Enter Recipient Information</h3>
+							</div>
+							<div class="panel-body">
+								<div  class="col-xs-5 col-md-6">
+									<label>Personal information</label>	
+									<div class= "form-group">
+										<label>First Name</label>
+										<input type="text" class="form-control" id ="newDonorFirstName" ng-model="formData.firstName" placeholder="First Name">
+										<p class="error">{{firstNameError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Last Name</label>
+										<input type="text" class="form-control" id ="newDonorLastName" ng-model="formData.lastName" placeholder="Last Name">
+										<p class="error">{{lastNameError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>SSN</label>
+										<input type="text" class="form-control" id ="newDonorSSN" ng-model="formData.ssn" placeholder="Social securty number">
+										<p class="error">{{ssnError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Street address</label>
+										<input type="text" class="form-control" id ="newDonorStreet" ng-model="formData.street" placeholder="Street address">
+										<p class="error">{{streetError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>City</label>
+										<input type="text" class="form-control" id ="newHDonorCity" ng-model="formData.city" placeholder="City">
+										<p class="error">{{cityError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>State</label>
+										<select class="form-control" ng-model="formData.selectedState" ng-options="state for state in states">
+										</select>
+										<p class="error">{{stateError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Zip code</label>
+										<input type="text" class="form-control" id ="newDonorZip" ng-model="formData.zip" placeholder="Zip Code">
+										<p class="error">{{zipError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Phone Number</label>
+										<input type="text" class="form-control" id ="newDonorPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone number">
+										<p class="error">{{phoneNumberError}}</p>
+									</div>
+								</div>
+
+
+								<div  class="col-xs-5 col-md-6">
+									<label>Medical information</label>
+									<div class= "form-group">
+										<label>Organ Type</label>
+										<select class="form-control" ng-model="formData.selectedOrganType" ng-options="organType for organType in organTypes">
+										</select>
+										<p class="error">{{organTypeError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Sex</label>
+										<select class="form-control" ng-model="formData.selectedSex" ng-options="sex for sex in sexes">
+										</select>
+										<p class="error">{{sexError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Height</label>
+										<input type="text" class="form-control" id ="newDonorHeight" ng-model="formData.height" placeholder="Height (cm)">
+										<p class="error">{{heightError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Weight</label>
+										<input type="text" class="form-control" id ="newDonorWeight" ng-model="formData.weight" placeholder="Weight (kg)">
+										<p class="error">{{weightError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Urgency</label>
+										<select class="form-control" ng-model="formData.selectedUrgency" ng-options="urgency for urgency in urgencies">
+										</select>
+										<p class="error">{{urgencyError}}</p>
+									</div>
+									<div class= "form-inline">
+										<label>Date of Birth</label>
+										<p></p>
+										<input type="date" class="form-control" ng-model="formData.dob">
+										</input>
+								
+										<p class="error">{{dobError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Blood Type</label>
+										<select class="form-control" ng-model="formData.selectedBloodType" ng-options="bloodType for bloodType in bloodTypes">
+										</select>
+										<p class="error">{{bloodTypeError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>HLA Type</label>
+										<input type="text" class="form-control" id ="newDonorHLAType" ng-model="formData.HLAType" placeholder="HLA markers">
+										<p class="error">{{HLATypeError}}</p>
+									</div>
+									<div class= "form-group">
+										<label>Organ Size</label>
+										<input type="text" class="form-control" id ="newDonorOrganSize" ng-model="formData.organSize" placeholder="Organ Size (g)">
+										<p class="error">{{organSizeError}}</p>
+									</div>
+									<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addRecipient()">Submit</button>
+								</div>
+								<br>
+							</div>
+							<br>
+						</div>
+					</div>
 			</div>
 	</body>
 </html>
