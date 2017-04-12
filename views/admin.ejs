@@ -1,151 +1,117 @@
 <!DOCTYPE html>
 <html ng-app = "admin">
 	<body>
-	<style>
-      html,body {
-      margin:0;
-      padding:0;
-      height:100%;
-      //background-color:#ccc;
-      }
-      #header {
-      //background-color:#ccf;
-      }
-      #container {
-      position:relative;
-      min-height:80%;
-      //border:4px solid red;
-      overflow:hidden;
-      }
-      #left {
-      float:left;
-      width:200px;
-      //background-color:#cfc;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;
-      }
-      #footer {
-      //background-color:#fcc;
-      }
-      .btn-group button {
-      //background-color: #4CAF50; /* Green background */
-      border: 1px solid green; /* Green border */
-      color: white; /* White text */
-      padding: 10px 24px; /* Some padding */
-      cursor: pointer; /* Pointer/hand icon */
-      width: 50%; /* Set a width if needed */
-      display: block; /* Make the buttons appear below each other */
-      }
-      .btn-group button:not(:last-child) {
-      border-bottom: none; /* Prevent double borders */
-      }
-      /* Add a background color on hover */
-      .btn-group button:hover {
-      //background-color: #3e8e41;
-      }
-      .btnsize{
-      width:225px !important; //!important forces it
-      }
-      .btnsize2{
-      width: 150px !important; //!important forces it
-      }
-      .btnsize3{
-      width:100px !important; //!important forces it
-      }
-      .fnt{
-         text-align:left;
-      }
-      .tableBorder{
-      border: 1px solid black;
-      }
-      .centered{
-         text-align: center;
-      }
-      .tile_div a {
-         display: block;
-         float: left;
-         height: 50px;
-         width: 100px;
-         margin-right: 5px;
-         background-image: url(./images/button_left.png);
-         background-color: #ccc;
-         text-align: center;
-         line-height: 50px;
-         text-decoration: none;
-      }
-
-.title_div a.last {
-    margin-right: 0;
-}
-
-.clear {
-    clear: both;
-}
-#wgtmsr{
- width:150px;   
-}
-.selectbox{
-   width:200px;
-}
-   </style>
-
+		<style>
+			html,body {
+			margin:0;
+			padding:0;
+			height:100%;
+			//background-color:#ccc;
+			}
+			#header {
+			//background-color:#ccf;
+			}
+			#container {
+			position:relative;
+			min-height:80%;
+			//border:4px solid red;
+			overflow:hidden;
+			}
+			#left {
+			float:left;
+			width:200px;
+			//background-color:#cfc;
+			padding-bottom:9999px;
+			margin-bottom:-9999px;
+			}
+			#footer {
+			//background-color:#fcc;
+			}
+			.btn-group button {
+			//background-color: #4CAF50; /* Green background */
+			border: 1px solid green; /* Green border */
+			color: white; /* White text */
+			padding: 10px 24px; /* Some padding */
+			cursor: pointer; /* Pointer/hand icon */
+			width: 50%; /* Set a width if needed */
+			display: block; /* Make the buttons appear below each other */
+			}
+			.btn-group button:not(:last-child) {
+			border-bottom: none; /* Prevent double borders */
+			}
+			/* Add a background color on hover */
+			.btn-group button:hover {
+			//background-color: #3e8e41;
+			}
+			.btnsize{
+			width:225px !important; //!important forces it
+			}
+			.btnsize2{
+			width: 150px !important; //!important forces it
+			}
+			.btnsize3{
+			width:100px !important; //!important forces it
+			}
+			.fnt{
+			text-align:left;
+			}
+			.tableBorder{
+			border: 1px solid black;
+			}
+			.centered{
+			text-align: center;
+			}
+			.tile_div a {
+			display: block;
+			float: left;
+			height: 50px;
+			width: 100px;
+			margin-right: 5px;
+			background-image: url(./images/button_left.png);
+			background-color: #ccc;
+			text-align: center;
+			line-height: 50px;
+			text-decoration: none;
+			}
+			.title_div a.last {
+			margin-right: 0;
+			}
+			.clear {
+			clear: both;
+			}
+			#wgtmsr{
+			width:150px;   
+			}
+			.selectbox{
+			width:200px;
+			}
+		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
 		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
 		<script src="controllers/admin-ctrl.js"></script>
-
 		<div class="body-content">
-			<div class="jumbotron top-banner row text-center">
-				<div class="col-xs-2">
-					<img src="images/cardiogram.svg" class="logo"></img>
-				</div>
-				<div class="col-xs-10">
-					<h1>Organ Network</h1>
-					<h2>Doctor home</h2>
-				</div>
+		<div class="jumbotron top-banner row text-center">
+			<div class="col-xs-2">
+				<img src="images/cardiogram.svg" class="logo"></img>
 			</div>
-			<div class="row" ng-controller="adminController">
-				<div class="col-xs-4 col-md-2 left-banner left">
-
-					<a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
-               		<a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
-               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
-               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
-				</div>
-				<div class="col-xs-8 col-md-9">
-				<!--  Main Content Here  -->
-
+			<div class="col-xs-10">
+				<h1>Organ Network</h1>
+				<h2>Doctor home</h2>
+			</div>
+		</div>
+		<div class="row" ng-controller="adminController">
+		<div class="col-xs-4 col-md-2 left-banner left">
+			<a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+			<a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
+			<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+			<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+		</div>
+		<div class="col-xs-8 col-md-9">
+		<!--  Main Content Here  -->
 		<div class="container body-content">
-			<div class="jumbotron top-banner row text-center">
-				<div class="col-xs-2">
-					<img src="images/cardiogram.svg" class="logo"></img>
-				</div>
-				<div class="col-xs-10">
-					<h1>Organ Network</h1>
-					<h2>Doctor home</h2>
-				</div>
-			</div>
-			<div ng-controller="adminController">
-				<div class="col-xs-4 col-md-3 left-banner">
-				<a class="btn btn-primary btn-lg btn-block" ng-click = "addHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
-
-					<a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
-               		<a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
-               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
-               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
-				</div>
-				<div class="col-xs-8 col-md-9">
-				<!--  Main Content Here  -->
-
-				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
-				<button class="btn btn-primary btn-lg btn-block" ng-click = "logout()" role="button"><span class="glyphicon glyphicon-remove"></span> Logout</a>
-
-				</div>
-				<div>
-					<!-- main content here -->
-				</div>
-			</div>
+		
 	</body>
 </html>
