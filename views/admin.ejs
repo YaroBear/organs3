@@ -124,14 +124,20 @@
 				</div>
 				<div class="col-xs-10">
 					<h1>Organ Network</h1>
-					<h2>Admin home</h2>
+					<h2>Doctor home</h2>
 				</div>
 			</div>
 			<div ng-controller="adminController">
 				<div class="col-xs-4 col-md-3 left-banner">
 				<a class="btn btn-primary btn-lg btn-block" ng-click = "addHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
 
-				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+					<a class="btn btn-primary btn-lg btn-block" ng-click = "gotoaddHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+               		<a class="btn btn-primary btn-lg btn-block" ng-click = "gotomanageHospitals()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</a>
+               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+               		<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+				</div>
+				<div class="col-xs-8 col-md-9">
+				<!--  Main Content Here  -->
 
 				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
 				<button class="btn btn-primary btn-lg btn-block" ng-click = "logout()" role="button"><span class="glyphicon glyphicon-remove"></span> Logout</a>
