@@ -10,25 +10,9 @@ statistics.factory("RecipentsService", ["$q", "$http", "$rootScope", "$timeout",
                 url: '/doctor/api/recipents/waitlist/' + organ
 
             }).then(function(res) {
-                var x = new Array();
-                for (var d in res.data) {
-
-                    $http({
-                        method: "GET",
-                        headers: { "x-access-token": token },
-
-                        url: '/doctor/api/recipentsByID/' + res.data[d]._id
-
-                    }).then(function(response) {
-                        if (response.data != null) {
-                            response.data.priority = res.data[d].priority;
-                            x.push(response.data);
-                        }
-
-                    });
+                var x = res.data;
 
 
-                }
                 setTimeout(function() {
                     output = x
                     defer.resolve(output);
@@ -45,24 +29,10 @@ statistics.factory("RecipentsService", ["$q", "$http", "$rootScope", "$timeout",
                 url: '/doctor/api/recipents/waitlist/' + organ + "/" + start_date + "/" + end_date
 
             }).then(function(res) {
-                var x = new Array();
-                for (var d in res.data) {
-
-                    $http({
-                        method: "GET",
-                        headers: { "x-access-token": token },
-                        url: '/doctor/api/recipentsByID/' + res.data[d]._id
-
-                    }).then(function(response) {
-                        if (response.data != null) {
-                            response.data.priority = res.data[d].priority;
-                            x.push(response.data);
-                        }
-
-                    });
+                var x = res.data;
 
 
-                }
+
                 setTimeout(function() {
                     output = x
                     defer.resolve(output);
@@ -136,11 +106,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     };
 
                     var data = [trace1];
-                    if (xaxis.length > 0 && yaxis.length > 0)
-                        Plotly.newPlot('plot', data, layout);
-
-
-
+                    Plotly.newPlot('plot', data, layout);
 
 
                 });
@@ -158,10 +124,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     for (var x in data) {
                         xaxis.push(data[x].dateAdded);
                         yaxis.push(data[x].priority);
-                        text_hover.push(data[x].urgency);
-
                     }
-
 
 
                     var trace = {
@@ -174,7 +137,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                         marker: { size: 12 }
                     };
                     var data = [trace];
-                    var title = "Total number on wait list in date range: " + data.length;
+                    var title = "Total number on wait list in date range: " + $scope.recipents.data.length;
 
                     var layout = {
                         xaxis: {
@@ -187,8 +150,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                         },
                         title: title
                     };
-                    if (xaxis.length > 0 && yaxis.length > 0)
-                        Plotly.newPlot('plot', data, layout);
+                    Plotly.newPlot('plot', data, layout);
 
                 }));
 
@@ -234,8 +196,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     };
 
                     var data = [trace1];
-                    if (xaxis.length > 0 && yaxis.length > 0)
-                        Plotly.newPlot('plot', data, layout);
+                    Plotly.newPlot('plot', data, layout);
                 });
             }
             if (reportType == "wasted_organs") {
@@ -264,7 +225,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                         name: organ,
                         marker: { size: 12 }
                     };
-                    var title = "Total number of wasted " + organ + "s in date range: " + data.length;
+                    var title = "Total number of wasted " + organ + "s in date range: " + res.data.length;
 
                     var layout = {
                         xaxis: {
@@ -279,8 +240,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     };
 
                     var data = [trace1];
-                    if (xaxis.length > 0 && yaxis.length > 0)
-                        Plotly.newPlot('plot', data, layout);
+                    Plotly.newPlot('plot', data, layout);
                 });
             }
         } else {
@@ -337,7 +297,6 @@ statistics.controller("statisticsController", function statisticsController($sco
                 $scope.recipents = RecipentsService;
                 $q.when($scope.recipents.getUsers(organ, token).then(function(data) {
                     $scope.recipents.data = data;
-
                     var xaxis = [];
                     var yaxis = [];
                     var text_hover = [];
@@ -345,8 +304,6 @@ statistics.controller("statisticsController", function statisticsController($sco
                     for (var x in data) {
                         xaxis.push(data[x].dateAdded);
                         yaxis.push(data[x].priority);
-                        text_hover.push(data[x].urgency);
-
                     }
 
 
@@ -374,8 +331,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     };
                     var data = [trace];
 
-                    if (xaxis.length > 0 && yaxis.length > 0)
-                        Plotly.newPlot('plot', data, layout);
+                    Plotly.newPlot('plot', data, layout);
 
                 }));
 
@@ -424,8 +380,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     };
 
                     var data = [trace1];
-                    if (xaxis.length > 0 && yaxis.length > 0)
-                        Plotly.newPlot('plot', data, layout);
+                    Plotly.newPlot('plot', data, layout);
                 });
 
 
@@ -474,8 +429,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     };
 
                     var data = [trace1];
-                    if (xaxis.length > 0 && yaxis.length > 0)
-                        Plotly.newPlot('plot', data, layout);
+                    Plotly.newPlot('plot', data, layout);
                 });
 
 
