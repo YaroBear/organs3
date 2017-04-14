@@ -138,10 +138,6 @@ var doctor = angular.module('doctor', [])
 
 
 
-
-
-
-
 		$scope.formData = {};
 
 		$scope.showForm = true; //default to show form on page load

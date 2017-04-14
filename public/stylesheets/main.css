@@ -80,3 +80,91 @@ body {
     text-decoration: none;
     cursor: pointer;
 }
+
+#sidebar{
+
+	  float:left;
+      width:250px;
+      padding-left: 40px;
+      padding-bottom: 30px;
+
+
+/*      background-color:#cfc;
+      padding-bottom:9999px;
+      margin-bottom:-9999px;*/
+}
+/*#sidebarBtn{
+	background: #4CAF50;
+    color: #ffffff;
+}*/
+
+
+.btn-primary{
+/*	padding:15px 24px;
+	border: 1px solid green; 
+	background: #4CAF50;*/
+    color: #ffffff;
+}
+
+.btn-group button {
+	background-color: #4CAF50; /* Green background */
+	border: 1px solid green; /* Green border */
+	color: white; /* White text */
+	padding: 15px 24px; /* Some padding */
+	cursor: pointer; /* Pointer/hand icon */
+	width: 50%; /* Set a width if needed */
+	display: block; /* Make the buttons appear below each other */
+}
+.btn-group button:not(:last-child) {
+	border-bottom: none; /* Prevent double borders */
+}
+/* Add a background color on hover */
+.btn-group button:hover {
+	//background-color: #3e8e41;
+}
+.btnsize{
+	width:225px !important; //!important forces it
+}
+.btnsize2{
+	width: 150px !important; //!important forces it
+}
+.btnsize3{
+	width:100px !important; //!important forces it
+}
+
+
+
+
+.fnt{
+	text-align:left;
+}
+.tableBorder{
+	border: 1px solid black;
+}
+.centered{
+ 	text-align: center;
+}
+.tile_div a {
+	 display: block;
+	 float: left;
+	 height: 50px;
+	 width: 100px;
+	 margin-right: 5px;
+	 background-image: url(./images/button_left.png);
+	 background-color: #ccc;
+	 text-align: center;
+	 line-height: 50px;
+	 text-decoration: none;
+	}
+.title_div a.last {
+    margin-right: 0;
+}
+.clear {
+    clear: both;
+}
+#wgtmsr{
+	width:150px;   
+}
+.selectbox{
+   width:200px;
+}

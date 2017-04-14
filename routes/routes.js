@@ -382,6 +382,24 @@ router.post('/admin/api/hospitals', function(req, res) {
 });
 
 
+router.get('/admin/api/hospital-info/:admin_id', function(req, res){
+    console.log(req.params.admin_id);
+    Hospital.findOne({"doctors" : { "_id" : ObjectId(req.params.admin_id)}})
+        .then(function(hospital){
+            if (hospital)
+            {
+                res.status(201).send({success: true, hospital: hospital});
+            }
+            else
+            {
+                res.status(201).send({success: true, hospital: "Not found"});
+            }
+        }).catch(function(err){
+            res.status(500).send({success: false, error : err});
+    });
+});
+
+
 
 //deleteHospital
 router.post('/admin/api/deletehospital', function(req, res) {
