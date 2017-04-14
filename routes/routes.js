@@ -13,6 +13,7 @@ var plotly = require('plotly')("hasnainbilgrami", "Tp0ci7oUZdLrQ5Dg3AdZ")
 app.set('superSecret', process.env.SECRET);
 app.set('doctorSecret', process.env.DOCTOR_SECRET);
 
+<<<<<<< HEAD
 
 var mongoose = require('mongoose');
 var ObjectId = require('mongoose').Schema.ObjectId
@@ -24,11 +25,17 @@ var ObjectId = require('mongoose').Types.ObjectId;
 // connecting to Mlab
 var mongodb_uri = process.env.MONGODB_URI;
 var db = mongoose.connect(mongodb_uri);
+=======
+var ObjectId = require('mongoose').Types.ObjectId; 
+
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
 
 //matching functions
 var matchingFunctions = require("../matchingFunctions");
 
+var schemas = require("../models/schemas");
 
+<<<<<<< HEAD
 //******************************
 //******************************
 //***********SCHEMAS************
@@ -237,13 +244,19 @@ var doctorNotificationSchema = new Schema({
     },
     responded: { type: Boolean, default: false }
 });
+=======
+var Hospital = schemas.Hospital;
 
-var Hospitals = mongoose.model('hospitals', hospitalSchema);
+var Doctor = schemas.Doctor;
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
 
-var Doctors = mongoose.model('doctors', doctorSchema);
+var Donor = schemas.Donor;
 
-var Donors = mongoose.model('donors', donorSchema);
+var Recipient = schemas.Recipient;
 
+var User = schemas.User;
+
+<<<<<<< HEAD
 var Heart_Waitlist = mongoose.model('heart_waitlists', waitlistSchema);
 
 var Kidney_Waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
@@ -255,6 +268,9 @@ var Liver_Waitlist = mongoose.model('liver_waitlists', waitlistSchema);
 var Pancreas_Waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
 
 var Recipients = mongoose.model('recipients', recipientSchema);
+=======
+var DoctorNotifications = schemas.DoctorNotifications;
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
 
 var Doctor_Notifications = mongoose.model('doctor_notifications', doctorNotificationSchema);
 
@@ -268,8 +284,23 @@ var Wasted = mongoose.model("wasted_organs", matchesAndWastedSchema);
 //******************************
 //******************************
 
+<<<<<<< HEAD
 router.get('/api/hospitals/names', function(req, res) {
     Hospitals.find({}, { name: 1 }, function(err, data) {
+=======
+
+Recipient.findOne()
+    .then(function(recip)
+    {
+
+        return matchingFunctions.generateMatchforRecipient(recip);
+        
+    });
+
+
+router.get('/api/hospitals/names', function(req, res){
+    Hospital.find({}, {name: 1}, function(err, data){
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
         if (err)
             res.send(err);
         else
@@ -280,7 +311,6 @@ router.get('/api/hospitals/names', function(req, res) {
 
 router.post('/api/register', function(req, res) {
     //console.log(req.body);
-    var User = mongoose.model('users', userSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -341,18 +371,31 @@ router.post('/api/register', function(req, res) {
             error.errors = errors;
             throw error;
         }).then(function(newUser) {
+<<<<<<< HEAD
             var newDoctor = new Doctors({
                 _id: newUser._id,
                 name: newUser.name
             });
 
             return newDoctor.save().then(function() { return newUser; });
+=======
+        	var newDoctor = new Doctor({
+        		_id : newUser._id,
+        		name : newUser.name
+        	});
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
 
         }).then(function(newUser) {
+<<<<<<< HEAD
 
             Hospitals.findOneAndUpdate({ "_id": request.selectedHospital._id }, { $push: { doctors: { "_id": newUser._id } } }).then(function() { return Hospitals });
         }).then(function(Hospitals) {
             res.status(201).send({ ok: true, message: 'Added user successfully' });
+=======
+        	Hospital.findOneAndUpdate({"_id": request.selectedHospital._id}, {$push: {doctors: {"_id" :newUser._id}}}).then(function() {return Hospital});
+        }).then(function(Hospitals){
+            res.status(201).send({ok: true, message: 'Added user successfully'});
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
         }).catch(function(err) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ ok: false, message: err.message, errors: err.errors });
@@ -361,10 +404,9 @@ router.post('/api/register', function(req, res) {
 
 
 
-//user authentication
+//user
 router.post('/api/authenticate', function(req, res) {
-    console.log(req.body);
-    var User = mongoose.model('users', userSchema);
+    //console.log(req.body);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -518,8 +560,13 @@ router.use('/admin/', function(req, res, next) {
 
 // put apis you want to secure with admin token here VVVVVVV
 
+<<<<<<< HEAD
 router.get('/admin/api/hospitals', function(req, res) {
     Hospitals.find(function(err, data) {
+=======
+router.get('/admin/api/hospitals', function(req, res){
+    Hospital.find(function(err, data){
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
         if (err)
             res.send(err);
         else
@@ -530,7 +577,6 @@ router.get('/admin/api/hospitals', function(req, res) {
 //ADD HOSPITAL ROUTE
 router.post('/admin/api/hospitals', function(req, res) {
     //console.log(req.body);
-    var Hospital = mongoose.model('hospitals', hospitalSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -544,7 +590,7 @@ router.post('/admin/api/hospitals', function(req, res) {
 
     var errors = {};
 
-    Hospitals.findOne({
+    Hospital.findOne({
         $or: [
             { address: { street: request.street } },
             { name: request.name }
@@ -767,10 +813,10 @@ router.use('/doctor/', function(req, res, next) {
     }
 });
 
+
 //ADD RECIPIENT ROUTE
 router.post('/doctor/api/recipients', function(req, res) {
     //console.log(req.body);
-    var Recipient = mongoose.model('recipients', recipientSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -784,7 +830,13 @@ router.post('/doctor/api/recipients', function(req, res) {
 
     var errors = {};
 
+<<<<<<< HEAD
     Recipient.findOne({ ssn: request.ssn })
+=======
+    var recip;
+
+    Recipient.findOne({ssn : request.ssn})
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
         .then(function(ssn) {
             if (ssn) {
                 errors.ssnExists = "A recipient with that SSN already exists";
@@ -825,9 +877,12 @@ router.post('/doctor/api/recipients', function(req, res) {
                 organSize: request.organSize
             });
 
-            return newRecipient.validate().then(function() { return newRecipient; });
+            console.log(request.dob);
+
+            return newRecipient.save().then(function() { return newRecipient; });
         }).catch(function(err) {
             errors.validationError = err;
+<<<<<<< HEAD
         }).then(function(newRecipient) {
             if (errors.validationError) {
                 var error = {};
@@ -857,13 +912,33 @@ router.post('/doctor/api/recipients', function(req, res) {
         }).catch(function(err) {
             console.log(err);
             res.status(500).send({ success: false, errors });
+=======
+            res.status(500).send({success: false, errors});
+        }).then(function(newRecipient){
+            recip = newRecipient;
+            Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newRecipient._id}
+        }).then(function(newRecipient) {return newRecipient});
+            if (newRecipient){
+                return matchingFunctions.addRecipientToWaitlist(newRecipient);
+            }
+      
+        }).then(function(){
+        	
+            matchingFunctions.generateMatchforRecipient(recip);
+            
+        }).then(function(){
+        	res.status(201).send({ok: true, message: 'Recipient added successfully'});
+
+        }).catch(function(err) {
+            console.log(err);
+            res.status(500).send({success: false, err});
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
         });
 });
 
 //ADD Donors to donor list
 router.post('/doctor/api/donors', function(req, res) {
     //console.log(req.body);
-    var Donor = mongoose.model('donors', donorSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -874,15 +949,18 @@ router.post('/doctor/api/donors', function(req, res) {
         console.log("using req.body")
         request = req.body;
     }
-
-
     var errors = {};
+<<<<<<< HEAD
 
     Donor.findOne({ ssn: request.ssn })
+=======
+    Donor.findOne({ssn : request.ssn})
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
         .then(function(ssn) {
             if (ssn) {
                 errors.ssnExists = "A donor with that SSN already exists";
             }
+<<<<<<< HEAD
         }).then(function() {
 
 
@@ -917,11 +995,36 @@ router.post('/doctor/api/donors', function(req, res) {
                 organSize: request.organSize,
                 deceased: request.selectedDeceased,
 
+=======
+        }).then(function(){
+            // create a new donor
+            //drop down attributes not working
+            var newDonor = Donor({
+                ssn : request.ssn,
+                name : {
+                firstName : request.firstName,
+                lastName : request.lastName},
+                address : {street : request.street,
+                city : request.city,
+                state : request.selectedState,
+                zip : request.zip},
+                phoneNumber : request.phoneNumber,
+                dateAdded : new Date(Date.now()),
+                sex : request.selectedSex,
+                height : request.height,
+                weight : request.weight,
+                dob : new Date(Date.parse(request.dob)),
+                organType : request.selectedOrganType,
+                bloodType : request.selectedBloodType,
+                HLAType : request.HLAType,
+                organSize : request.organSize,
+                deceased : request.selectedDeceased,
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
             });
-
-            return newDonor.validate().then(function() { return newDonor; });
+            return newDonor.save().then(function() { return newDonor; });
         }).catch(function(err) {
             errors.validationError = err;
+<<<<<<< HEAD
         }).then(function(newDonor) {
             if (errors.validationError) {
                 var error = {};
@@ -948,11 +1051,26 @@ router.post('/doctor/api/donors', function(req, res) {
             matchingFunctions.generateMatchforDonor(newDonor);
         }).catch(function(err) {
             res.status(500).send({ success: false, errors });
+=======
+            res.status(500).send({success: false, errors});
+        }).then(function(newDonor){
+            return Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}});
+        }).then(function(newDonor){
+            if (newDonor)
+            {
+                res.status(201).send({ok: true, message: 'Donor added successfully'});
+                return matchingFunctions.generateMatchforDonor(newDonor);
+            }
+        }).catch(function(err) {
+            console.log(err);
+            res.status(500).send({success: false, err});
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
         });
 });
 
 router.get('/doctor/api/hospital-info/:doctor_id', function(req, res) {
     console.log(req.params.doctor_id);
+<<<<<<< HEAD
     Hospitals.findOne({ "doctors": { "_id": ObjectId(req.params.doctor_id) } })
         .then(function(hospital) {
             if (hospital) {
@@ -963,12 +1081,45 @@ router.get('/doctor/api/hospital-info/:doctor_id', function(req, res) {
         }).catch(function(err) {
             res.status(500).send({ success: false, error: err });
         });
+=======
+    Hospital.findOne({"doctors" : { "_id" : ObjectId(req.params.doctor_id)}})
+        .then(function(hospital){
+            if (hospital)
+            {
+                res.status(201).send({success: true, hospital: hospital});
+            }
+            else
+            {
+                res.status(201).send({success: true, hospital: "Not found"});
+            }
+        }).catch(function(err){
+            res.status(500).send({success: false, error : err});
+    });
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
+});
+
+router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res){
+
+	DoctorNotifications.findOne({"_id" : ObjectId(req.params.doctor_id)})
+		.then(function(notification){
+			if (notification)
+			{
+				res.status(201).send({success: true, hasNotification: true, notification});
+			}
+		}).catch(function(err){
+            res.status(500).send({success: false, error : err});	
+		});
 });
 
 
 router.get('/doctor/api/doctors', function(req, res) {
+<<<<<<< HEAD
     Doctors.find(function(err, data) {
         if (err)
+=======
+    Doctor.find(function(err, data){
+        if(err)
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
             res.send(err);
         else
             res.json(data);
@@ -977,8 +1128,13 @@ router.get('/doctor/api/doctors', function(req, res) {
 
 
 router.get('/doctor/api/donors', function(req, res) {
+<<<<<<< HEAD
     Donors.find(function(err, data) {
         if (err)
+=======
+    Donor.find(function(err, data){
+        if(err)
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
             res.send(err);
         else
             res.json(data);
@@ -1001,6 +1157,7 @@ router.get('/doctor/api/view-patients/:doctor_id', function(req, res) {
     var recipientPatients = [];
     var patient_ids = [];
 
+<<<<<<< HEAD
     Doctors.findOne({ _id: req.params.doctor_id })
         .then(function(doctor) {
             patient_ids = doctor.patients;
@@ -1209,6 +1366,29 @@ router.get('/doctor/api/matches/:organ/:start_date?/:end_date?', (req, res) => {
             else {
                 res.json(data);
             }
+=======
+    Doctor.findOne({_id : req.params.doctor_id})
+        .then(function(doctor){
+            patient_ids  = doctor.patients;
+            return patient_ids;
+        }).then(function(patient_ids){
+            return Donor.find({_id : {$in : patient_ids}}).then(function(donors) {return donors;});
+
+        }).then(function(donors){
+            if (donors)
+            {
+            donorPatients = donors;
+            patients.donorPatients = donorPatients;
+            }
+            return Recipient.find({_id : {$in : patient_ids}}).then(function(recipients) {return recipients;});
+        }).then(function(recipients){
+            if (recipients)
+            {
+            recipientPatients = recipients;
+            patients.recipientPatients = recipientPatients;
+            }
+            res.status(201).send({success: true, patients});
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
         });
     }
 });
@@ -1249,6 +1429,45 @@ router.get("/doctor/api/recipentsByID/:id", (req, res) => {
     });
 });
 
+<<<<<<< HEAD
+=======
+router.post('/doctor/api/view-recipient-donor-info', function(req,res){
+    var request = {};
+    var response = {};
+    // if req.body is empty (form is empty), use query parameters 
+    // to test API without front end via Postman or regular xmlhttprequest
+    if (Object.keys(req.body).length === 0 && req.body.constructor === Object)
+    {    
+        console.log("using req.query");
+        request = req.query;
+    }
+    else
+    {
+        console.log("using req.body")
+        request = req.body;
+    }
+
+    console.log(request);
+
+    Recipient.findOne({"_id" : ObjectId(request.recipient_id)})
+    	.then(function(recipient){
+    		response.recipient = recipient;
+
+    		return Donor.findOne({"_id": ObjectId(request.donor_id)});
+    	}).then(function(donorInfo){
+    		var donor = {};
+    		donor.organType = donorInfo.organType;
+    		donor.HLAType = donorInfo.HLAType;
+    		donor.bloodType = donorInfo.bloodType;
+    		donor.organSize = donorInfo.organSize;
+    		response.donor = donor;
+
+    		res.status(201).send({success:true, response});
+    	});
+});
+
+          
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
 
 /*GET addDonor page. */
 router.get('/doctor/doctor/addDonor', function(req, res, next) {
