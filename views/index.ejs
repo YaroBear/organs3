@@ -37,28 +37,33 @@
 				<div id="loginModal" class="modal">
 					<div class="modal-content">
 
-
-						<span class="loginClose">&times;</span>
-						<h3>Enter login information</h3>
-
-						<div class= "form-group">
-							<label>Username</label>
-							<input type="text" class="form-control" id ="userUsername" ng-model="formData.username" placeholder="Username">
-
+						<div class="modal-header">
+							<span class="loginClose">&times;</span>
+							<h3 class="modal-title">Enter login information</h3>
 						</div>
-						<div class= "form-group">
-							<label>Password</label>
-							<input type="password" class="form-control" id ="userPassword" ng-model="formData.password" placeholder="Password">
+						<div class="modal-body">
 
+							<div class= "form-group">
+								<label>Username</label>
+								<input type="text" class="form-control" id ="userUsername" ng-model="formData.username" placeholder="Username">
+
+							</div>
+							<div class= "form-group">
+								<label>Password</label>
+								<input type="password" class="form-control" id ="userPassword" ng-model="formData.password" placeholder="Password">
+
+							</div>
+
+							<div ng-show="loginSuccess">
+								<h2 style="color:red">Welcome back {{userFullName}}!</h2>
+							</div>
+							<div ng-show="loginFailed">
+								<h2 style="color:red">Authentication Failed</h2>
+							</div>
 						</div>
 
-						<button class="btn btn-primary btn-sm pull-right"  type="submit" ng-click="authenticateUser()">Submit</button>
-
-						<div ng-show="loginSuccess">
-							<h2 style="color:red">Welcome back {{userFullName}}!</h2>
-						</div>
-						<div ng-show="loginFailed">
-							<h2 style="color:red">Authentication Failed</h2>
+						<div class="modal-footer">
+							<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="authenticateUser()">Submit</button>
 						</div>
 
 					</div>
@@ -66,45 +71,50 @@
 
 				<div id="registerModal" class="modal">
 					<div class="modal-content">
-						<span class="registerClose">&times;</span>
-						<h3>Enter information</h3>
-						<div class= "form-group">
-							<label for="newDoctorSSN">SSN</label>
-							<input type="text" class="form-control" id ="newDoctorSSN" ng-model="formData.SSN" placeholder="xxx-xx-xxxx">
-							<p class="error">{{ssnError}}</p>
-						</div>
-						<div class= "form-group">
-							<label>Name</label>
-							<input type="text" class="form-control" id ="newDoctorName" ng-model="formData.name" placeholder="Enter name">
-							<p class="error">{{nameError}}</p>
-						</div>
-						<div class= "form-group">
-							<label>Username</label>
-							<input type="text" class="form-control" id ="newDoctorUsername" ng-model="formData.username" placeholder="Desired Username">
-							<p class="error">{{usernameError}}</p>
-						</div>
-						<div class= "form-group">
-							<label>Password</label>
-							<input type="password" class="form-control" id ="newDoctorPassword" ng-model="formData.password" placeholder="Desired Password">
-							<p class="error">{{passwordError}}</p>
-						</div>
-						<div class= "form-group">
-							<label>Hospital</label>
-							<select class="form-control" ng-model="formData.selectedHospital" ng-options="hospital.name for hospital in hospitals | orderBy:'name'">
-							</select>
-							<p>{{hospital}}</p>
-						</div>
-						<div class= "form-group">
-							<label for="permissionCode">Permission Code</label>
-							<input type="password" class="form-control" id ="permissionCode" ng-model="formData.code" placeholder="">
-							<p class="error">{{permCodeError}}</p>
-						</div>
-						<button class="btn btn-primary btn-sm pull-right"  type="submit" ng-click="addUser()">Submit</button>
-
-						<div ng-show="addedAlert">
-							<h2 style="color:red">User Added Successfully!</h2>
+						<div class="modal-header">
+							<span class="registerClose">&times;</span>
+							<h3 class="modal-title">Enter information</h3>
 						</div>
 
+						<div class="modal-body">
+							<div class= "form-group">
+								<label for="newDoctorSSN">SSN</label>
+								<input type="text" class="form-control" id ="newDoctorSSN" ng-model="formData.SSN" placeholder="xxx-xx-xxxx">
+								<p class="error">{{ssnError}}</p>
+							</div>
+							<div class= "form-group">
+								<label>Name</label>
+								<input type="text" class="form-control" id ="newDoctorName" ng-model="formData.name" placeholder="Enter name">
+								<p class="error">{{nameError}}</p>
+							</div>
+							<div class= "form-group">
+								<label>Username</label>
+								<input type="text" class="form-control" id ="newDoctorUsername" ng-model="formData.username" placeholder="Desired Username">
+								<p class="error">{{usernameError}}</p>
+							</div>
+							<div class= "form-group">
+								<label>Password</label>
+								<input type="password" class="form-control" id ="newDoctorPassword" ng-model="formData.password" placeholder="Desired Password">
+								<p class="error">{{passwordError}}</p>
+							</div>
+							<div class= "form-group">
+								<label>Hospital</label>
+								<select class="form-control" ng-model="formData.selectedHospital" ng-options="hospital.name for hospital in hospitals | orderBy:'name'">
+								</select>
+								<p>{{hospital}}</p>
+							</div>
+							<div class= "form-group">
+								<label for="permissionCode">Permission Code</label>
+								<input type="password" class="form-control" id ="permissionCode" ng-model="formData.code" placeholder="">
+								<p class="error">{{permCodeError}}</p>
+							</div>
+							<div ng-show="addedAlert">
+								<h2 style="color:red">User Added Successfully!</h2>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addUser()">Submit</button>
+						</div>
 					</div>
 				</div>
 
