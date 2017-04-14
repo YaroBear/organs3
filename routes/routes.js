@@ -34,7 +34,7 @@ var DoctorNotifications = schemas.DoctorNotifications;
 //******************************
 //******************************
 
-
+*/
 Recipient.findOne({"_id" : ObjectId("58ee78e6976b8c332c7ac2ef")})
     .then(function(recip)
     {
@@ -46,7 +46,7 @@ Recipient.findOne({"_id" : ObjectId("58ee78e6976b8c332c7ac2ef")})
         
         
     });
-
+*/
 
 router.get('/api/hospitals/names', function(req, res){
     Hospital.find({}, {name: 1}, function(err, data){
@@ -605,11 +605,32 @@ router.get('/doctor/api/hospital-info/:doctor_id', function(req, res){
 
 router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res){
 
+	var genForRecip;
 	DoctorNotifications.findOne({"_id" : ObjectId(req.params.doctor_id)})
 		.then(function(notification){
 			if (notification)
 			{
-				res.status(201).send({success: true, hasNotification: true, notification});
+				var now = new Date();
+				if (now > notification.expiresAt)
+				{
+					genForRecip = notification.recipient;
+					return DoctorNotifications.remove({"_id" : ObjectId(req.params.doctor_id)});
+				}
+				else
+				{
+					res.status(201).send({success: true, hasNotification: true, notification});
+				}
+			}
+		}).then(function(removed){
+			if (removed)
+			{
+				console.log("Removed old notification");
+				return Recipient.findOne({"_id": ObjectId(genForRecip)});
+			}
+		}).then(function(recip){
+			if (recip)
+			{
+				return matchingFunctions.generateMatchforRecipient(recip);
 			}
 		}).catch(function(err){
             res.status(500).send({success: false, error : err});	
@@ -701,14 +722,21 @@ router.post('/doctor/api/view-recipient-donor-info', function(req,res){
 
     		return Donor.findOne({"_id": ObjectId(request.donor_id)});
     	}).then(function(donorInfo){
-    		var donor = {};
-    		donor.organType = donorInfo.organType;
-    		donor.HLAType = donorInfo.HLAType;
-    		donor.bloodType = donorInfo.bloodType;
-    		donor.organSize = donorInfo.organSize;
-    		response.donor = donor;
+    		if (donorInfo)
+    		{
+	    		var donor = {};
+	    		donor.organType = donorInfo.organType;
+	    		donor.HLAType = donorInfo.HLAType;
+	    		donor.bloodType = donorInfo.bloodType;
+	    		donor.organSize = donorInfo.organSize;
+	    		response.donor = donor;
 
-    		res.status(201).send({success:true, response});
+	    		res.status(201).send({success:true, response});
+    		}
+    		else
+    		{
+    			res.status(201).send({success:true, response : "Donor no longer in system, but notification still exists"});
+    		}
     	});
 });
 

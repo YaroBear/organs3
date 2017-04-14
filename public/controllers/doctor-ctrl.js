@@ -56,6 +56,7 @@ var doctor = angular.module('doctor', [])
 			{
 				$scope.matchFound = true;
 				$scope.score_info = serverResponse.notification.scores;
+				$scope.createdAt = new Date(Date.parse(serverResponse.notification.createdAt));
 				var request = {};
 				request.recipient_id = serverResponse.notification.recipient;
 				request.donor_id = serverResponse.notification.donor;

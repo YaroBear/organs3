@@ -14,7 +14,8 @@ mongoose.connect(mongodb_uri);
 //******************************
 
 var doctorNotificationSchema = new Schema({
-    createdAt : {type : Date, expires: 3600},
+    createdAt : {type : Date},
+    expiresAt : {type: Date},
     donor: {type: String, required: true},
     recipient : {type: String, required: true},
     scores: {
