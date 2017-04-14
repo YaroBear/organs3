@@ -87,7 +87,7 @@ body {
       width:250px;
       padding-left: 40px;
       padding-bottom: 30px;
-
+      padding-top: 30px;
 
 /*      background-color:#cfc;
       padding-bottom:9999px;
@@ -98,6 +98,9 @@ body {
     color: #ffffff;
 }*/
 
+#mainPanel{
+	padding-top: 30px;
+}
 
 .btn-primary{
 /*	padding:15px 24px;

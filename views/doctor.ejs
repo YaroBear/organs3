@@ -8,14 +8,15 @@
 		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
 		<script src="controllers/doctor-ctrl.js"></script>
-
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 		<div class="body-content">
-			<div class="jumbotron top-banner row text-center">
+			<div class="top-banner row text-center">
 				<div class="col-xs-2">
 					<img src="images/cardiogram.svg" class="logo"></img>
 				</div>
-				<div class="col-xs-10">
-					<h1>Organ Network</h1>
+				<div >
+				<br>
+					<h1>Organ Matching Network</h1>
 					<h2>Doctor home</h2>
 				</div>
 			</div>
@@ -30,9 +31,11 @@
 
 					<button class="btn btn-primary btn-lg btn-block" ng-click="addRecipientView()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Recipient</button>
 
+					<button class="btn btn-primary btn-lg btn-block" ng-click = "statsView()" role="button"><span class="glyphicon glyphicon-stats"></span> View Statistics</button>
+
 					<button class="btn btn-primary btn-lg btn-block" ng-click="logout()" role="button"><span class="glyphicon glyphicon-remove"></span> Logout</button>
 				</div>
-				<div class="col-xs-8 col-md-9">
+				<div id="mainPanel" class="col-xs-8 col-md-9">
 					<div ng-show="defaultView">
 						<div class="panel panel-primary">
 							<div class="panel-heading">
@@ -418,6 +421,71 @@
 							<br>
 						</div>
 					</div>
+
+
+
+
+
+					<div ng-show="statsPanel">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Statistics</h3>
+							</div>
+							<div class="panel-body">
+								<form style="margin-bottom: 5%; padding-left: 5%" ng-submit="generateChart(report)">
+								        <div class="form-group">
+								            <label for="reportName">What report do you want to gernerate?</label>
+								            <select class="form-control" id="reportName" ng-model="report.name" style="width:58%;" required>
+								                <option value = ""></option>
+								                <option value = "donors">Donors</option>
+								                <option value = "recipients" >Recipients on wait list</option>
+								                <option value = "people_matched">People matched</option>
+								                <option value = "wasted_organs">Wasted Organs</option>
+								            </select>
+								        </div>
+								        <div class="form-group">
+								            <label class = "inline-form" for="startDate">Start Date</label>
+								            <input class="form-control inline-form" type = "date" id="startDate" ng-model="report.startDate" style="width :20%;">
+								            </input>
+								        </div>
+								        <div class="form-group">
+								            <label class = "inline-form" for="endDate">End Date</label>
+								            <input class="form-control inline-form" type = "date" id="endDate" ng-model="report.endDate"
+								                style="width: 20%; margin-right:40%">
+								            </input>
+								        </div>
+								        <div class="form-group" >
+								            <label for="organType">What organ wait list would you like?</label>
+								            <select class="form-control" id="organType" ng-model="report.organ" style="width:58%;" required>
+								                <option value = ""></option>
+								                <option value = "Heart" >Heart</option>
+								                <option value = "Kidney">Kidney</option>
+								                <option value = "Lung">Lungs</option>
+								                <option value = "Liver">Liver</option>
+								                <option value = "Pancreas">Pancreas</option>
+								                
+								              <!--  <option value = "all" >I want all organs</option> -->
+								            </select>
+								        </div>
+
+								        <div class="form-group">
+								  			<button class="btn btn-primary btn-lg pull-right"  type="submit">Submit</button>
+										</div>
+								</form>
+								</div>
+								<div class="panel-footer">
+							    	<div id="plot" style="width:90%;height:250px; margin: 0 auto;"></div>
+							    </div>
+
+						</div>
+					</div>
+
+
+
+
+
+
+
 			</div>
 	</body>
 </html>

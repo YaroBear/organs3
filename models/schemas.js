@@ -40,48 +40,48 @@ var wastedOrgansSchema = new Schema({
     }
 });
 
-var doctorSchema = new Schema({
-    name : {
-        type: String,
-        required: [true, "A name is required"]
-    },
-    patients : []
-});
+// var doctorSchema = new Schema({
+//     name : {
+//         type: String,
+//         required: [true, "A name is required"]
+//     },
+//     patients : []
+// });
 
 
-var userSchema = new Schema({
-    ssn : {
-        type: String,
-        unique: true,
-        validate: {
-            validator: function(v) {
-                return /\d{3}-\d{2}-\d{4}/.test(v);
-            },
-            message: "Please enter your SSN as xxx-xx-xxxx"
-        },
-        required: [true, "Social Security number required"]
-    },
-    name: {type: String, required: [true, "Name is required"]},
-    username : {type: String, required: [true, "Username is required"], unique: true},
-    password : {type: String, required: [true, "Password is required"]},
-    admin : Boolean
-});
+// var userSchema = new Schema({
+//     ssn : {
+//         type: String,
+//         unique: true,
+//         validate: {
+//             validator: function(v) {
+//                 return /\d{3}-\d{2}-\d{4}/.test(v);
+//             },
+//             message: "Please enter your SSN as xxx-xx-xxxx"
+//         },
+//         required: [true, "Social Security number required"]
+//     },
+//     name: {type: String, required: [true, "Name is required"]},
+//     username : {type: String, required: [true, "Username is required"], unique: true},
+//     password : {type: String, required: [true, "Password is required"]},
+//     admin : Boolean
+// });
 
 
 //HOSPITAL SCHEMA
-var hospitalSchema = new Schema({
-	name: {type: String, required: [true, "Please provide the hospital name"]},
-	address : {
-		street : {type: String, required: [true, "Please provide the hospital street address"]},
-		city: {type: String, required: [true, "Please provide the hospital city"]},
-		state: {type: String, required: [true, "Please select a state"]},
-		zip: {type: String, required: [true, "Please provide the hospital zipcode"]},
-		region: {type: String, required: [true, "Please select a region"]},
-	},
-	phone : {type: String, required: [true, "Please provide the hospital phone number"]},
-	procedures : Array,
-	doctors : Array
-});
+// var hospitalSchema = new Schema({
+// 	name: {type: String, required: [true, "Please provide the hospital name"]},
+// 	address : {
+// 		street : {type: String, required: [true, "Please provide the hospital street address"]},
+// 		city: {type: String, required: [true, "Please provide the hospital city"]},
+// 		state: {type: String, required: [true, "Please select a state"]},
+// 		zip: {type: String, required: [true, "Please provide the hospital zipcode"]},
+// 		region: {type: String, required: [true, "Please select a region"]},
+// 	},
+// 	phone : {type: String, required: [true, "Please provide the hospital phone number"]},
+// 	procedures : Array,
+// 	doctors : Array
+// });
 
 
 //DOCTOR SCHEMA
@@ -254,6 +254,24 @@ var waitlistSchema = new Schema({
 });
 
 
+
+
+
+
+//for stats
+var matchedOrganSchema = new Schema({
+    _id: Date,
+    organs: {
+        heart: Number,
+        kidney: Number,
+        liver: Number,
+        lung: Number,
+        pancreas: Number
+    }
+});
+
+exports.Matches = mongoose.model("matches", matchedOrganSchema);
+
 exports.Hospital = mongoose.model('hospitals', hospitalSchema);
 
 exports.Doctor = mongoose.model('doctors', doctorSchema);
@@ -267,3 +285,13 @@ exports.User = mongoose.model('users', userSchema);
 exports.DoctorNotifications = mongoose.model('doctor_notifications', doctorNotificationSchema);
 
 exports.WastedOrgans = mongoose.model('wasted_organs', wastedOrgansSchema);
+
+exports.Heart_Waitlist = mongoose.model('heart_waitlists', waitlistSchema);
+
+exports.Kidney_Waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
+
+exports.Lung_Waitlist = mongoose.model('lung_waitlists', waitlistSchema);
+
+exports.Liver_Waitlist = mongoose.model('liver_waitlists', waitlistSchema);
+
+exports.Pancreas_Waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
