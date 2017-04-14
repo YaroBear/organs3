@@ -95,7 +95,7 @@ var doctor = angular.module('index', [])
 		$http.get("/api/hospitals/names")
 			.success(function(names){
 				$scope.hospitals = names;
-				console.log($scope.hospitals);
+				//console.log($scope.hospitals);
 			}).error(function(err){
 				console.log(err);
 				$scope.hospitals = "Error retrieving hospitals";
