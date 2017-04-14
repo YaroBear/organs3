@@ -24,7 +24,13 @@ body {
     color: red;
 }
 
+<<<<<<< HEAD
 .table {
     width: 50%;
     margin: 0 auto;
+=======
+.error {
+	color: red;
+	font-weight: bold;
+>>>>>>> 0e98e83a94d50c085e118a5be4ba9b2dbdf74726
 }

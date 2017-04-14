@@ -28,239 +28,184 @@ var db = mongoose.connect(mongodb_uri);
 //matching functions
 var matchingFunctions = require("../matchingFunctions");
 
+var schemas = require("../models/schemas");
 
 //******************************
 //******************************
 //***********SCHEMAS************
 //******************************
 //******************************
-var doctorSchema = new Schema({
-    name: {
-        type: String,
-        required: [true, "A name is required"]
-    },
-    patients: []
-});
+// var doctorSchema = new Schema({
+//     name: {
+//         type: String,
+//         required: [true, "A name is required"]
+//     },
+//     patients: []
+// });
 
 
-var userSchema = new Schema({
-    ssn: {
-        type: String,
-        unique: true,
-        validate: {
-            validator: function(v) {
-                return /\d{3}-\d{2}-\d{4}/.test(v);
-            },
-            message: "Please enter your SSN as xxx-xx-xxxx"
-        },
-        required: [true, "Social Security number required"]
-    },
-    name: { type: String, required: [true, "Name is required"] },
-    username: { type: String, required: [true, "Username is required"], unique: true },
-    password: { type: String, required: [true, "Password is required"] },
-    admin: Boolean
-});
+// var userSchema = new Schema({
+//     ssn: {
+//         type: String,
+//         unique: true,
+//         validate: {
+//             validator: function(v) {
+//                 return /\d{3}-\d{2}-\d{4}/.test(v);
+//             },
+//             message: "Please enter your SSN as xxx-xx-xxxx"
+//         },
+//         required: [true, "Social Security number required"]
+//     },
+//     name: { type: String, required: [true, "Name is required"] },
+//     username: { type: String, required: [true, "Username is required"], unique: true },
+//     password: { type: String, required: [true, "Password is required"] },
+//     admin: Boolean
+// });
 
 
-//HOSPITAL SCHEMA
-var hospitalSchema = new Schema({
+// //HOSPITAL SCHEMA
+// var hospitalSchema = new Schema({
 
-    name: { type: String, required: [true, "Please provide the hospital name"] },
-    address: {
-        street: { type: String, required: [true, "Please provide the hospital street address"] },
-        city: { type: String, required: [true, "Please provide the hospital city"] },
-        state: { type: String, required: [true, "Please select a state"] },
-        zip: { type: String, required: [true, "Please provide the hospital zipcode"] },
-        region: { type: String, required: [true, "Please select a region"] },
-    },
-    phone: { type: String, required: [true, "Please provide the hospital phone number"] },
-    procedures: Array,
-    doctors: Array
-});
-
-
-//DONOR SCHEMA
-var donorSchema = new Schema({
-    ssn: {
-        type: String,
-        unique: true,
-        validate: {
-            validator: function(v) {
-                return /\d{3}-\d{2}-\d{4}/.test(v);
-            },
-            message: "Please enter your SSN as xxx-xx-xxxx"
-        },
-        required: [true, "Social Security number required"]
-    },
-    name: {
-        firstName: { type: String, required: [true, "First name is required"] },
-        lastName: { type: String, required: [true, "Last Name is required"] }
-    },
-
-    address: {
-        street: { type: String, required: [true, "Street address is required"] },
-        city: { type: String, required: [true, "City is required"] },
-
-        state: { type: String, required: [true, "Please select a state"] },
-        zip: {
-            type: String,
-            validate: {
-                validator: function(v) {
-                    return /\d{5}/.test(v);
-                },
-                message: "Please enter zip code as xxxxx"
-            },
-            required: [true, "Zip code is required"]
-        },
-
-    },
-
-    phoneNumber: {
-        type: String,
-        validate: {
-            validator: function(v) {
-                return /\d{3}-\d{3}-\d{4}/.test(v);
-            },
-            message: "Please enter phone number as xxx-xxx-xxxx"
-        },
-        required: [false]
-    },
-
-    dateAdded: { type: Date, required: [true, "Date is required"] },
-    HLAType: { type: String, required: [true, "HLA type is required"] },
-    height: { type: String, required: [true, "height is required"] },
-    weight: { type: String, required: [true, "weight is required"] },
-    organType: { type: String, required: [true, "Please select an organ type"] },
-    sex: { type: String, required: [true, "Please enter patient sex"] },
-    organType: { type: String, required: [true, "Please select an organ type"] },
-    bloodType: { type: String, required: [true, "Please select a blood type"] },
-    organSize: { type: String, required: [true, "Please enter organ size"] },
-    deceased: { type: String, required: [true, "Is the donor deceased?"] },
-
-});
+//     name: { type: String, required: [true, "Please provide the hospital name"] },
+//     address: {
+//         street: { type: String, required: [true, "Please provide the hospital street address"] },
+//         city: { type: String, required: [true, "Please provide the hospital city"] },
+//         state: { type: String, required: [true, "Please select a state"] },
+//         zip: { type: String, required: [true, "Please provide the hospital zipcode"] },
+//         region: { type: String, required: [true, "Please select a region"] },
+//     },
+//     phone: { type: String, required: [true, "Please provide the hospital phone number"] },
+//     procedures: Array,
+//     doctors: Array
+// });
 
 
-//RECIPIENT SCHEMA
-var recipientSchema = new Schema({
-    ssn: {
-        type: String,
-        unique: true,
-        validate: {
-            validator: function(v) {
-                return /\d{3}-\d{2}-\d{4}/.test(v);
-            },
-            message: "Please enter your SSN as xxx-xx-xxxx"
-        },
-        required: [true, "Social Security number required"]
-    },
-    name: {
-        firstName: { type: String, required: [true, "First name is required"] },
-        lastName: { type: String, required: [true, "Last Name is required"] }
-    },
+// //DONOR SCHEMA
+// var donorSchema = new Schema({
+//     ssn: {
+//         type: String,
+//         unique: true,
+//         validate: {
+//             validator: function(v) {
+//                 return /\d{3}-\d{2}-\d{4}/.test(v);
+//             },
+//             message: "Please enter your SSN as xxx-xx-xxxx"
+//         },
+//         required: [true, "Social Security number required"]
+//     },
+//     name: {
+//         firstName: { type: String, required: [true, "First name is required"] },
+//         lastName: { type: String, required: [true, "Last Name is required"] }
+//     },
 
-    address: {
-        street: { type: String, required: [true, "Street address is required"] },
-        city: { type: String, required: [true, "City is required"] },
+//     address: {
+//         street: { type: String, required: [true, "Street address is required"] },
+//         city: { type: String, required: [true, "City is required"] },
 
-        state: { type: String, required: [true, "Please select a state"] },
+//         state: { type: String, required: [true, "Please select a state"] },
+//         zip: {
+//             type: String,
+//             validate: {
+//                 validator: function(v) {
+//                     return /\d{5}/.test(v);
+//                 },
+//                 message: "Please enter zip code as xxxxx"
+//             },
+//             required: [true, "Zip code is required"]
+//         },
 
-        zip: {
-            type: String,
-            validate: {
-                validator: function(v) {
-                    return /\d{5}/.test(v);
-                },
-                message: "Please enter zip code as xxxxx"
-            },
-            required: [true, "Zip code is required"]
-        },
+//     },
 
-    },
+//     phoneNumber: {
+//         type: String,
+//         validate: {
+//             validator: function(v) {
+//                 return /\d{3}-\d{3}-\d{4}/.test(v);
+//             },
+//             message: "Please enter phone number as xxx-xxx-xxxx"
+//         },
+//         required: [false]
+//     },
 
-    phoneNumber: {
-        type: String,
-        validate: {
-            validator: function(v) {
-                return /\d{3}-\d{3}-\d{4}/.test(v);
-            },
-            message: "Please enter phone number as xxx-xxx-xxxx"
-        },
-        required: [false]
-    },
+//     dateAdded: { type: Date, required: [true, "Date is required"] },
+//     HLAType: { type: String, required: [true, "HLA type is required"] },
+//     height: { type: String, required: [true, "height is required"] },
+//     weight: { type: String, required: [true, "weight is required"] },
+//     organType: { type: String, required: [true, "Please select an organ type"] },
+//     sex: { type: String, required: [true, "Please enter patient sex"] },
+//     organType: { type: String, required: [true, "Please select an organ type"] },
+//     bloodType: { type: String, required: [true, "Please select a blood type"] },
+//     organSize: { type: String, required: [true, "Please enter organ size"] },
+//     deceased: { type: String, required: [true, "Is the donor deceased?"] },
 
-    dateAdded: { type: Date, required: [true, "Date is required"] },
-    HLAType: { type: String, required: [true, "HLA type is required"] },
-    height: { type: String, required: [true, "height is required"] },
-    weight: { type: String, required: [true, "weight is required"] },
-    organType: { type: String, required: [true, "Please select an organ type"] },
-    sex: { type: String, required: [true, "Please enter patient sex"] },
-    dob: { type: Date, required: [true, "Please enter patient date of birth"] },
-    organType: { type: String, required: [true, "Please select an organ type"] },
-    bloodType: { type: String, required: [true, "Please select a blood type"] },
-    organSize: { type: String, required: [true, "Please enter organ size"] },
-    urgency: { type: String, required: [true, "Please specify urgency"] }
-});
+// });
 
-//ON_WAITLIST SCHEMA
-var waitlistSchema = new Schema({
 
-    dateAdded: { type: Date },
-    priority: { type: Number },
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipents' }
-});
+// //RECIPIENT SCHEMA
 
-//MATCHES AND WASTED ORGAN SCHEMA
-var matchesAndWastedSchema = new Schema({
-    _id: {
-        type: Date
-    },
-    organs: {
-        heart: Number,
-        kidney: Number,
-        liver: Number,
-        Lung: Number,
-        pancreas: Number
-    }
-});
 
-var doctorNotificationSchema = new Schema({
-    donor: { type: String, required: true },
-    recipient: { type: String, required: true },
-    scores: {
-        HLAscore: { type: Number, required: true },
-        sizeScore: { type: Number, required: true },
-        travelScore: { type: Number, required: true },
-        kidneyBonus: { type: Number, required: true },
-        pediatricBonus: { type: Number, required: true },
-        expireScore: { type: Number, required: true },
-        totalScore: { type: Number, required: true }
-    },
-    responded: { type: Boolean, default: false }
-});
+// //ON_WAITLIST SCHEMA
+// var waitlistSchema = new Schema({
 
-var Hospitals = mongoose.model('hospitals', hospitalSchema);
+//     dateAdded: { type: Date },
+//     priority: { type: Number },
+// });
 
-var Doctors = mongoose.model('doctors', doctorSchema);
+// //MATCHES AND WASTED ORGAN SCHEMA
+// var matchesAndWastedSchema = new Schema({
+//     _id: {
+//         type: Date
+//     },
+//     organs: {
+//         heart: Number,
+//         kidney: Number,
+//         liver: Number,
+//         Lung: Number,
+//         pancreas: Number
+//     }
+// });
 
-var Donors = mongoose.model('donors', donorSchema);
+// var doctorNotificationSchema = new Schema({
+//     donor: { type: String, required: true },
+//     recipient: { type: String, required: true },
+//     scores: {
+//         HLAscore: { type: Number, required: true },
+//         sizeScore: { type: Number, required: true },
+//         travelScore: { type: Number, required: true },
+//         kidneyBonus: { type: Number, required: true },
+//         pediatricBonus: { type: Number, required: true },
+//         expireScore: { type: Number, required: true },
+//         totalScore: { type: Number, required: true }
+//     },
+//     responded: { type: Boolean, default: false }
+// });
 
-var Heart_Waitlist = mongoose.model('heart_waitlists', waitlistSchema);
+var Hospital = schemas.Hospital;
 
-var Kidney_Waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
+var Doctor = schemas.Doctor;
 
-var Lung_Waitlist = mongoose.model('lung_waitlists', waitlistSchema);
+var Donor = schemas.Donor;
 
-var Liver_Waitlist = mongoose.model('liver_waitlists', waitlistSchema);
 
-var Pancreas_Waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
+var User = schemas.User;
 
-var Recipients = mongoose.model('recipients', recipientSchema);
+var Heart_Waitlist = schemas.Heart_Waitlist;
 
-var Doctor_Notifications = mongoose.model('doctor_notifications', doctorNotificationSchema);
+var Kidney_Waitlist = schemas.Kidney_Waitlist;
 
-var Matches = mongoose.model("matches", matchesAndWastedSchema);
+var Lung_Waitlist = schemas.Lung_Waitlist;
 
-var Wasted = mongoose.model("wasted_organs", matchesAndWastedSchema);
+var Liver_Waitlist = schemas.Liver_Waitlist;
+
+var Pancreas_Waitlist = schemas.Pancreas_Waitlist;
+
+var Recipients = schemas.Recipient;
+
+var Doctor_Notifications = schemas.DoctorNotifications;
+
+var Matches = schemas.Matches;
+
+var Wasted = schemas.WastedOrgans;
 
 //******************************
 //******************************
@@ -268,8 +213,17 @@ var Wasted = mongoose.model("wasted_organs", matchesAndWastedSchema);
 //******************************
 //******************************
 
+Recipient.findOne()
+    .then(function(recip) {
+
+        return matchingFunctions.generateMatchforRecipient(recip);
+
+    });
 router.get('/api/hospitals/names', function(req, res) {
     Hospitals.find({}, { name: 1 }, function(err, data) {
+
+
+
         if (err)
             res.send(err);
         else
@@ -280,7 +234,6 @@ router.get('/api/hospitals/names', function(req, res) {
 
 router.post('/api/register', function(req, res) {
     //console.log(req.body);
-    var User = mongoose.model('users', userSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -348,11 +301,13 @@ router.post('/api/register', function(req, res) {
 
             return newDoctor.save().then(function() { return newUser; });
 
+
         }).then(function(newUser) {
 
             Hospitals.findOneAndUpdate({ "_id": request.selectedHospital._id }, { $push: { doctors: { "_id": newUser._id } } }).then(function() { return Hospitals });
         }).then(function(Hospitals) {
             res.status(201).send({ ok: true, message: 'Added user successfully' });
+
         }).catch(function(err) {
             var errorCode = err.code || 500;
             res.status(errorCode).send({ ok: false, message: err.message, errors: err.errors });
@@ -361,10 +316,9 @@ router.post('/api/register', function(req, res) {
 
 
 
-//user authentication
+//user
 router.post('/api/authenticate', function(req, res) {
-    console.log(req.body);
-    var User = mongoose.model('users', userSchema);
+    //console.log(req.body);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -520,6 +474,7 @@ router.use('/admin/', function(req, res, next) {
 
 router.get('/admin/api/hospitals', function(req, res) {
     Hospitals.find(function(err, data) {
+
         if (err)
             res.send(err);
         else
@@ -530,7 +485,6 @@ router.get('/admin/api/hospitals', function(req, res) {
 //ADD HOSPITAL ROUTE
 router.post('/admin/api/hospitals', function(req, res) {
     //console.log(req.body);
-    var Hospital = mongoose.model('hospitals', hospitalSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -544,7 +498,7 @@ router.post('/admin/api/hospitals', function(req, res) {
 
     var errors = {};
 
-    Hospitals.findOne({
+    Hospital.findOne({
         $or: [
             { address: { street: request.street } },
             { name: request.name }
@@ -767,10 +721,10 @@ router.use('/doctor/', function(req, res, next) {
     }
 });
 
+
 //ADD RECIPIENT ROUTE
 router.post('/doctor/api/recipients', function(req, res) {
     //console.log(req.body);
-    var Recipient = mongoose.model('recipients', recipientSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -785,85 +739,89 @@ router.post('/doctor/api/recipients', function(req, res) {
     var errors = {};
 
     Recipient.findOne({ ssn: request.ssn })
-        .then(function(ssn) {
-            if (ssn) {
-                errors.ssnExists = "A recipient with that SSN already exists";
-            }
 
-        }).then(function() {
+    .then(function(ssn) {
+        if (ssn) {
+            errors.ssnExists = "A recipient with that SSN already exists";
+        }
 
-
-            // create a new recipient
-            //drop down attributes not working
-            var newRecipient = Recipient({
-                ssn: request.ssn,
-                name: {
-                    firstName: request.firstName,
-                    lastName: request.lastName
-                },
-
-                address: {
-                    street: request.street,
-                    city: request.city,
-                    state: request.selectedState,
-                    zip: request.zip
-                },
-
-                phoneNumber: request.phoneNumber,
-
-                dateAdded: new Date(Date.now()),
-                urgency: request.selectedUrgency,
-                sex: request.selectedSex,
-                height: request.height,
-                weight: request.weight,
-                dob: new Date(Date.parse(request.dob)),
+    }).then(function() {
 
 
-                organType: request.selectedOrganType,
-                bloodType: request.selectedBloodType,
-                HLAType: request.HLAType,
-                organSize: request.organSize
-            });
+        // create a new recipient
+        //drop down attributes not working
+        var newRecipient = Recipient({
+            ssn: request.ssn,
+            name: {
+                firstName: request.firstName,
+                lastName: request.lastName
+            },
 
-            return newRecipient.validate().then(function() { return newRecipient; });
-        }).catch(function(err) {
-            errors.validationError = err;
-        }).then(function(newRecipient) {
-            if (errors.validationError) {
-                var error = {};
-                error.message = 'Failed to add recipient';
-                error.code = 400;
-                error.errors = errors;
-                throw error;
-            } else {
-                return newRecipient.save().then(function() { return newRecipient; });
-            }
-        }).catch(function(err) {
+            address: {
+                street: request.street,
+                city: request.city,
+                state: request.selectedState,
+                zip: request.zip
+            },
+
+            phoneNumber: request.phoneNumber,
+
+            dateAdded: new Date(Date.now()),
+            urgency: request.selectedUrgency,
+            sex: request.selectedSex,
+            height: request.height,
+            weight: request.weight,
+            dob: new Date(Date.parse(request.dob)),
+
+
+            organType: request.selectedOrganType,
+            bloodType: request.selectedBloodType,
+            HLAType: request.HLAType,
+            organSize: request.organSize
+        });
+
+        console.log(request.dob);
+
+        return newRecipient.save().then(function() { return newRecipient; });
+    }).catch(function(err) {
+        errors.validationError = err;
+    }).then(function(newRecipient) {
+        if (errors.validationError) {
             var error = {};
-            error.message = err.message;
+            error.message = 'Failed to add recipient';
             error.code = 400;
             error.errors = errors;
             throw error;
-        }).catch(function(err) {
-            var errorCode = err.code || 500;
-            res.status(errorCode).send({ ok: false, message: err.message, errors: err.errors });
-        }).then(function(newRecipient) {
-            if (newRecipient) {
-                matchingFunctions.addRecipientToWaitlist(newRecipient);
-            }
-        }).then(function(waitlist) {
-            console.log(waitlist);
-            res.status(201).send({ ok: true, message: 'Recipient added successfully' });
-        }).catch(function(err) {
-            console.log(err);
-            res.status(500).send({ success: false, errors });
-        });
+        } else {
+            return newRecipient.save().then(function() { return newRecipient; });
+        }
+    }).catch(function(err) {
+        var error = {};
+        error.message = err.message;
+        error.code = 400;
+        error.errors = errors;
+        throw error;
+    }).catch(function(err) {
+        var errorCode = err.code || 500;
+        res.status(errorCode).send({ ok: false, message: err.message, errors: err.errors });
+    }).then(function(newRecipient) {
+        if (newRecipient) {
+            matchingFunctions.addRecipientToWaitlist(newRecipient);
+        }
+    }).then(function(waitlist) {
+        console.log(waitlist);
+        res.status(201).send({ ok: true, message: 'Recipient added successfully' });
+    }).catch(function(err) {
+        console.log(err);
+        res.status(500).send({ success: false, errors });
+        res.status(500).send({ success: false, errors });
+
+    });
 });
 
 //ADD Donors to donor list
 router.post('/doctor/api/donors', function(req, res) {
     //console.log(req.body);
-    var Donor = mongoose.model('donors', donorSchema);
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -874,81 +832,81 @@ router.post('/doctor/api/donors', function(req, res) {
         console.log("using req.body")
         request = req.body;
     }
-
-
     var errors = {};
 
     Donor.findOne({ ssn: request.ssn })
-        .then(function(ssn) {
-            if (ssn) {
-                errors.ssnExists = "A donor with that SSN already exists";
-            }
-        }).then(function() {
+
+    .then(function(ssn) {
+        if (ssn) {
+            errors.ssnExists = "A donor with that SSN already exists";
+        }
+    }).then(function() {
 
 
-            // create a new donor
-            //drop down attributes not working
-            var newDonor = Donor({
-                ssn: request.ssn,
-                name: {
-                    firstName: request.firstName,
-                    lastName: request.lastName
-                },
+        // create a new donor
+        //drop down attributes not working
+        var newDonor = Donor({
+            ssn: request.ssn,
+            name: {
+                firstName: request.firstName,
+                lastName: request.lastName
+            },
 
-                address: {
-                    street: request.street,
-                    city: request.city,
-                    state: request.selectedState,
-                    zip: request.zip
-                },
+            address: {
+                street: request.street,
+                city: request.city,
+                state: request.selectedState,
+                zip: request.zip
+            },
 
-                phoneNumber: request.phoneNumber,
+            phoneNumber: request.phoneNumber,
 
-                dateAdded: new Date(Date.now()),
+            dateAdded: new Date(Date.now()),
 
-                sex: request.selectedSex,
-                height: request.height,
-                weight: request.weight,
+            sex: request.selectedSex,
+            height: request.height,
+            weight: request.weight,
 
 
-                organType: request.selectedOrganType,
-                bloodType: request.selectedBloodType,
-                HLAType: request.HLAType,
-                organSize: request.organSize,
-                deceased: request.selectedDeceased,
+            organType: request.selectedOrganType,
+            bloodType: request.selectedBloodType,
+            HLAType: request.HLAType,
+            organSize: request.organSize,
+            deceased: request.selectedDeceased,
 
-            });
 
-            return newDonor.validate().then(function() { return newDonor; });
-        }).catch(function(err) {
-            errors.validationError = err;
-        }).then(function(newDonor) {
-            if (errors.validationError) {
-                var error = {};
-                error.message = 'Failed to add user';
-                error.code = 400;
-                error.errors = errors;
-                throw error;
-            } else {
-                return newDonor.save().then(function() { return newDonor; });
-            }
-        }).catch(function(err) {
+        });
+        return newDonor.save().then(function() { return newDonor; });
+    }).catch(function(err) {
+        errors.validationError = err;
+    }).then(function(newDonor) {
+        if (errors.validationError) {
             var error = {};
-            error.message = err.message;
+            error.message = 'Failed to add user';
             error.code = 400;
             error.errors = errors;
             throw error;
-        }).then(function(newDonor) {
-            Doctors.findOneAndUpdate({ "_id": request.doctor_id }, { $push: { patients: newDonor._id } }).then(function(newDonor) { return newDonor });
-        }).catch(function(err) {
-            var errorCode = err.code || 500;
-            res.status(errorCode).send({ ok: false, message: err.message, errors: err.errors });
-        }).then(function(newDonor) {
-            res.status(201).send({ ok: true, message: 'Donor added successfully' });
-            matchingFunctions.generateMatchforDonor(newDonor);
-        }).catch(function(err) {
-            res.status(500).send({ success: false, errors });
-        });
+        } else {
+            return newDonor.save().then(function() { return newDonor; });
+        }
+    }).catch(function(err) {
+        var error = {};
+        error.message = err.message;
+        error.code = 400;
+        error.errors = errors;
+        throw error;
+    }).then(function(newDonor) {
+        Doctors.findOneAndUpdate({ "_id": request.doctor_id }, { $push: { patients: newDonor._id } }).then(function(newDonor) { return newDonor });
+    }).catch(function(err) {
+        var errorCode = err.code || 500;
+        res.status(errorCode).send({ ok: false, message: err.message, errors: err.errors });
+    }).then(function(newDonor) {
+        res.status(201).send({ ok: true, message: 'Donor added successfully' });
+        matchingFunctions.generateMatchforDonor(newDonor);
+    }).catch(function(err) {
+        res.status(500).send({ success: false, errors });
+
+    });
 });
 
 router.get('/doctor/api/hospital-info/:doctor_id', function(req, res) {
@@ -965,10 +923,23 @@ router.get('/doctor/api/hospital-info/:doctor_id', function(req, res) {
         });
 });
 
+router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
+
+    DoctorNotifications.findOne({ "_id": ObjectId(req.params.doctor_id) })
+        .then(function(notification) {
+            if (notification) {
+                res.status(201).send({ success: true, hasNotification: true, notification });
+            }
+        }).catch(function(err) {
+            res.status(500).send({ success: false, error: err });
+        });
+});
+
 
 router.get('/doctor/api/doctors', function(req, res) {
     Doctors.find(function(err, data) {
         if (err)
+
             res.send(err);
         else
             res.json(data);
@@ -979,6 +950,7 @@ router.get('/doctor/api/doctors', function(req, res) {
 router.get('/doctor/api/donors', function(req, res) {
     Donors.find(function(err, data) {
         if (err)
+
             res.send(err);
         else
             res.json(data);
@@ -1209,6 +1181,7 @@ router.get('/doctor/api/matches/:organ/:start_date?/:end_date?', (req, res) => {
             else {
                 res.json(data);
             }
+
         });
     }
 });
@@ -1248,6 +1221,40 @@ router.get("/doctor/api/recipentsByID/:id", (req, res) => {
         }
     });
 });
+
+
+router.post('/doctor/api/view-recipient-donor-info', function(req, res) {
+    var request = {};
+    var response = {};
+    // if req.body is empty (form is empty), use query parameters 
+    // to test API without front end via Postman or regular xmlhttprequest
+    if (Object.keys(req.body).length === 0 && req.body.constructor === Object) {
+        console.log("using req.query");
+        request = req.query;
+    } else {
+        console.log("using req.body")
+        request = req.body;
+    }
+
+    console.log(request);
+
+    Recipient.findOne({ "_id": ObjectId(request.recipient_id) })
+        .then(function(recipient) {
+            response.recipient = recipient;
+
+            return Donor.findOne({ "_id": ObjectId(request.donor_id) });
+        }).then(function(donorInfo) {
+            var donor = {};
+            donor.organType = donorInfo.organType;
+            donor.HLAType = donorInfo.HLAType;
+            donor.bloodType = donorInfo.bloodType;
+            donor.organSize = donorInfo.organSize;
+            response.donor = donor;
+
+            res.status(201).send({ success: true, response });
+        });
+});
+
 
 
 /*GET addDonor page. */
