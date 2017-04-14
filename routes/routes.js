@@ -23,164 +23,17 @@ var ObjectId = require('mongoose').Types.ObjectId;
 
 // connecting to Mlab
 var mongodb_uri = process.env.MONGODB_URI;
-var db = mongoose.connect(mongodb_uri);
+// var db = mongoose.connect(mongodb_uri);
 
 //matching functions
 var matchingFunctions = require("../matchingFunctions");
 
 var schemas = require("../models/schemas");
 
-//******************************
-//******************************
-//***********SCHEMAS************
-//******************************
-//******************************
-// var doctorSchema = new Schema({
-//     name: {
-//         type: String,
-//         required: [true, "A name is required"]
-//     },
-//     patients: []
-// });
 
 
-// var userSchema = new Schema({
-//     ssn: {
-//         type: String,
-//         unique: true,
-//         validate: {
-//             validator: function(v) {
-//                 return /\d{3}-\d{2}-\d{4}/.test(v);
-//             },
-//             message: "Please enter your SSN as xxx-xx-xxxx"
-//         },
-//         required: [true, "Social Security number required"]
-//     },
-//     name: { type: String, required: [true, "Name is required"] },
-//     username: { type: String, required: [true, "Username is required"], unique: true },
-//     password: { type: String, required: [true, "Password is required"] },
-//     admin: Boolean
-// });
 
-
-// //HOSPITAL SCHEMA
-// var hospitalSchema = new Schema({
-
-//     name: { type: String, required: [true, "Please provide the hospital name"] },
-//     address: {
-//         street: { type: String, required: [true, "Please provide the hospital street address"] },
-//         city: { type: String, required: [true, "Please provide the hospital city"] },
-//         state: { type: String, required: [true, "Please select a state"] },
-//         zip: { type: String, required: [true, "Please provide the hospital zipcode"] },
-//         region: { type: String, required: [true, "Please select a region"] },
-//     },
-//     phone: { type: String, required: [true, "Please provide the hospital phone number"] },
-//     procedures: Array,
-//     doctors: Array
-// });
-
-
-// //DONOR SCHEMA
-// var donorSchema = new Schema({
-//     ssn: {
-//         type: String,
-//         unique: true,
-//         validate: {
-//             validator: function(v) {
-//                 return /\d{3}-\d{2}-\d{4}/.test(v);
-//             },
-//             message: "Please enter your SSN as xxx-xx-xxxx"
-//         },
-//         required: [true, "Social Security number required"]
-//     },
-//     name: {
-//         firstName: { type: String, required: [true, "First name is required"] },
-//         lastName: { type: String, required: [true, "Last Name is required"] }
-//     },
-
-//     address: {
-//         street: { type: String, required: [true, "Street address is required"] },
-//         city: { type: String, required: [true, "City is required"] },
-
-//         state: { type: String, required: [true, "Please select a state"] },
-//         zip: {
-//             type: String,
-//             validate: {
-//                 validator: function(v) {
-//                     return /\d{5}/.test(v);
-//                 },
-//                 message: "Please enter zip code as xxxxx"
-//             },
-//             required: [true, "Zip code is required"]
-//         },
-
-//     },
-
-//     phoneNumber: {
-//         type: String,
-//         validate: {
-//             validator: function(v) {
-//                 return /\d{3}-\d{3}-\d{4}/.test(v);
-//             },
-//             message: "Please enter phone number as xxx-xxx-xxxx"
-//         },
-//         required: [false]
-//     },
-
-//     dateAdded: { type: Date, required: [true, "Date is required"] },
-//     HLAType: { type: String, required: [true, "HLA type is required"] },
-//     height: { type: String, required: [true, "height is required"] },
-//     weight: { type: String, required: [true, "weight is required"] },
-//     organType: { type: String, required: [true, "Please select an organ type"] },
-//     sex: { type: String, required: [true, "Please enter patient sex"] },
-//     organType: { type: String, required: [true, "Please select an organ type"] },
-//     bloodType: { type: String, required: [true, "Please select a blood type"] },
-//     organSize: { type: String, required: [true, "Please enter organ size"] },
-//     deceased: { type: String, required: [true, "Is the donor deceased?"] },
-
-// });
-
-
-// //RECIPIENT SCHEMA
-
-
-// //ON_WAITLIST SCHEMA
-// var waitlistSchema = new Schema({
-
-//     dateAdded: { type: Date },
-//     priority: { type: Number },
-// });
-
-// //MATCHES AND WASTED ORGAN SCHEMA
-// var matchesAndWastedSchema = new Schema({
-//     _id: {
-//         type: Date
-//     },
-//     organs: {
-//         heart: Number,
-//         kidney: Number,
-//         liver: Number,
-//         Lung: Number,
-//         pancreas: Number
-//     }
-// });
-
-// var doctorNotificationSchema = new Schema({
-//     donor: { type: String, required: true },
-//     recipient: { type: String, required: true },
-//     scores: {
-//         HLAscore: { type: Number, required: true },
-//         sizeScore: { type: Number, required: true },
-//         travelScore: { type: Number, required: true },
-//         kidneyBonus: { type: Number, required: true },
-//         pediatricBonus: { type: Number, required: true },
-//         expireScore: { type: Number, required: true },
-//         totalScore: { type: Number, required: true }
-//     },
-//     responded: { type: Boolean, default: false }
-// });
-
-var Hospital = schemas.Hospital;
+var Hospitals = schemas.Hospital;
 
 var Doctor = schemas.Doctor;
 
@@ -201,7 +54,7 @@ var Pancreas_Waitlist = schemas.Pancreas_Waitlist;
 
 var Recipients = schemas.Recipient;
 
-var Doctor_Notifications = schemas.DoctorNotifications;
+var DoctorNotifications = schemas.DoctorNotifications;
 
 var Matches = schemas.Matches;
 
@@ -213,7 +66,7 @@ var Wasted = schemas.WastedOrgans;
 //******************************
 //******************************
 
-Recipient.findOne()
+Recipients.findOne()
     .then(function(recip) {
 
         return matchingFunctions.generateMatchforRecipient(recip);
@@ -340,9 +193,7 @@ router.post('/api/authenticate', function(req, res) {
     }
 
 
-
     if (request.username && request.password) {
-        console.log(request);
 
         User.findOne({
             username: request.username
@@ -350,7 +201,6 @@ router.post('/api/authenticate', function(req, res) {
 
             //console.log(user.username);
             if (err) throw err;
-
 
             if (!user) {
                 errors.usernameError = { message: 'Authentication failed. User not found.' };
@@ -370,6 +220,7 @@ router.post('/api/authenticate', function(req, res) {
                             expiresIn: 60 * 60
                         });
 
+
                         //return message and token
                         res.json({
                             success: true,
@@ -379,12 +230,12 @@ router.post('/api/authenticate', function(req, res) {
                             userType: "admin",
                             mongo_id: user._id
                         });
-
                     } else {
 
                         var token = jwt.sign(user, app.get('doctorSecret'), {
                             expiresIn: 60 * 60
                         });
+
                         res.json({
                             success: true,
                             message: 'Doctor Login successful',
@@ -397,8 +248,11 @@ router.post('/api/authenticate', function(req, res) {
                 }
             }
         });
+    } else {
+        res.status(400).send({ success: false, errors });
     }
 });
+
 
 
 //Angular Routes
@@ -640,7 +494,7 @@ router.get("/admin/api/collection/stats/:collectionName", (req, res) => {
         });
     }
     if (cName == 'donors') {
-        Donors.collection.stats(function(err, results) {
+        Donor.collection.stats(function(err, results) {
             if (err) {
                 res.send(err);
             } else {
@@ -722,7 +576,7 @@ router.use('/doctor/', function(req, res, next) {
 });
 
 
-//ADD RECIPIENT ROUTE
+//ADD Recipients ROUTE
 router.post('/doctor/api/recipients', function(req, res) {
     //console.log(req.body);
     var request = {};
@@ -738,19 +592,19 @@ router.post('/doctor/api/recipients', function(req, res) {
 
     var errors = {};
 
-    Recipient.findOne({ ssn: request.ssn })
+    Recipients.findOne({ ssn: request.ssn })
 
     .then(function(ssn) {
         if (ssn) {
-            errors.ssnExists = "A recipient with that SSN already exists";
+            errors.ssnExists = "A Recipients with that SSN already exists";
         }
 
     }).then(function() {
 
 
-        // create a new recipient
+        // create a new Recipients
         //drop down attributes not working
-        var newRecipient = Recipient({
+        var newRecipient = Recipients({
             ssn: request.ssn,
             name: {
                 firstName: request.firstName,
@@ -788,7 +642,7 @@ router.post('/doctor/api/recipients', function(req, res) {
     }).then(function(newRecipient) {
         if (errors.validationError) {
             var error = {};
-            error.message = 'Failed to add recipient';
+            error.message = 'Failed to add Recipients';
             error.code = 400;
             error.errors = errors;
             throw error;
@@ -810,7 +664,7 @@ router.post('/doctor/api/recipients', function(req, res) {
         }
     }).then(function(waitlist) {
         console.log(waitlist);
-        res.status(201).send({ ok: true, message: 'Recipient added successfully' });
+        res.status(201).send({ ok: true, message: 'Recipients added successfully' });
     }).catch(function(err) {
         console.log(err);
         res.status(500).send({ success: false, errors });
@@ -819,7 +673,7 @@ router.post('/doctor/api/recipients', function(req, res) {
     });
 });
 
-//ADD Donors to donor list
+//ADD Donor to donor list
 router.post('/doctor/api/donors', function(req, res) {
     //console.log(req.body);
     var request = {};
@@ -948,7 +802,7 @@ router.get('/doctor/api/doctors', function(req, res) {
 
 
 router.get('/doctor/api/donors', function(req, res) {
-    Donors.find(function(err, data) {
+    Donor.find(function(err, data) {
         if (err)
 
             res.send(err);
@@ -973,12 +827,12 @@ router.get('/doctor/api/view-patients/:doctor_id', function(req, res) {
     var recipientPatients = [];
     var patient_ids = [];
 
-    Doctors.findOne({ _id: req.params.doctor_id })
+    Doctor.findOne({ _id: req.params.doctor_id })
         .then(function(doctor) {
             patient_ids = doctor.patients;
             return patient_ids;
         }).then(function(patient_ids) {
-            return Donors.find({ _id: { $in: patient_ids } }).then(function(donors) { return donors; });
+            return Donor.find({ _id: { $in: patient_ids } }).then(function(donors) { return donors; });
 
         }).then(function(donors) {
             if (donors) {
@@ -1005,7 +859,7 @@ router.get('/doctor/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, r
     if (organType == "all") {
         if (start_date == undefined || end_date == undefined) {
 
-            Donors.find((err, data) => {
+            Donor.find((err, data) => {
                 if (err)
                     res.send(err)
                 else {
@@ -1015,7 +869,7 @@ router.get('/doctor/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, r
                 }
             })
         } else {
-            Donors.find({ "created_on": { "$gte": start_date, "$lte": end_date } }, (err, data) => {
+            Donor.find({ "created_on": { "$gte": start_date, "$lte": end_date } }, (err, data) => {
                 if (err)
                     res.send(err)
                 else
@@ -1024,7 +878,7 @@ router.get('/doctor/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, r
         }
     } else {
         if (start_date == undefined || end_date == undefined) {
-            Donors.find({
+            Donor.find({
                     "organType": organType
                 },
                 (err, data) => {
@@ -1036,7 +890,7 @@ router.get('/doctor/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, r
                     }
                 })
         } else {
-            Donors.find({ dateAdded: { "$gte": start_date, "$lt": end_date }, "organType": organType }, (err, data) => {
+            Donor.find({ dateAdded: { "$gte": start_date, "$lt": end_date }, "organType": organType }, (err, data) => {
                 if (err)
                     res.send(err)
                 else {
@@ -1223,7 +1077,7 @@ router.get("/doctor/api/recipentsByID/:id", (req, res) => {
 });
 
 
-router.post('/doctor/api/view-recipient-donor-info', function(req, res) {
+router.post('/doctor/api/view-Recipients-donor-info', function(req, res) {
     var request = {};
     var response = {};
     // if req.body is empty (form is empty), use query parameters 
@@ -1238,9 +1092,9 @@ router.post('/doctor/api/view-recipient-donor-info', function(req, res) {
 
     console.log(request);
 
-    Recipient.findOne({ "_id": ObjectId(request.recipient_id) })
-        .then(function(recipient) {
-            response.recipient = recipient;
+    Recipients.findOne({ "_id": ObjectId(request.recipient_id) })
+        .then(function(Recipients) {
+            response.Recipients = Recipients;
 
             return Donor.findOne({ "_id": ObjectId(request.donor_id) });
         }).then(function(donorInfo) {

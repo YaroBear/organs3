@@ -1,82 +1,6 @@
 var statistics = angular.module("statistics", []);
-statistics.factory("RecipentsService", ["$q", "$http", "$rootScope", "$timeout", function($q, $http, $rootScope) {
 
-    var RecipentsService = {
-        getUsers: function(organ, token) {
-            var defer = $q.defer();
-            return $http({
-                method: "GET",
-                headers: { "x-access-token": token },
-                url: '/doctor/api/recipents/waitlist/' + organ
-
-            }).then(function(res) {
-                var x = new Array();
-                for (var d in res.data) {
-
-                    $http({
-                        method: "GET",
-                        headers: { "x-access-token": token },
-
-                        url: '/doctor/api/recipentsByID/' + res.data[d]._id
-
-                    }).then(function(response) {
-                        if (response.data != null) {
-                            response.data.priority = res.data[d].priority;
-                            x.push(response.data);
-                        }
-
-                    });
-
-
-                }
-                setTimeout(function() {
-                    output = x
-                    defer.resolve(output);
-                }, 500);
-                return defer.promise;
-
-            });
-        },
-        getUsersByDate: function(organ, start_date, end_date, token) {
-            var defer = $q.defer();
-            return $http({
-                method: "GET",
-                headers: { "x-access-token": token },
-                url: '/doctor/api/recipents/waitlist/' + organ + "/" + start_date + "/" + end_date
-
-            }).then(function(res) {
-                var x = new Array();
-                for (var d in res.data) {
-
-                    $http({
-                        method: "GET",
-                        headers: { "x-access-token": token },
-                        url: '/doctor/api/recipentsByID/' + res.data[d]._id
-
-                    }).then(function(response) {
-                        if (response.data != null) {
-                            response.data.priority = res.data[d].priority;
-                            x.push(response.data);
-                        }
-
-                    });
-
-
-                }
-                setTimeout(function() {
-                    output = x
-                    defer.resolve(output);
-                }, 500);
-                return defer.promise;
-
-            });
-        }
-
-    };
-    return RecipentsService;
-}])
-
-statistics.controller("statisticsController", function statisticsController($scope, $q, $http, $log, RecipentsService) {
+statistics.controller("statisticsController", function statisticsController($scope, $q, $http, $log) {
 
     $scope.generateChart = function(report) {
         var token = localStorage.getItem("token");
@@ -146,19 +70,23 @@ statistics.controller("statisticsController", function statisticsController($sco
                 });
             }
             if (reportType == "recipients_WL") {
-                $scope.recipents = RecipentsService;
 
-                $q.when($scope.recipents.getUsersByDate(organ, start_date, end_date, token).then(function(data) {
-                    $scope.recipents.data = data;
+                $http({
+                    method: "GET",
+                    headers: { "x-access-token": token },
+                    url: '/doctor/api/recipents/waitlist/' + organ + "/" + start_date + "/" + end_date
+
+                }).then(function(res) {
+                    console.log(res);
+                    $scope.recipents = res.data;
 
                     var xaxis = [];
                     var yaxis = [];
                     var text_hover = [];
 
-                    for (var x in data) {
-                        xaxis.push(data[x].dateAdded);
-                        yaxis.push(data[x].priority);
-                        text_hover.push(data[x].urgency);
+                    for (var x in $scope.recipents) {
+                        xaxis.push($scope.recipents[x].dateAdded);
+                        yaxis.push($scope.recipents[x].priority);
 
                     }
 
@@ -174,7 +102,6 @@ statistics.controller("statisticsController", function statisticsController($sco
                         marker: { size: 12 }
                     };
                     var data = [trace];
-                    var title = "Total number on wait list in date range: " + data.length;
 
                     var layout = {
                         xaxis: {
@@ -190,7 +117,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     if (xaxis.length > 0 && yaxis.length > 0)
                         Plotly.newPlot('plot', data, layout);
 
-                }));
+                });
 
             }
             if (reportType == "people_matched") {
@@ -335,17 +262,21 @@ statistics.controller("statisticsController", function statisticsController($sco
             }
             if (reportType == "recipients_WL") {
                 $scope.recipents = RecipentsService;
-                $q.when($scope.recipents.getUsers(organ, token).then(function(data) {
-                    $scope.recipents.data = data;
+                $http({
+                    method: "GET",
+                    headers: { "x-access-token": token },
+                    url: '/doctor/api/recipents/waitlist/' + organ
+
+                }).then(function(res) {
+                    $scope.recipents.data = res.data;
 
                     var xaxis = [];
                     var yaxis = [];
                     var text_hover = [];
 
-                    for (var x in data) {
-                        xaxis.push(data[x].dateAdded);
-                        yaxis.push(data[x].priority);
-                        text_hover.push(data[x].urgency);
+                    for (var x in $scope.recipents.data) {
+                        xaxis.push($scope.recipents.data[x].dateAdded);
+                        yaxis.push($scope.recipents.data[x].priority);
 
                     }
 
@@ -360,7 +291,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                         text: text_hover,
                         marker: { size: 12 }
                     };
-                    var title = "Total number on wait list: " + data.length;
+                    var title = "Total number on wait list: " + $scope.recipents.data.length;
                     var layout = {
                         xaxis: {
                             title: 'Date Added to Wait list'
@@ -377,7 +308,7 @@ statistics.controller("statisticsController", function statisticsController($sco
                     if (xaxis.length > 0 && yaxis.length > 0)
                         Plotly.newPlot('plot', data, layout);
 
-                }));
+                });
 
             }
             if (reportType == 'people_matched') {
