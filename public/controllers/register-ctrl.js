@@ -29,6 +29,11 @@ var register = angular.module('register', [])
 			console.log(serverResponse);
 			$scope.showForm = false;
 			$scope.addedAlert = true;
+
+
+			setTimeout(function(){
+					$window.location.href = "/";
+			},2000);
 				
 
 			})

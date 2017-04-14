@@ -1,23 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html ng-app = "index">
 	<body>
+
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+		<script src="controllers/index-ctrl.js"></script>
+
+
 		<div class="container body-content">
 			<div class="jumbotron top-banner row text-center">
 				<div class="col-xs-2">
 					<img src="images/cardiogram.svg" class="logo"></img>
 				</div>
 				<div class="col-xs-10">
-					<h1>Organ Network</h1>
+					<h1 >Organ Network</h1>
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-xs-3 col-md-2 left-banner">
-				<a class="btn btn-primary btn-lg btn-block" href="/register" role="button"><span class="glyphicon glyphicon-pencil"></span> Register</a>
 
-				<a class="btn btn-primary btn-lg btn-block" href="/authenticate" role="button"><span class="glyphicon glyphicon-cloud"></span> Login</a>
+
+
+
+			<div class="row" ng-controller="indexController">
+				<div class="col-xs-3 col-md-2 left-banner">
+					<button class="btn btn-primary btn-lg btn-block" id="loginBtn" role="button"><span class="glyphicon glyphicon-user"></span> Login</button>
+
+					<button class="btn btn-primary btn-lg btn-block" id="registerBtn" role="button"><span class="glyphicon glyphicon-pencil"></span> Register</button>
 
 				</div>
-				<div class="col-xs-9 col-md-10 body-content">
+
+
+
+
+				<div id="loginModal" class="modal">
+					<div class="modal-content">
+
+
+						<span class="loginClose">&times;</span>
+						<h3>Enter login information</h3>
+
+						<div class= "form-group">
+							<label>Username</label>
+							<input type="text" class="form-control" id ="userUsername" ng-model="formData.username" placeholder="Username">
+
+						</div>
+						<div class= "form-group">
+							<label>Password</label>
+							<input type="password" class="form-control" id ="userPassword" ng-model="formData.password" placeholder="Password">
+
+						</div>
+
+						<button class="btn btn-primary btn-sm pull-right"  type="submit" ng-click="authenticateUser()">Submit</button>
+
+						<div ng-show="loginSuccess">
+							<h2 style="color:red">Welcome back {{userFullName}}!</h2>
+						</div>
+						<div ng-show="loginFailed">
+							<h2 style="color:red">Authentication Failed</h2>
+						</div>
+
+					</div>
+				</div>
+
+				<div id="registerModal" class="modal">
+					<div class="modal-content">
+						<span class="registerClose">&times;</span>
+						<h3>Enter information</h3>
+						<div class= "form-group">
+							<label for="newDoctorSSN">SSN</label>
+							<input type="text" class="form-control" id ="newDoctorSSN" ng-model="formData.SSN" placeholder="xxx-xx-xxxx">
+							<p class="error">{{ssnError}}</p>
+						</div>
+						<div class= "form-group">
+							<label>Name</label>
+							<input type="text" class="form-control" id ="newDoctorName" ng-model="formData.name" placeholder="Enter name">
+							<p class="error">{{nameError}}</p>
+						</div>
+						<div class= "form-group">
+							<label>Username</label>
+							<input type="text" class="form-control" id ="newDoctorUsername" ng-model="formData.username" placeholder="Desired Username">
+							<p class="error">{{usernameError}}</p>
+						</div>
+						<div class= "form-group">
+							<label>Password</label>
+							<input type="password" class="form-control" id ="newDoctorPassword" ng-model="formData.password" placeholder="Desired Password">
+							<p class="error">{{passwordError}}</p>
+						</div>
+						<div class= "form-group">
+							<label>Hospital</label>
+							<select class="form-control" ng-model="formData.selectedHospital" ng-options="hospital.name for hospital in hospitals | orderBy:'name'">
+							</select>
+							<p>{{hospital}}</p>
+						</div>
+						<div class= "form-group">
+							<label for="permissionCode">Permission Code</label>
+							<input type="password" class="form-control" id ="permissionCode" ng-model="formData.code" placeholder="">
+							<p class="error">{{permCodeError}}</p>
+						</div>
+						<button class="btn btn-primary btn-sm pull-right"  type="submit" ng-click="addUser()">Submit</button>
+
+						<div ng-show="addedAlert">
+							<h2 style="color:red">User Added Successfully!</h2>
+						</div>
+
+					</div>
+				</div>
+
+				<script>
+				// Get the modal
+				var loginModal = document.getElementById('loginModal');
+				var registerModal = document.getElementById('registerModal');
+
+				// Get the button that opens the modal
+				var loginButton = document.getElementById("loginBtn");
+				var registerButton = document.getElementById("registerBtn");
+
+				// Get the <span> element that closes the modal
+				var loginSpan = document.getElementsByClassName("loginClose")[0];
+				var registerSpan = document.getElementsByClassName("registerClose")[0];
+
+				// When the user clicks the button, open the modal 
+				loginButton.onclick = function() {
+				    loginModal.style.display = "block";
+				}
+				registerButton.onclick = function() {
+				    registerModal.style.display = "block";
+				}
+
+				// When the user clicks on <span> (x), close the modal
+				loginSpan.onclick = function() {
+				    loginModal.style.display = "none";
+				}
+				registerSpan.onclick = function() {
+				    registerModal.style.display = "none";
+				}
+
+				// When the user clicks anywhere outside of the modal, close it
+				window.onclick = function(event) {
+				    if (event.target == loginModal) {
+				        loginModal.style.display = "none";
+				    }
+				    else if (event.target == registerModal) {
+				        registerModal.style.display = "none";
+				    }
+				}
+				</script>
+
+<!-- 				<script>
+				// Get the modal
+				var modal = document.getElementById('registerModal');
+
+				// Get the button that opens the modal
+				var btn = document.getElementById("registerBtn");
+
+				// Get the <span> element that closes the modal
+				var span = document.getElementsByClassName("close")[0];
+
+				// When the user clicks the button, open the modal 
+				btn.onclick = function() {
+				    modal.style.display = "block";
+				}
+
+				// When the user clicks on <span> (x), close the modal
+				span.onclick = function() {
+				    modal.style.display = "none";
+				}
+
+				// When the user clicks anywhere outside of the modal, close it
+				window.onclick = function(event) {
+				    if (event.target == modal) {
+				        modal.style.display = "none";
+				    }
+				}
+				</script> -->
+
+
+
+
+				<div id="frontPageInfo" class="col-xs-9 col-md-10 body-content">
 					<div>
 						<iframe width="560" height="315" src="https://www.youtube.com/embed/YVer3lUv6HQ" frameborder="0" allowfullscreen></iframe>
 					</div>
@@ -40,11 +202,7 @@
 			</div>
 		</div>
 
-		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
-		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
+
 
 	</body>
 </html>
