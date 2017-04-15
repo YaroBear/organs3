@@ -1,18 +1,40 @@
-body {
-	background-color: #74828F;
+html, body {
+	height:100%;
 }
 
 .logo {
 	display: block;
+	height:100%;
 }
 
 .body-content {
-	background-color: #96C0CE;
+	background-color: #f9f9f9;
 }
 
 
 .top-banner {
-	background-color: #B88EB9;
+/*	background-color: #99e6ff;*/
+	background: url('../images/banner.jpg');
+	background-size: 100%;
+	opacity:0.9;
+
+}
+
+.top-banner p{
+	padding-top:40px;
+	padding-left:100px;
+	color: #FFFFFF;
+	font-family: "Quicksand",  sans-serif;
+	font-size:500%;
+	letter-spacing: 7px;
+	height:50%;
+	float: left;
+}
+
+#heartImg img{
+	padding-left:60px;
+	padding-top:40px;
+	padding-bottom:20px;
 }
 
 .body-text {
@@ -29,7 +51,10 @@ body {
 }
 
 
-
+/*h1{
+	padding-top:50px;
+	font-size:500%;
+}*/
 	
 /* The Modal (background) */
 .modal {
@@ -82,16 +107,20 @@ body {
 }
 
 #sidebar{
-
+	background-color: #e8e8e8;
 	  float:left;
       width:250px;
-      padding-left: 40px;
-      padding-bottom: 30px;
+      padding-left: 30px;
+      padding-bottom:40%;
       padding-top: 30px;
-
-/*      background-color:#cfc;
-      padding-bottom:9999px;
-      margin-bottom:-9999px;*/
+}
+#sidebarAbout{
+	background-color: #e8e8e8;
+	  float:left;
+      width:250px;
+      padding-left: 30px;
+      padding-bottom:100%;
+      padding-top: 30px;
 }
 /*#sidebarBtn{
 	background: #4CAF50;
@@ -101,30 +130,71 @@ body {
 #mainPanel{
 	padding-top: 30px;
 }
+#frontPageInfo{
+	width:50%;
+	padding-bottom: 30px;
+}
+#about{
+	padding-top:15px;
+	padding-left: 30px;
+}
 
-.btn-primary{
-/*	padding:15px 24px;
-	border: 1px solid green; 
-	background: #4CAF50;*/
+
+#organDonation{
+	padding-top: 30px;
+	padding-left: 30px;
+
+
+	text-align:left;
+}
+
+
+
+#organDonation.p{
+
+	text-align:left;
+}
+
+#organFacts{
+	padding-top: 30px;
+
+	font-size: 1.5em;
+
+}
+
+
+
+
+.btn-primary {
+	padding:15px 24px;
+	border: 1px #4286f4; 
+	background: #91A8D0;
+    color: #ffffff;
+}
+.btn-primary:hover {
+	padding:15px 24px;
+	border: 1px #4286f4; 
+	background: #4ba4d8;
     color: #ffffff;
 }
 
-.btn-group button {
-	background-color: #4CAF50; /* Green background */
-	border: 1px solid green; /* Green border */
-	color: white; /* White text */
-	padding: 15px 24px; /* Some padding */
-	cursor: pointer; /* Pointer/hand icon */
-	width: 50%; /* Set a width if needed */
-	display: block; /* Make the buttons appear below each other */
+
+/*.btn-group button {
+	background-color: #4CAF50; 
+	border: 1px solid green; 
+	color: white; 
+	padding: 15px 24px; 
+	cursor: pointer; 
+	width: 50%; 
+	display: block; 
 }
 .btn-group button:not(:last-child) {
-	border-bottom: none; /* Prevent double borders */
+	border-bottom: none; 
 }
-/* Add a background color on hover */
+
 .btn-group button:hover {
-	//background-color: #3e8e41;
-}
+	background-color: #3e8e41;
+}*/
 .btnsize{
 	width:225px !important; //!important forces it
 }

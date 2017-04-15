@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app = "index">
+<html ng-app = "about">
 	<body>
 
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
@@ -7,9 +7,10 @@
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
 		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
-		<script src="controllers/index-ctrl.js"></script>
+		<script src="controllers/about-ctrl.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Quicksand">
 		<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Secular+One">
+
 
 		<div class="body-content" >
 			<div class="top-banner row text-center">
@@ -24,15 +25,15 @@
 
 
 
-			<div class="row" ng-controller="indexController">
-				<div id="sidebar" class="col-xs-3 col-md-2 left-banner">
-					<a class="btn btn-primary btn-lg btn-block" on-click="/" role="button"><span class="glyphicon glyphicon-user"></span> Home</a>
+			<div class="row" ng-controller="aboutController">
+				<div id="sidebarAbout" class="col-xs-3 col-md-2 left-banner">
+				<a class="btn btn-primary btn-lg btn-block" href="/" role="button"><span class="glyphicon glyphicon-user"></span> Home</a>
 
 					<button class="btn btn-primary btn-lg btn-block" id="loginBtn" role="button"><span class="glyphicon glyphicon-user"></span> Login</button>
 
 					<button class="btn btn-primary btn-lg btn-block" id="registerBtn" role="button"><span class="glyphicon glyphicon-pencil"></span> Register</button>
 
-
+					
 
 				</div>
 
@@ -164,36 +165,46 @@
 				</script>
 
 
-				<div id="frontPageInfo" class="col-xs-7 col-md-8 body-content">
+				<div class="col-xs-5 col-md-6 body-content">
+					<div id="about">
+						<h2>Our matching process</h2>
+						<div class="body-text">
+								<ul>
+									<li style="text-align: justify;">Initially, patients are entered into the system and added to the list.  Waitlist priority is determined by the medical urgency of the patient as well as any prior time spent waiting on the list.  Financial or celebrity status have no effect a patient's priority.</li>
+									<br>
+									<div>
+										<iframe width="700" height="400" src="https://www.youtube.com/embed/f4bW9exS6vY" frameborder="0" allowfullscreen></iframe>
+									</div>
+									<br>
+									<li>Our system matches patients with candidate donors based on specific criteria to produce the best match, including:</li>
+										<ol style="font-weight:bold">
+											<li>Blood type</li>
+											<li>HLA type</li>
+											<li>Organ size</li>
+											<li>Organ age</li>
+											<li>Distance</li>
+										</ol>
+										<br>
+									<p style="text-align: justify;">Blood type and HLA type are very important for ensuring graft success.  While blood typing is fairly straight forward, HLA typing is much more complex.
+									HLA testing involves determining the types of antigens present for each HLA class, HLA-A, HLA-B, HLA-DR.  There are many different antigens possible for each type.  Matches are made by determining if any of the donors antigens are of a type that would be mismatched with the recipient.  Fewer mismatches means improved engraftment thereby reducing the risk of graft versus host disease.  Our system places greater emphasis on closely matched HLA types.
+									<br><br>
+									<div>
+									
+										<iframe width="700" height="400" src="https://www.youtube.com/embed/YVer3lUv6HQ" frameborder="0" allowfullscreen></iframe>
+									</div>
+									<br><br>
+									<p style="text-align: justify;">Organ size and organ age are very important for matching as well.  People come in all shapes and sizes, our system ensures that patients are matched to a donor organ that is similar in size to their own.  Organ age is important because transplants with fresher organs have been shown to have better outcomes.  Organ age is also the primary limitation when it comes to transportation.  Organs expire in a matter of hours, making cross country travel infeasible.  Because of the connection between organ age and travel distance, our system assigns higher scores to donor organs that are located closer to the recipient.
+									<br><br>Additional criteria that can increase the match score are the patient's or donor's pediatric status and, in the case of a kidney donation, the donor's living status.</p>
+									</p>
+									<br>
 
-				<div id="organDonation">
-					<p style="font-size:445%; color: #595959;">ORGAN DONATION</p>
-					<p style="font-family: 'Secular One';font-size:730%; font-weight: bolder; color: #5ec0ed; margin-top:-30px">SAVES LIVES</p>
-				</div>
+									<br>
+									<li style="text-align: justify;">Patients work directly with their doctors upon registration. Docotrs are able to check a patient's waitlist status and review potential matches, before informing patients of the best course of action.  </li>
+								</ul>
 
-
-				<div style="padding-left:35px;">
-						<iframe width="565" height="310" src="https://www.youtube.com/embed/HuKx2a5HkIM" frameborder="0" allowfullscreen></iframe>
-						<br>
-
-				</div>
-				<div id="organFacts">
-						<ul>
-						<br>
-							<li>One organ donor can save as many as 8 lives.</li>
-							<li>Matches are made based on blood type, tissue type, organ size, <br>medical urgnecy,waiting time, and location.</li>
-							<li>Celebrity or financial status are not factors in the process.</li>
-							<li>Healthy people can become living donors of many organ types.</li>
-							<li>A person can become a donor at any age.</li>
-						</ul>
-
-				</div>
-				<div style="padding-right:20%">
-					<a class="btn btn-primary btn-lg pull-right" href="/about" role="button">Learn more</a>
-				</div>
-
-
-
+						</div>
+					</div>
+					<br>
 
 				</div>
 			</div>
