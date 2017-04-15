@@ -292,16 +292,21 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
+/* GET home page. */
+router.get('/about', function(req, res, next) {
+  res.render('about');
+});
+
 /* GET register page. */
-router.get('/register', function(req, res, next) {
-  res.render('register');
-});
+// router.get('/register', function(req, res, next) {
+//   res.render('register');
+// });
 
 
-/* GET login page. */
-router.get('/authenticate', function(req, res, next) {
-  res.render('authenticate');
-});
+//  GET login page. 
+// router.get('/authenticate', function(req, res, next) {
+//   res.render('authenticate');
+// });
 
 
 
