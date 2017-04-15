@@ -469,7 +469,7 @@ router.get("/admin/api/collection/stats/:collectionName", (req, res) => {
     }
 
     if (cName == 'doctor_notifications') {
-        Doctor_Notifications.collection.stats(function(err, results) {
+        DoctorNotifications.collection.stats(function(err, results) {
             if (err) {
                 res.send(err);
             } else {
@@ -478,8 +478,6 @@ router.get("/admin/api/collection/stats/:collectionName", (req, res) => {
         });
     }
     if (cName == 'users') {
-        var User = mongoose.model('users', userSchema);
-
         User.collection.stats(function(err, results) {
             if (err) {
                 res.send(err);
@@ -1053,7 +1051,7 @@ router.get('/doctor/api/donors/waitlist/:organ/:start_date?/:end_date?', (req, r
 
 });
 
-router.get('/doctor/api/recipents/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
+router.get('/doctor/api/recipients/waitlist/:organ/:start_date?/:end_date?', (req, res) => {
     var organ = req.params.organ;
     var start_date = req.params.start_date;
     var end_date = req.params.end_date;

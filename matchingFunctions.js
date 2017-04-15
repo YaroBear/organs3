@@ -62,23 +62,32 @@ var addRecipientToWaitlist = function(recipient) {
 
     if (recipient.organType == "Heart")
     {
-        waitlist = mongoose.model('heart_waitlists', waitlistSchema);
+        // waitlist = mongoose.model('heart_waitlists', waitlistSchema);
+        waitlist = schemas.Heart_Waitlist;
     }
     else if (recipient.organType == "Liver")
     {
-        waitlist = mongoose.model('liver_waitlists', waitlistSchema);
+        //waitlist = mongoose.model('liver_waitlists', waitlistSchema);
+        waitlist = schemas.Liver_Waitlist;
+
     }
     else if (recipient.organType == "Lung")
     {
-        waitlist = mongoose.model('lung_waitlists', waitlistSchema);
+        //waitlist = mongoose.model('lung_waitlists', waitlistSchema);
+        waitlist = schemas.Lung_Waitlist;
+
     }
     else if (recipient.organType == "Pancreas")
     {
-        waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
+        //waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
+        waitlist = schemas.Pancreas_Waitlist;
+
     }
     else if (recipient.organType == "Kidney")
     {
-        waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
+        //waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
+        waitlist = schemas.Kidney_Waitlist;
+
     }
 
     var priority = calculatePriority(recipient);
@@ -399,23 +408,28 @@ var generateMatchforDonor = function(donor) {
     var waitlist = {};
     if (donor.organType == "Heart")
     {
-        waitlist = mongoose.model('heart_waitlists', waitlistSchema);
+        // waitlist = mongoose.model('heart_waitlists', waitlistSchema);
+        waitlist = schemas.Heart_Waitlist;
     }
     else if (donor.organType == "Liver")
     {
-        waitlist = mongoose.model('liver_waitlists', waitlistSchema);
+        //waitlist = mongoose.model('liver_waitlists', waitlistSchema);
+        waitlist = schemas.Liver_Waitlist;
     }
     else if (donor.organType == "Lung")
     {
-        waitlist = mongoose.model('lung_waitlists', waitlistSchema);
+        //waitlist = mongoose.model('lung_waitlists', waitlistSchema);
+        waitlist = schemas.Lung_Waitlist;
     }
     else if (donor.organType == "Pancreas")
     {
-        waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
+        //waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
+        waitlist = schemas.Heart_Waitlist;
     }
     else if (donor.organType == "Kidney")
     {
-        waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
+        //waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
+        waitlist = schemas.Heart_Waitlist;
     }
 
     waitlist.find().sort({"priority" : -1}).exec(function(err, sortedList){
