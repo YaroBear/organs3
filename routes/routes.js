@@ -29,6 +29,8 @@ var User = schemas.User;
 
 var DoctorNotifications = schemas.DoctorNotifications;
 
+var Match = schemas.Matches;
+
 cron.schedule('* * * * *', function(){
   console.log('Running organ expiration checks every minute');
 
@@ -673,6 +675,37 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res){
 		});
 });
 
+router.post('/doctor/api/respond-to-match/', function(req, res){
+	var request = req.body;
+
+	console.log(request);
+	res.status(201).send("Acknowledged");
+
+	if (request.choice == "accept")
+	{
+		var today = new Date();
+
+    	Match.findOne({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)})
+    		.then(function(date){
+    			if (date == null)
+    			{
+    				var newMatchDoc = new Match({
+                        _id: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0 ,0),
+                        organs: {
+                            heart: 0,
+                            kidney: 0,
+                            liver: 0,
+                            lung: 0,
+                            pancreas: 0
+                        }
+                    });
+                    return newMatchDoc.save();
+    			}
+    		}).then(function(match){
+
+    		});
+	}
+});
 
 router.get('/doctor/api/doctors', function(req, res) {
     Doctor.find(function(err, data){

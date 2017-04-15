@@ -4,7 +4,8 @@ var doctor = angular.module('doctor', [])
 		var token = localStorage.getItem("token");
 
 
-
+		var matchedRecipient;
+		var matchedDonor;
 
 		
 		$scope.doctorName = localStorage.getItem("user");
@@ -60,6 +61,8 @@ var doctor = angular.module('doctor', [])
 				var request = {};
 				request.recipient_id = serverResponse.notification.recipient;
 				request.donor_id = serverResponse.notification.donor;
+				matchedDonor = serverResponse.notification.donor;;
+				matchedRecipient = serverResponse.notification.recipient;
 				$http({
 					method: "POST",
 					url : '/doctor/api/view-recipient-donor-info/',
@@ -110,6 +113,23 @@ var doctor = angular.module('doctor', [])
 
 			});
 
+		};
+
+		$scope.decideMatch = function(choice) {
+			var data = {};
+			data.choice = choice;
+			data.recipientId = matchedRecipient;
+			data.donorId = matchedDonor;
+			$http({
+				method: "POST",
+				url : '/doctor/api/respond-to-match/',
+				headers: {"x-access-token": token},
+				data : data
+			}).success(function(serverResponse){
+				console.log(serverResponse);
+			}).error(function(err){
+				console.log("Error:", err);
+			});
 		};
 
 		$scope.viewDonors = function() {

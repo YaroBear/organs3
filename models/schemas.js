@@ -40,6 +40,17 @@ var wastedOrgansSchema = new Schema({
     }
 });
 
+var matchesSchema = new Schema({
+    _id: Date,
+    organs: {
+        heart: Number,
+        kidney: Number,
+        liver: Number,
+        lung: Number,
+        pancreas: Number
+    }
+});
+
 var doctorSchema = new Schema({
     name : {
         type: String,
@@ -267,3 +278,5 @@ exports.User = mongoose.model('users', userSchema);
 exports.DoctorNotifications = mongoose.model('doctor_notifications', doctorNotificationSchema);
 
 exports.WastedOrgans = mongoose.model('wasted_organs', wastedOrgansSchema);
+
+exports.Matches = mongoose.model('matches', matchesSchema);

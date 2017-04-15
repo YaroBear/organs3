@@ -454,6 +454,9 @@ var notifyRecipientDoctor = function(scoresArray) {
 
     var winner = sortedScoresArray[0];
 
+    var organType = winner.organType;
+
+
     if (winner && winner.totalScore > 60)
     {
         DoctorNotifications.findOne({"_id": ObjectId(winner.doctor)})
