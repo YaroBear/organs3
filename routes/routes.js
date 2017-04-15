@@ -12,13 +12,7 @@ var cron = require("node-cron");
 //plotly 
 var plotly = require('plotly')("hasnainbilgrami", "Tp0ci7oUZdLrQ5Dg3AdZ")
 
-
-
-var plotly = require('plotly')("hasnainbilgrami", "Tp0ci7oUZdLrQ5Dg3AdZ")
-
-
 var mongoose = require('mongoose');
-
 
 var ObjectId = require('mongoose').Types.ObjectId;
 mongoose.Promise = Promise;
@@ -869,10 +863,8 @@ router.post('/doctor/api/donors', function(req, res) {
 });
 
 router.get('/doctor/api/hospital-info/:doctor_id', function(req, res) {
-    console.log(req.params.doctor_id);
     Hospital.findOne({ "doctors": { "_id": ObjectId(req.params.doctor_id) } })
         .then(function(hospital) {
-            console.log(hospital);
             if (hospital) {
                 res.status(201).send({ success: true, hospital: hospital });
             } else {
@@ -883,8 +875,9 @@ router.get('/doctor/api/hospital-info/:doctor_id', function(req, res) {
         });
 });
 
-router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
 
+
+router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
     var donorOldScores;
     DoctorNotifications.findOne({ "_id": ObjectId(req.params.doctor_id) })
         .then(function(notification) {
@@ -893,14 +886,15 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
                 return Donor.findOne({ "_id": ObjectId(notification.donor) });
             }
         }).then(function(donor) {
-            if (donor) {
-                console.log(donor);
+            if (donor != null) {
                 var newExpireScore = matchingFunctions.getOrganTimeScore(donor);
                 var oldExpireScore = donorOldScores.expireScore;
                 var oldTotalScore = donorOldScores.totalScore;
                 var newTotalScore = (oldTotalScore - oldExpireScore) + newExpireScore;
 
-                if (newExpireScore > 0 && newTotalScore >= 60) {
+                if (newExpireScore > 0 && newTotalScore >= 60) 
+                {
+                	console.log("Updating doctor notifcation");
                     return DoctorNotifications.update({ "_id": ObjectId(req.params.doctor_id) }, {
                         $set: {
                             "scores.expireScore": newExpireScore,
@@ -908,13 +902,20 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
                             "createdAt": new Date()
                         }
                     });
-                } else {
-                    DoctorNotifications.delete({ "_id": ObjectId(req.params.doctor_id) });
-                    res.status(201).send({ success: true, hasNotification: false });
-                }
+                } 
+            }
+            else 
+            {
+            	console.log("Removing doctor notification");
+                DoctorNotifications.remove({ "_id": ObjectId(req.params.doctor_id) }, function(err, update){
+                	if (update)
+                	{
+                		res.status(201).send({ success: true, hasNotification: false });
+                	}
+                });
             }
         }).then(function(update) {
-            console.log(update);
+        	console.log(update);
             if (update) {
                 return DoctorNotifications.findOne({ "_id": ObjectId(req.params.doctor_id) });
             }

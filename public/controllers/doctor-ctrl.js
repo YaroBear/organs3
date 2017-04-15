@@ -61,6 +61,7 @@ var doctor = angular.module('doctor', [])
         url: '/doctor/api/doctor-notification/' + doctor_id,
         headers: { "x-access-token": token }
     }).success(function(serverResponse) {
+        console.log(serverResponse);
 
         if (serverResponse.hasNotification) {
             $scope.matchFound = true;
