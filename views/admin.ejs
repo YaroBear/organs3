@@ -135,9 +135,9 @@
 									<table class="tableBorder">
 									<tr class="tableBorder">
 									   <th class="tableBorder">
-									   		<button class="btn btn-primary btn-lg btn-success btnsize2" ng-confirm-click="test" ng-click="loadHospList()">Refresh List</button>
+									   		<button class="btn btn-success btn-lg btn-success btnsize2" ng-confirm-click="test" ng-click="loadHospList()"><font class="fnt" size="3"><span class="glyphicon glyphicon-refresh"></span>Refresh</font></button>
 									   </th>
-									   <th class="tableBorder">Name</th>
+									   <th class="tableBorder">Hospital Name</th>
 									   <th class="tableBorder">Phone</th>
 									   <th class="tableBorder">Street</th>
 									   <th class="tableBorder">City</th>
@@ -149,10 +149,10 @@
 									</tr>
 									<tr class="tableBorder" ng-repeat="hosp in hospitals">
 									   <td class="tableBorder">
-							                <button ng-hide="hosp.delete" class="btn btn-danger btnsize2" ng-click="deletePrompt(hosp)"> <font class="fnt" size="2">Delete</font></button>
-							                <div class="tile_div" ng-show="hosp.delete">
-							                    <button  class="btn btn-danger btnsize3" ng-click="confirmDelete(hosp)"> <font class="fnt" size="1">Confirm Delete</font></button>
-							                    <button  class="btn btn-primary btnsize3" ng-click="dontDelete(hosp)"> <font class="fnt" size="1">Cancel</font></button>
+							                <button ng-hide="hosp.delete" class="btn btn-danger btnsize2" ng-click="deletePrompt(hosp)"> <font class="fnt" size="2"><span class="glyphicon glyphicon-trash"></span>Delete</font></button>
+							                <div id="tile_div" ng-show="hosp.delete">
+							                    <button  class="btn btn-danger btnsize3" ng-click="confirmDelete(hosp)"> <font class="fnt" size="1"><span class="glyphicon glyphicon-trash"></span>Confirm Delete</font></button>
+							                    <button  class="btn btn-info btnsize3" ng-click="dontDelete(hosp)"> <font class="fnt" size="1"><span class="glyphicon glyphicon-remove"></span>Cancel</font></button>
 							                </div>
 							            </td>
 							            <td class="tableBorder">{{hosp.name}}</td>

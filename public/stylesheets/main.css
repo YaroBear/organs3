@@ -51,10 +51,6 @@ html, body {
 }
 
 
-/*h1{
-	padding-top:50px;
-	font-size:500%;
-}*/
 	
 /* The Modal (background) */
 .modal {
@@ -122,10 +118,6 @@ html, body {
       padding-bottom:100%;
       padding-top: 30px;
 }
-/*#sidebarBtn{
-	background: #4CAF50;
-    color: #ffffff;
-}*/
 
 #mainPanel{
 	padding-top: 30px;
@@ -179,34 +171,34 @@ html, body {
   -color: #4286f4 !important;
 }
 
+
+.btn-info {
+/*	padding:15px 24px;
+	border: 1px #4286f4; */
+	background: #91A8D0;
+    color: #ffffff;
+}
+.btn-info:hover {
+	background: #4ba4d8;
+}
+.btn-info:active, .btn-info:focus {
+  background-color: #4ba4d8 !important;
+  -color: #4286f4 !important;
+}
+
 .panel-primary > .panel-heading{
 	background-color: #4ba4d8
 }
 
-/*.btn-group button {
-	background-color: #4CAF50; 
-	border: 1px solid green; 
-	color: white; 
-	padding: 15px 24px; 
-	cursor: pointer; 
-	width: 50%; 
-	display: block; 
-}
-.btn-group button:not(:last-child) {
-	border-bottom: none; 
-}
 
-.btn-group button:hover {
-	background-color: #3e8e41;
-}*/
 .btnsize{
 	width:225px !important; //!important forces it
 }
 .btnsize2{
-	width: 150px !important; //!important forces it
+	width: 100px !important; //!important forces it
 }
 .btnsize3{
-	width:100px !important; //!important forces it
+	width: 100px !important; //!important forces it
 }
 
 
@@ -221,21 +213,21 @@ html, body {
 .centered{
  	text-align: center;
 }
-.tile_div a {
+#tile_div {
 	 display: block;
 	 float: left;
-	 height: 50px;
+	 height: 70px;
 	 width: 100px;
-	 margin-right: 5px;
-	 background-image: url(./images/button_left.png);
+/*	 margin-right: 5px;*/
+	 /*background-image: url(./images/button_left.png);*/
 	 background-color: #ccc;
 	 text-align: center;
-	 line-height: 50px;
+/*	 line-height: 50px;*/
 	 text-decoration: none;
 	}
-.title_div a.last {
+/*.title_div a.last {
     margin-right: 0;
-}
+}*/
 .clear {
     clear: both;
 }
