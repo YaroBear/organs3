@@ -7,7 +7,9 @@ var jwt = require('jsonwebtoken');
 app.set('superSecret', process.env.SECRET);
 app.set('doctorSecret', process.env.DOCTOR_SECRET);
 
-var ObjectId = require('mongoose').Types.ObjectId; 
+var ObjectId = require('mongoose').Types.ObjectId;
+
+var cron = require("node-cron");
 
 
 //matching functions
@@ -27,6 +29,23 @@ var User = schemas.User;
 
 var DoctorNotifications = schemas.DoctorNotifications;
 
+cron.schedule('* * * * *', function(){
+  console.log('Running organ expiration checks every minute');
+
+  var now = new Date();
+  Donor.find().then(function(donors){
+  	for (var i = 0; i < donors.length; i++)
+  	{
+  		var timeLeft = matchingFunctions.getOrganTimeScore(donors[i]);
+
+  		if (timeLeft <= 0)
+  		{
+  			matchingFunctions.deleteDonorUpdateWastedCollection(donors[i]);
+  		}
+  	}
+  });
+});
+
 
 //******************************
 //******************************
@@ -34,7 +53,7 @@ var DoctorNotifications = schemas.DoctorNotifications;
 //******************************
 //******************************
 
-*/
+/*
 Recipient.findOne({"_id" : ObjectId("58ee78e6976b8c332c7ac2ef")})
     .then(function(recip)
     {
@@ -524,6 +543,7 @@ router.post('/doctor/api/recipients', function(req, res) {
 //ADD Donors to donor list
 router.post('/doctor/api/donors', function(req, res) {
     //console.log(req.body);
+    var genForDonor;
     var request = {};
     // if req.body is empty (form is empty), use query parameters 
     // to test API without front end via Postman or regular xmlhttprequest
@@ -573,12 +593,15 @@ router.post('/doctor/api/donors', function(req, res) {
             errors.validationError = err;
             res.status(500).send({success: false, errors});
         }).then(function(newDonor){
-            return Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}});
+            if (newDonor)
+            {   genForDonor = newDonor;
+                return Doctor.findOneAndUpdate({"_id": request.doctor_id}, {$push:{patients: newDonor._id}});
+            }
         }).then(function(newDonor){
             if (newDonor)
             {
                 res.status(201).send({ok: true, message: 'Donor added successfully'});
-                return matchingFunctions.generateMatchforDonor(newDonor);
+                return matchingFunctions.generateMatchforDonor(genForDonor);
             }
         }).catch(function(err) {
             console.log(err);
@@ -605,32 +628,45 @@ router.get('/doctor/api/hospital-info/:doctor_id', function(req, res){
 
 router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res){
 
-	var genForRecip;
+	var donorOldScores;
 	DoctorNotifications.findOne({"_id" : ObjectId(req.params.doctor_id)})
 		.then(function(notification){
 			if (notification)
 			{
-				var now = new Date();
-				if (now > notification.expiresAt)
+				donorOldScores = notification.scores;
+				return Donor.findOne({"_id" : ObjectId(notification.donor)});
+			}
+		}).then(function(donor){
+			if (donor)
+			{
+				console.log(donor);
+				var newExpireScore = matchingFunctions.getOrganTimeScore(donor);
+				var oldExpireScore = donorOldScores.expireScore;
+				var oldTotalScore = donorOldScores.totalScore;
+				var newTotalScore = (oldTotalScore - oldExpireScore) + newExpireScore;
+
+				if (newExpireScore > 0 && newTotalScore >= 60)
 				{
-					genForRecip = notification.recipient;
-					return DoctorNotifications.remove({"_id" : ObjectId(req.params.doctor_id)});
+					return DoctorNotifications.update({"_id" : ObjectId(req.params.doctor_id)},
+						{$set : {"scores.expireScore" : newExpireScore, "scores.totalScore" : newTotalScore,
+						"createdAt": new Date()}});
 				}
 				else
 				{
-					res.status(201).send({success: true, hasNotification: true, notification});
+					DoctorNotifications.delete({"_id" : ObjectId(req.params.doctor_id)});
+					res.status(201).send({success: true, hasNotification: false});
 				}
 			}
-		}).then(function(removed){
-			if (removed)
+		}).then(function(update){
+			console.log(update);
+			if (update)
 			{
-				console.log("Removed old notification");
-				return Recipient.findOne({"_id": ObjectId(genForRecip)});
+				return DoctorNotifications.findOne({"_id" : ObjectId(req.params.doctor_id)});
 			}
-		}).then(function(recip){
-			if (recip)
+		}).then(function(notification){
+			if (notification)
 			{
-				return matchingFunctions.generateMatchforRecipient(recip);
+				res.status(201).send({success: true, hasNotification: true, notification});
 			}
 		}).catch(function(err){
             res.status(500).send({success: false, error : err});	

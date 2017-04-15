@@ -88,52 +88,36 @@ var addRecipientToWaitlist = function(recipient) {
     return targetWaitlist.save().then(function(){return waitlist});
 };
 
-
-
-var getMatchingScore = function(donor, recipient) {
-    return new Promise(function(resolve, reject){
-        var scoreDetails = {};
-        var zeroScore = {totalScore : 0};
-        var score = 0;
-
-        // organ age check
-        //
-        console.log("Determining donor organ age compatability");
-        var preservationTimes = {
-            "Kidney" : 36,
-            "Pancreas": 18,
-            "Liver": 12,
-            "Heart": 6,
-            "Lungs": 6
+var getOrganTimeScore = function(donor) {
+    console.log("Determining donor organ age compatability");
+    var preservationTimes = {
+        "Kidney" : 36,
+        "Pancreas": 18,
+        "Liver": 12,
+        "Heart": 6,
+        "Lungs": 6
         };
+    var diffMs = (Date.now() - donor.dateAdded);
+    var diffHours = diffMs/(60*60*1000);
+    var hoursLeft = preservationTimes[donor.organType] - diffHours;
+    var percentageLeft = hoursLeft/preservationTimes[donor.organType];
 
-        var getOrganTimeScore = function() {
-            var diffMs = (Date.now() - donor.dateAdded);
-            var diffHours = diffMs/(60*60*1000);
-            var hoursLeft = preservationTimes[donor.organType] - diffHours;
-            var percentageLeft = hoursLeft/preservationTimes[donor.organType];
+    if (percentageLeft <= 0)
+    {
+        return 0;
+    }
+    else
+    {
+        console.log("Organ expire time score: " + (percentageLeft * 15));
+        return (percentageLeft * 15); // max 15
+    }
+};
 
-            if (percentageLeft <= 0)
-            {
-                return 0;
-            }
-            else
-            {
-                console.log("Organ expire time score: " + (percentageLeft * 15));
-                scoreDetails.expireScore = (percentageLeft * 15);
-                return (percentageLeft * 15); // max 15
-            }
-        };
 
-        var organTimeScore = getOrganTimeScore();
+var deleteDonorUpdateWastedCollection = function(donor){
+    var today = new Date();
 
-        if (organTimeScore == 0)
-        {
-            //kick donor off the list
-            resolve(zeroScore); // next candidate
-            var today = new Date();
-
-            WastedOrgans.findOne({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)})
+    WastedOrgans.findOne({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)})
                 .then(function(date)
                 {
                     if (date == null)
@@ -176,7 +160,7 @@ var getMatchingScore = function(donor, recipient) {
                     else if (donor.organType == "Liver")
                     {
                         return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
-                            {$inc : {"organs.heart": 1}});
+                            {$inc : {"organs.liver": 1}});
                     }
                 }).then(function(update){
                     console.log(update);
@@ -184,8 +168,28 @@ var getMatchingScore = function(donor, recipient) {
                 }).then(function(update){
                     console.log("Expired donor deleted");
                 });
+};
+
+var getMatchingScore = function(donor, recipient) {
+    return new Promise(function(resolve, reject){
+        var scoreDetails = {};
+        var zeroScore = {totalScore : 0};
+        var score = 0;
+
+        // organ age check
+        //
+
+        var organTimeScore = getOrganTimeScore(donor);
+        scoreDetails.expireScore = organTimeScore;
+
+        if (organTimeScore == 0)
+        {
+            //kick donor off the list
+            resolve(zeroScore); // next candidate
+            deleteDonorUpdateWastedCollection(donor);
             return 0;
         }
+
 
         score += organTimeScore;
 
@@ -417,24 +421,26 @@ var generateMatchforDonor = function(donor) {
     {
         waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
     }
-
     waitlist.find().sort({"priority" : -1}).exec(function(err, sortedList){
         console.log(sortedList);
         var matchScore = 0;
-
+        scorePromises = [];
+        var recipientID;
         for (i = 0; i < sortedList.length; i++)
         {
-            var recipientID = sortedList[i]._id;
-
-            Recipient.findOne({"_id": ObjectId(recipientID)})
+            recipientID = sortedList[i]._id;
+            Recipient.findOne({"_id": recipientID})
                 .then(function(recipient){
-                    getMatchingScore(donor, recipient)
-                        .then(function(score){
-                            matchScore = score;
-                        });
+                    if (recipient)
+                    {
+                        var scorePromise = new getMatchingScore(donor, recipient);
+                        scorePromises.push(scorePromise);
+                    }
                 });
         }
-
+        Promise.all(scorePromises).then(function(scoresArray){
+            notifyRecipientDoctor(scoresArray);
+        });
     });
 };
 
@@ -447,6 +453,28 @@ var notifyRecipientDoctor = function(scoresArray) {
     var sortedScoresArray = scoresArray.sort(scoreCompare);
 
     var winner = sortedScoresArray[0];
+
+    if (winner && winner.totalScore > 60)
+    {
+        DoctorNotifications.findOne({"_id": ObjectId(winner.doctor)})
+            .then(function(notification){
+                if (!notification)
+                {
+                    console.log("Notifiying Doctor of donor match");
+                    var newDoctorNotification = new DoctorNotifications({"_id": ObjectId(winner.doctor), "createdAt" : new Date(),
+                    "donor": ObjectId(winner.donor), "recipient" : ObjectId(winner.recipient), scores : {"HLAscore": winner.HLAscore,
+                    "sizeScore": winner.sizeScore, "travelScore": winner.travelScore, "expireScore": winner.expireScore, "totalScore": winner.totalScore,
+                    "kidneyBonus" : winner.kidneyBonus, "pediatricBonus" :winner.pediatricBonus}});
+
+                    newDoctorNotification.save(function(err, doc){
+                        if (err) console.log(err);
+                        console.log(doc);
+                    });
+                }
+            });
+    }
+
+
 
     if (winner && winner.totalScore > 60)
     {
@@ -490,3 +518,5 @@ exports.generateMatchforRecipient = generateMatchforRecipient;
 exports.addRecipientToWaitlist = addRecipientToWaitlist;
 exports.generateMatchforDonor = generateMatchforDonor;
 exports.getMatchingScore = getMatchingScore;
+exports.getOrganTimeScore = getOrganTimeScore;
+exports.deleteDonorUpdateWastedCollection = deleteDonorUpdateWastedCollection;
