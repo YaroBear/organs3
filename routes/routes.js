@@ -13,12 +13,22 @@ var cron = require("node-cron");
 var plotly = require('plotly')("hasnainbilgrami", "Tp0ci7oUZdLrQ5Dg3AdZ")
 
 
+
+var plotly = require('plotly')("hasnainbilgrami", "Tp0ci7oUZdLrQ5Dg3AdZ")
+
+
+var mongoose = require('mongoose');
+
+
+var ObjectId = require('mongoose').Types.ObjectId;
+mongoose.Promise = Promise;
+
+
+
 //matching functions
 var matchingFunctions = require("../matchingFunctions");
 
 var schemas = require("../models/schemas");
-
-var ObjectId = require('mongoose').Schema.ObjectId
 
 var Hospital = schemas.Hospital;
 
