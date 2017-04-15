@@ -108,8 +108,9 @@
 										<td>{{score_info.totalScore.toFixed(3)}}/100</td>
 									</tr>
 								</table>
-								<button class="btn pull-right btn-danger btn-lg">Reject</button>
-								<button class="btn pull-right btn-success btn-lg">Accept</button>
+								<button class="btn pull-right btn-danger btn-lg" ng-click="decideMatch('reject')">Reject</button>
+								<button class="btn pull-right btn-success btn-lg" ng-click="decideMatch('accept')">Accept</button>
+								<p style="font-style: italic;">Notification updated: {{createdAt.getMonth()+1}}/{{createdAt.getDate()}}/{{createdAt.getFullYear()}} at {{createdAt.getHours()+1}}:{{createdAt.getMinutes()}} UTC</p>
 							</div>
 						</div>
 					</div>
