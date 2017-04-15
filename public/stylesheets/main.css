@@ -172,12 +172,16 @@ html, body {
     color: #ffffff;
 }
 .btn-primary:hover {
-	padding:15px 24px;
-	border: 1px #4286f4; 
 	background: #4ba4d8;
-    color: #ffffff;
+}
+.btn-primary:active, .btn-primary:focus {
+  background-color: #4ba4d8 !important;
+  -color: #4286f4 !important;
 }
 
+.panel-primary > .panel-heading{
+	background-color: #4ba4d8
+}
 
 /*.btn-group button {
 	background-color: #4CAF50; 

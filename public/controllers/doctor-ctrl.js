@@ -490,6 +490,7 @@ var doctor = angular.module('doctor', [])
         var reportType = report["name"];
         var graphType = report["type"];
         var organ = report["organ"];
+        console.log(reportType);
 
         if (start_date != undefined || end_date != undefined) {
             start_date = new Date(start_date).toISOString();
@@ -550,30 +551,34 @@ var doctor = angular.module('doctor', [])
 
                 });
             }
-            if (reportType == "recipients_WL") {
+            if (reportType == "recipients") {
 
                 $http({
                     method: "GET",
                     headers: { "x-access-token": token },
-                    url: '/doctor/api/recipents/waitlist/' + organ + "/" + start_date + "/" + end_date
+                    url: '/doctor/api/recipients/waitlist/' + organ + "/" + start_date + "/" + end_date
 
                 }).then(function(res) {
                     console.log(res);
-                    $scope.recipents = res.data;
+                    // $scope.recipients = res.data;
+                    var x1 = [];
+                    var y1 = [];
 
-                    var xaxis = [];
+                    var data = [];
+                    var xaxis = []
                     var yaxis = [];
                     var text_hover = [];
 
-                    for (var x in $scope.recipents) {
-                        xaxis.push($scope.recipents[x].dateAdded);
-                        yaxis.push($scope.recipents[x].priority);
+                    for (var d in res.data) {
+                        //name = res.data[d]["organType"]
+                        xaxis.push(res.data[d]["dateAdded"]);
+                        yaxis.push(res.data[d]["priority"]);
 
                     }
 
 
 
-                    var trace = {
+                    var trace1 = {
                         x: xaxis,
                         y: yaxis,
                         mode: 'markers',
@@ -582,7 +587,7 @@ var doctor = angular.module('doctor', [])
                         text: text_hover,
                         marker: { size: 12 }
                     };
-                    var data = [trace];
+                   
 
                     var layout = {
                         xaxis: {
@@ -595,6 +600,8 @@ var doctor = angular.module('doctor', [])
                         },
                         title: title
                     };
+					var data = [trace1];
+
                     if (xaxis.length > 0 && yaxis.length > 0)
                         Plotly.newPlot('plot', data, layout);
 
@@ -792,52 +799,52 @@ var doctor = angular.module('doctor', [])
                 // });
 
 
-                $http({
-                    method: "GET",
-                    headers: { "x-access-token": token },
-                    url: '/doctor/api/recipients/waitlist/' + organ
+                // $http({
+                //     method: "GET",
+                //     headers: { "x-access-token": token },
+                //     url: '/doctor/api/recipients/waitlist/' + organ
 
-                }).then(function(res) {
-                    var x1 = [];
-                    var y1 = [];
-                    var text1 = [];
-                    var data = [];
-                    for (var d in res.data) {
+                // }).then(function(res) {
+                //     var x1 = [];
+                //     var y1 = [];
+                //     var text1 = [];
+                //     var data = [];
+                //     for (var d in res.data) {
 
-                        var name = "";
+                //         var name = "";
 
-                        name = res.data[d]["organType"]
-                        x1.push(res.data[d]["dateAdded"]);
-                        y1.push(res.data[d]["organSize"]);
+                //         name = res.data[d]["organType"]
+                //         x1.push(res.data[d]["dateAdded"]);
+                //         y1.push(res.data[d]["organSize"]);
 
-                        //text1.push("Deceased: " + res.data[d]["deceased"]);
-                    }
-                    var title = "Total number on Recipient List: " + res.data.length;
+                //         //text1.push("Deceased: " + res.data[d]["deceased"]);
+                //     }
+                //     var title = "Total number on Recipient List: " + res.data.length;
 
-                    var layout = {
-                        xaxis: {
-                            title: 'Date Added to Recipient list'
+                //     var layout = {
+                //         xaxis: {
+                //             title: 'Date Added to Recipient list'
 
-                        },
-                        yaxis: {
-                            title: 'Organ Size'
+                //         },
+                //         yaxis: {
+                //             title: 'Organ Size'
 
-                        },
-                        title: title
-                    };
-                    var trace1 = {
-                        x: x1,
-                        y: y1,
-                        mode: 'markers',
-                        type: 'scatter',
-                        name: organ,
-                        text: text1,
-                        marker: { size: 12 }
-                    };
-                    var data = [trace1];
-                    Plotly.newPlot('plot', data, layout);
+                //         },
+                //         title: title
+                //     };
+                //     var trace1 = {
+                //         x: x1,
+                //         y: y1,
+                //         mode: 'markers',
+                //         type: 'scatter',
+                //         name: organ,
+                //         text: text1,
+                //         marker: { size: 12 }
+                //     };
+                //     var data = [trace1];
+                //     Plotly.newPlot('plot', data, layout);
 
-                });
+                // });
 
 
             }
@@ -900,7 +907,7 @@ var doctor = angular.module('doctor', [])
 
                 }).then(function(res) {
                     var data = res.data;
-
+                    console.log(data);
                     var xaxis = [];
                     var yaxis = [];
                     var text_hover = [];
