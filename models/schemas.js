@@ -40,16 +40,6 @@ var wastedOrgansSchema = new Schema({
     }
 });
 
-var matchesSchema = new Schema({
-    _id: Date,
-    organs: {
-        heart: Number,
-        kidney: Number,
-        liver: Number,
-        lung: Number,
-        pancreas: Number
-    }
-});
 
 var doctorSchema = new Schema({
     name : {
@@ -76,22 +66,6 @@ var userSchema = new Schema({
     username : {type: String, required: [true, "Username is required"], unique: true},
     password : {type: String, required: [true, "Password is required"]},
     admin : Boolean
-});
-
-
-//HOSPITAL SCHEMA
-var hospitalSchema = new Schema({
-	name: {type: String, required: [true, "Please provide the hospital name"]},
-	address : {
-		street : {type: String, required: [true, "Please provide the hospital street address"]},
-		city: {type: String, required: [true, "Please provide the hospital city"]},
-		state: {type: String, required: [true, "Please select a state"]},
-		zip: {type: String, required: [true, "Please provide the hospital zipcode"]},
-		region: {type: String, required: [true, "Please select a region"]},
-	},
-	phone : {type: String, required: [true, "Please provide the hospital phone number"]},
-	procedures : Array,
-	doctors : Array
 });
 
 
@@ -265,6 +239,24 @@ var waitlistSchema = new Schema({
 });
 
 
+
+
+
+
+//for stats
+var matchedOrganSchema = new Schema({
+    _id: Date,
+    organs: {
+        heart: Number,
+        kidney: Number,
+        liver: Number,
+        lung: Number,
+        pancreas: Number
+    }
+});
+
+exports.Matches = mongoose.model("matches", matchedOrganSchema);
+
 exports.Hospital = mongoose.model('hospitals', hospitalSchema);
 
 exports.Doctor = mongoose.model('doctors', doctorSchema);
@@ -279,4 +271,13 @@ exports.DoctorNotifications = mongoose.model('doctor_notifications', doctorNotif
 
 exports.WastedOrgans = mongoose.model('wasted_organs', wastedOrgansSchema);
 
-exports.Matches = mongoose.model('matches', matchesSchema);
+exports.Heart_Waitlist = mongoose.model('heart_waitlists', waitlistSchema);
+
+exports.Kidney_Waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
+
+exports.Lung_Waitlist = mongoose.model('lung_waitlists', waitlistSchema);
+
+exports.Liver_Waitlist = mongoose.model('liver_waitlists', waitlistSchema);
+
+exports.Pancreas_Waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
+

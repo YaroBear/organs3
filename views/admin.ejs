@@ -1,33 +1,302 @@
 <!DOCTYPE html>
 <html ng-app="admin">
 	<body>
-
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
 		<script type="text/javascript" src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="stylesheets/main.css"/>
 		<script src="controllers/admin-ctrl.js"></script>
-
-		<div class="container body-content">
-			<div class="jumbotron top-banner row text-center">
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <div class="body-content">
+			<div class="top-banner row text-center">
 				<div class="col-xs-2">
 					<img src="images/cardiogram.svg" class="logo"></img>
 				</div>
 				<div class="col-xs-10">
-					<h1>Organ Network</h1>
-					<h2>Admin home</h2>
+					<h1>Organ Matching Network</h1>
+					<h2>Doctor home</h2>
 				</div>
 			</div>
 			<div class="row" ng-controller="adminController">
-				<div class="col-xs-4 col-md-3 left-banner">
-				<a class="btn btn-primary btn-lg btn-block" ng-click = "addHospital()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</a>
+				<div id="sidebar" class="col-xs-4 col-md-2 left-banner">
 
-				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> Match Statistics</a>
+					<button class="btn btn-primary btn-lg btn-block" ng-click="viewHome()" role="button"><span class="glyphicon glyphicon-home"></span> Home</button>
+					<button class="btn btn-primary btn-lg btn-block" ng-click = "addHospitalView()" role="button"><span class="glyphicon glyphicon-pencil"></span> Add Hospital</button>
+               		<button class="btn btn-primary btn-lg btn-block" ng-click = "manageHospitalsView()" role="button"><span class="glyphicon glyphicon-pencil"></span> Manage Hospitals</button>
 
-				<a class="btn btn-primary btn-lg btn-block" href="#" role="button"><span class="glyphicon glyphicon-stats"></span> System Statistics</a>
+					<button class="btn btn-primary btn-lg btn-block" ng-click = "adminStatsView()" role="button"><span class="glyphicon glyphicon-stats"></span> System statistics</button>
 
-				<button class="btn btn-primary btn-lg btn-block" ng-click = "logout()" role="button"><span class="glyphicon glyphicon-remove"></span> Logout</a>
-			</div>
+					<button class="btn btn-primary btn-lg btn-block" ng-click = "logout()" role="button"><span class="glyphicon glyphicon-remove"></span> Logout</button>
+
+				</div>
+				<div id="mainPanel" class="col-xs-8 col-md-9">
+					<div ng-show="defaultView">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Welcome {{adminName}}</h3>
+							</div>
+							<div class="panel-body">
+								<table class="table">
+									<tr>
+										<th>Hospital</th>
+										<th>Address</th>
+										<th>Phone</th>
+									</tr>
+									<tr>
+										<td>{{hospital_info.name}}</td>
+										<td>{{hospital_info.address.street}}, {{hospital_info.address.city}} {{hospital_info.address.state}}, {{hospital_info.address.zip}}</td>
+										<td>{{hospital_info.phone}}</td>
+									</tr>
+								</table>
+
+							</div>
+						</div>
+					</div>
+
+					<div ng-show="addHospitalPanel">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Enter Hospital Information</h3>
+							</div>
+							<div class="panel-body">
+								<div class= "form-group">
+				                  <label>Name</label>
+								  <input type="text" size="50" class="form-control" id ="newHospitalName" ng-model="formData.name" placeholder="Hospital name">
+								  <p class="error">{{nameError}}</p>
+								</div>
+								<div class= "form-group">
+								  <label>Region</label>
+								  <select class="form-control" ng-model="formData.region" ng-options="region as region for (region, states) in regions">
+								  </select>
+								  <p class="error">{{regionError}}</p>
+								</div>
+								<div class= "form-group">
+								  <label>Street address</label>
+								  <input type="text" class="form-control" id ="newHospitalStreet" ng-model="formData.street" placeholder="Street address">
+								  <p class="error">{{streetError}}</p>
+								</div>
+								<div class= "form-group">
+								  <label>City</label>
+								  <input type="text" class="form-control" id ="newHospitalCity" ng-model="formData.city" placeholder="City">
+								  <p class="error">{{cityError}}</p>
+								</div>
+								<div class= "form-group">
+								  <label>State</label>
+								  <select class="form-control" ng-model="formData.state" ng-options="state as state for state in regions[formData.region]">
+								  </select>
+								  <p class="error">{{stateError}}</p>
+								</div>
+								<div class= "form-group">
+								  <label>Zip code</label>
+								  <input type="text" class="form-control" id ="newHospitalZip" ng-model="formData.zip" placeholder="Zip Code">
+								  <p class="error">{{zipError}}</p>
+								</div>
+								<div class= "form-group">
+								  <label>Phone Number</label>
+								  <input type="phoneNumber" class="form-control" id ="newHospitalPhoneNumber" ng-model="formData.phoneNumber" placeholder="Phone Number">
+								  <p class="error">{{phoneNumberError}}</p>
+								</div>
+								<div class="form-group">
+								  <button class="btn btn-primary btn-lg pull-right"  type="submit" ng-click="addHospital()">Submit</button>
+								</div>
+								<div ng-show="addedAlert">
+									<h2 style="color:red">Hospital Added Successfully!</h2>
+								</div>
+							</div>
+
+
+
+							<div class="panel-footer">
+								<h3>Region information</h3>
+								<div>
+									<ul ng-repeat="regionDescriptor in regionDescriptors">
+									<li>{{regionDescriptor}}</li>
+									</ul>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+
+
+					<div ng-show="manageHospitalsPanel">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Transplant Center Management</h3>
+							</div>
+
+							<div class="panel-body">
+							      <!-- table here -->
+							     <div>
+
+									<table class="tableBorder">
+									<tr class="tableBorder">
+									   <th class="tableBorder">
+									   		<button class="btn btn-primary btn-lg btn-success btnsize2" ng-confirm-click="test" ng-click="loadHospList()">Refresh List</button>
+									   </th>
+									   <th class="tableBorder">Name</th>
+									   <th class="tableBorder">Phone</th>
+									   <th class="tableBorder">Street</th>
+									   <th class="tableBorder">City</th>
+									   <th class="tableBorder">State</th>
+									   <th class="tableBorder">Zip Code</th>
+									   <th class="tableBorder">Region</th>
+									   <th class="tableBorder">Doctors</th>
+									   <th class="tableBorder">Move Doc</th>
+									</tr>
+									<tr class="tableBorder" ng-repeat="hosp in hospitals">
+									   <td class="tableBorder">
+							                <button ng-hide="hosp.delete" class="btn btn-danger btnsize2" ng-click="deletePrompt(hosp)"> <font class="fnt" size="2">Delete</font></button>
+							                <div class="tile_div" ng-show="hosp.delete">
+							                    <button  class="btn btn-danger btnsize3" ng-click="confirmDelete(hosp)"> <font class="fnt" size="1">Confirm Delete</font></button>
+							                    <button  class="btn btn-primary btnsize3" ng-click="dontDelete(hosp)"> <font class="fnt" size="1">Cancel</font></button>
+							                </div>
+							            </td>
+							            <td class="tableBorder">{{hosp.name}}</td>
+							            <td class="tableBorder">{{hosp.phone}}</td>
+							            <td class="tableBorder">{{hosp.address.street}}</td>
+							            <td class="tableBorder centered">{{hosp.address.city}}</td>
+							            <td class="tableBorder centered">{{hosp.address.state}}</td>
+							            <td class="tableBorder centered">{{hosp.address.zip}}</td>
+							            <td class="tableBorder centered">{{hosp.address.region}}</td>
+							            <td class="tableBorder centered">{{hosp.doctors.length}}</td>
+							            <td class="tableBorder">
+							                <button nf-ig="hosp.doctors.length" ng-hide="hosp.movedoc" ng-click="enableMove(hosp)">Move</button>
+							                <select ng-if="hosp.movedoc" ng-model="hosp.docid" class="selectbox" ng-show="hosp.movedoc">
+							                    <option  value="{{doc._id}}" ng-repeat="doc in hosp.doctors">{{doc._id}}</option>
+							                </select>
+							                <button ng-show="hosp.movedoc" ng-click="doMove(hosp)">Move Doctor to</button>
+							                <select ng-if="hosp.movedoc" ng-model="hosp.destHosp" class="selectbox" ng-show="hosp.movedoc">
+							                    <option  value="{{newhosp._id}}" ng-repeat="newhosp in hospitals">{{newhosp.name}}</option>
+							                </select>
+							                <button ng-show="hosp.movedoc" ng-click="cancel(hosp)">Cancel</button>
+							            </td>
+							      </tr>
+							</table>
+							<table>
+							      <tr ng-repeat="hosp in hospitals">{{hosp.name}}</tr>
+							</table>
+							         </div>
+							   </div>
+						</div>
+					</div>
+
+
+					<div ng-show="adminStatsPanel">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">System reports</h3>
+							</div>
+
+				        <form style="margin-bottom: 5%; padding-left: 5%" ng-submit="generateAdminReport(report)">
+				            <div class="form-group">
+				                <label for="reportName">What collection stats would you like?</label>
+				                <select class="form-control" id="reportName" ng-model="report.name" style="width:58%;" required>
+				                    <option value = ""></option>
+				                    <option value = "lung_waitlists">lung_waitlists</option>
+				                    <option value = "pancreas_waitlists">pancreas_waitlists</option>
+				                    <option value = "doctor_notifications">doctor_notifications</option>
+				                    <option value = "users">users</option>
+				                    <option value = "liver_waitlists">liver_waitlists</option>
+				                    <option value = "matches">matches</option>
+				                    <option value = "recipients">recipients</option>
+				                    <option value = "heart_waitlists">heart_waitlists</option>
+				                    <option value = "kidney_waitlists">kidney_waitlists</option>
+				                    <option value = "hospitals">hospitals</option>
+				                    <option value = "donors">donors</option>
+				                    <option value = "doctors">doctors</option>
+				                    <option value = "wasted_organs">wasted_organs</option>
+				                </select>
+				            </div>
+
+							<div class="form-group">
+							  <button class="btn btn-primary btn-lg pull-right"  type="submit">Submit</button>
+							</div>
+<!-- 				            <input type="submit" class="btn btn-primary"></input> -->
+				        </form>
+
+				        <table class="table table-striped table-hover .table-bordered" >
+				            <tbody ng-repeat="(key,val) in tableVals">
+				                <tr><td>{{key}}</td><td>{{val}}</td></tr>
+				                
+				            </tbody>
+				        </table>
+
+
+
+
+						</div>
+					</div>
+
+
+					<div ng-show="statsPanel">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">Statistics</h3>
+							</div>
+							<div class="panel-body">
+								<form style="margin-bottom: 5%; padding-left: 5%" ng-submit="generateChart(report)">
+								        <div class="form-group">
+								            <label for="reportName">What report do you want to gernerate?</label>
+								            <select class="form-control" id="reportName" ng-model="report.name" style="width:58%;" required>
+								                <option value = ""></option>
+								                <option value = "donors">Donors</option>
+								                <option value = "recipients_WL" >Recipients on wait list</option>
+								                <option value = "people_matched">People matched</option>
+								                <option value = "wasted_organs">Wasted Organs</option>
+								            </select>
+								        </div>
+								        <div class="form-group">
+								            <label class = "inline-form" for="startDate">Start Date</label>
+								            <input class="form-control inline-form" type = "date" id="startDate" ng-model="report.startDate" style="width :20%;">
+								            </input>
+								        </div>
+								        <div class="form-group">
+								            <label class = "inline-form" for="endDate">End Date</label>
+								            <input class="form-control inline-form" type = "date" id="endDate" ng-model="report.endDate"
+								                style="width: 20%; margin-right:40%">
+								            </input>
+								        </div>
+								        <div class="form-group" >
+								            <label for="organType">What organ wait list would you like?</label>
+								            <select class="form-control" id="organType" ng-model="report.organ" style="width:58%;" required>
+								                <option value = ""></option>
+								                <option value = "Heart" >Heart</option>
+								                <option value = "Kidney">Kidney</option>
+								                <option value = "Lung">Lungs</option>
+								                <option value = "Liver">Liver</option>
+								                <option value = "Pancreas">Pancreas</option>
+								                
+								              <!--  <option value = "all" >I want all organs</option> -->
+								            </select>
+								        </div>
+
+								        <div class="form-group">
+								  			<button class="btn btn-primary btn-lg pull-right"  type="submit">Submit</button>
+										</div>
+								</form>
+								</div>
+								<div class="panel-footer">
+							    	<div id="plot" style="width:90%;height:250px; margin: 0 auto;"></div>
+							    </div>
+
+						</div>
+					</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+				</div>
 	</body>
 </html>
