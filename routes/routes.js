@@ -779,34 +779,26 @@ router.post('/doctor/api/recipients', function(req, res) {
                 organSize: request.organSize
             });
 
-            console.log(request.dob);
-
             return newRecipient.save().then(function() { return newRecipient; });
-        }).catch(function(err) {
-            errors.validationError = err;
-            res.status(500).send({ success: false, errors });
         }).then(function(newRecipient) {
-            recip = newRecipient;
-            Doctor.findOneAndUpdate({ "_id": request.doctor_id }, {
-                $push: { patients: newRecipient._id }
-            }).then(function(newRecipient) { return newRecipient });
+        	if (newRecipient)
+        	{
+	            Doctor.findOneAndUpdate({ "_id": request.doctor_id }, {
+	                $push: { patients: newRecipient._id }});
+        	}
+        }).then(function(newRecipient) {
             if (newRecipient) {
-                return matchingFunctions.addRecipientToWaitlist(newRecipient);
+                matchingFunctions.addRecipientToWaitlist(newRecipient);
+                matchingFunctions.generateMatchforRecipient(recip);
             }
-
-        }).then(function() {
-
-            matchingFunctions.generateMatchforRecipient(recip);
-
         }).then(function() {
             res.status(201).send({ ok: true, message: 'Recipient added successfully' });
 
         }).catch(function(err) {
-            console.log(err);
-            res.status(500).send({ success: false, err });
-        });
+        	errors.validationError = err;
+            res.status(400).send({ success: false, errors });
+    });
 });
-
 //ADD Donors to donor list
 router.post('/doctor/api/donors', function(req, res) {
     //console.log(req.body);
@@ -855,9 +847,6 @@ router.post('/doctor/api/donors', function(req, res) {
                 deceased: request.selectedDeceased,
             });
             return newDonor.save().then(function() { return newDonor; });
-        }).catch(function(err) {
-            errors.validationError = err;
-            res.status(500).send({ success: false, errors });
         }).then(function(newDonor) {
             if (newDonor) {
                 genForDonor = newDonor;
@@ -869,8 +858,8 @@ router.post('/doctor/api/donors', function(req, res) {
                 return matchingFunctions.generateMatchforDonor(genForDonor);
             }
         }).catch(function(err) {
-            console.log(err);
-            res.status(500).send({ success: false, err });
+        	errors.validationError = err;
+            res.status(400).send({ success: false, errors });
         });
 });
 
@@ -1023,8 +1012,31 @@ router.post('/doctor/api/respond-to-match/', function(req, res) {
             	}	
             }).then(function(removed){
             	if (removed)
-            	{
-            		
+            	{	var waitlist;
+        		    if (request.organType  == "Heart")
+				    {
+
+				        waitlist = schemas.Heart_Waitlist;
+				    }
+				    else if (request.organType  == "Liver")
+				    {
+
+				        waitlist = schemas.Liver_Waitlist;
+				    }
+				    else if (request.organType  == "Lung")
+				    {
+				        waitlist = schemas.Lung_Waitlist;
+				    }
+				    else if (request.organType  == "Pancreas")
+				    {
+
+				        waitlist = schemas.Pancreas_Waitlist;
+				    }
+				    else if (request.organType  == "Kidney")
+				    {
+				        waitlist = schemas.Kidney_Waitlist;
+					}
+					return waitlist.remove({"_id" : ObjectId(request.recipientId)});
             	}
             }).then(function(removed){
             	if (removed)

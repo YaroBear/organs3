@@ -130,6 +130,7 @@ var doctor = angular.module('doctor', [])
 
     $scope.decideMatch = function(choice) {
         var data = {};
+        $scope.matchConfirmed = false;
         data.choice = choice;
         data.recipientId = matchedRecipient;
         data.donorId = matchedDonor;
@@ -141,7 +142,15 @@ var doctor = angular.module('doctor', [])
             headers: { "x-access-token": token },
             data: data
         }).success(function(serverResponse) {
-            console.log(serverResponse);
+            if (serverResponse.success)
+            {
+                $scope.matchConfirmed = true;
+
+                var token = localStorage.getItem('token');
+                setTimeout(function() {
+                    $window.location.href = "/doctor/home?token=" + token;
+                }, 2000);
+            }
         }).error(function(err) {
             console.log("Error:", err);
         });

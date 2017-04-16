@@ -462,12 +462,12 @@ var generateMatchforDonor = function(donor) {
     else if (donor.organType == "Pancreas")
     {
 
-        waitlist = schemas.Heart_Waitlist;
+        waitlist = schemas.Pancreas_Waitlist;
     }
     else if (donor.organType == "Kidney")
     {
 
-        waitlist = schemas.Heart_Waitlist;
+        waitlist = schemas.Kidney_Waitlist;
     }
 
     var sortedList;
