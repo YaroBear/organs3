@@ -239,7 +239,11 @@ var waitlistSchema = new Schema({
 });
 
 
-
+var rejectionSchema = new Schema({
+    organType: String,
+    recipientId: String,
+    donorId: String
+});
 
 
 
@@ -280,4 +284,6 @@ exports.Lung_Waitlist = mongoose.model('lung_waitlists', waitlistSchema);
 exports.Liver_Waitlist = mongoose.model('liver_waitlists', waitlistSchema);
 
 exports.Pancreas_Waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
+
+exports.Rejection = mongoose.model('rejections', rejectionSchema);
 

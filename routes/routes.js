@@ -40,6 +40,8 @@ var Matches = schemas.Matches;
 
 var Wasted = schemas.WastedOrgans;
 
+var Rejection = schemas.Rejection;
+
 cron.schedule('* * * * *', function() {
     console.log('Running organ expiration checks every minute');
 
@@ -89,7 +91,7 @@ Recipient.findOne({"organType" : "Heart"})
     });
 */
 
-Donor.findOne({"_id" : ObjectId("58f2b9bdb8d16a0fa01ecca2")})
+Donor.findOne({"_id" : ObjectId("58f31abbdb0d4f27d4c9f77a")})
     .then(function(donor)
     {
     	if (donor)
@@ -1047,6 +1049,24 @@ router.post('/doctor/api/respond-to-match/', function(req, res) {
             	console.log(err);
             	res.status(500).send({success : true, message : "One of the update collections failed"});
             });
+    }
+    if (request.choice == "reject") 
+    {
+    	var newRejection = new Rejection({
+    		organType: request.organType,
+    		recipientId: request.recipientId,
+    		donorId: request.donorId
+    	});
+
+    	newRejection.save()
+    		.then(function(added){
+
+    			return DoctorNotifications.remove({"_id" : ObjectId(request.doctorId)});
+    		}).then(function(removed){
+    			res.status(201).send({success : true, message : "Rejection accepted"});
+    		}).catch(function(err){
+    			res.status(500).send({success : true, err: err, message : "Adding to rejection collection failed"});
+    		});
     }
 });
 

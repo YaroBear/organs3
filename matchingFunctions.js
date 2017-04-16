@@ -22,6 +22,8 @@ var DoctorNotifications = schemas.DoctorNotifications;
 
 var WastedOrgans = schemas.WastedOrgans;
 
+var Rejection = schemas.Rejection;
+
 
 var googleMapsClient = require('@google/maps').createClient({
   key: mapsKey,
@@ -185,223 +187,235 @@ var getMatchingScore = function(donor, recipient) {
         var zeroScore = {totalScore : 0};
         var score = 0;
 
-        // organ age check
-        //
-
-        var organTimeScore = getOrganTimeScore(donor);
-        scoreDetails.expireScore = organTimeScore;
-
-        if (organTimeScore == 0)
-        {
-            //kick donor off the list
-            resolve(zeroScore); // next candidate
-            deleteDonorUpdateWastedCollection(donor);
-            return 0;
-        }
-
-
-        score += organTimeScore;
-
-        console.log("Comparing organs");
-        if (donor.organType !== recipient.organType)
-        {
-            console.log("Organ doesn't match");
-            resolve(zeroScore);
-            return score; //0
-        }
-
-        // region hard check
-        //
-        if (donor.region != recipient.region)
-        {
-            console.log("Region doesn't match");
-            resolve(zeroScore);
-            return score; // 0
-        }
-
-        // blood type hard check
-        //
-        console.log("Comparing blood types");   
-        var bloodMatch = {
-            "A+" : ["A+", "A-", "O+", "O-"],
-            "A-" : ["A-", "O-"],
-            "B+" : ["B+", "B-", "O+", "O-"],
-            "A-" : ["B-", "O-"],
-            "AB-" : ["AB-", "A-", "B-", "O-"],
-            "O+" : ["O+", "O-"],
-            "O-": ["O-"],
-            // AB+ everyone
-            };
-
-        if (recipient.bloodtype != "AB+")
-        {
-            if (!bloodMatch[recipient.bloodType].includes(donor.bloodType))
-            {
-                console.log("Incompatible blood type");
-                resolve(zeroScore);
-                return score; // 0
-            }
-        }
-
-        // hla type check
-        //
-        console.log("Comparing HLA Types");
-        var getHLAscore = function()
-        {
-            var matches = 0;
-            for (var i = 0; i < 6; i++)
+        Rejection.findOne({$and :[{"donorId" : ObjectId(donor._id)}, {"recipientId": ObjectId(recipient._id)}]})
+            .then(function(found){
+                if (found)
                 {
-                    if (recipient.HLAType[i] == donor.HLAType[i])
+                    console.log("These candidates have been rejected. Skipping.");
+                    resolve(zeroScore);
+                    return 0;
+                }
+                else
+                {
+                    // organ age check
+                    //
+
+                    var organTimeScore = getOrganTimeScore(donor);
+                    scoreDetails.expireScore = organTimeScore;
+
+                    if (organTimeScore == 0)
                     {
-                        matches += 1;
+                        //kick donor off the list
+                        resolve(zeroScore); // next candidate
+                        deleteDonorUpdateWastedCollection(donor);
+                        return 0;
                     }
+
+
+                    score += organTimeScore;
+
+                    console.log("Comparing organs");
+                    if (donor.organType !== recipient.organType)
+                    {
+                        console.log("Organ doesn't match");
+                        resolve(zeroScore);
+                        return score; //0
+                    }
+
+                    // region hard check
+                    //
+                    if (donor.region != recipient.region)
+                    {
+                        console.log("Region doesn't match");
+                        resolve(zeroScore);
+                        return score; // 0
+                    }
+
+                    // blood type hard check
+                    //
+                    console.log("Comparing blood types");   
+                    var bloodMatch = {
+                        "A+" : ["A+", "A-", "O+", "O-"],
+                        "A-" : ["A-", "O-"],
+                        "B+" : ["B+", "B-", "O+", "O-"],
+                        "A-" : ["B-", "O-"],
+                        "AB-" : ["AB-", "A-", "B-", "O-"],
+                        "O+" : ["O+", "O-"],
+                        "O-": ["O-"],
+                        // AB+ everyone
+                        };
+
+                    if (recipient.bloodtype != "AB+")
+                    {
+                        if (!bloodMatch[recipient.bloodType].includes(donor.bloodType))
+                        {
+                            console.log("Incompatible blood type");
+                            resolve(zeroScore);
+                            return score; // 0
+                        }
+                    }
+
+                    // hla type check
+                    //
+                    console.log("Comparing HLA Types");
+                    var getHLAscore = function()
+                    {
+                        var matches = 0;
+                        for (var i = 0; i < 6; i++)
+                            {
+                                if (recipient.HLAType[i] == donor.HLAType[i])
+                                {
+                                    matches += 1;
+                                }
+                            }
+                        return (Math.pow(matches,2));
+                    }
+
+                    var HLAscore = getHLAscore();
+                    if (HLAscore == 0)
+                    {
+                        console.log("Zero HLA match");
+                        resolve(zeroScore);
+                        return score; //0
+                    }
+                    else
+                    {
+                        console.log("HLA score: " + HLAscore);
+                        scoreDetails.HLAscore = HLAscore;
+                        score += HLAscore;
+                    }
+
+
+                    //organ size check
+                    //
+                    console.log("Determining organ size match +- 15%")
+                    var getOrganSizeScore = function(){
+                        var difference = (Math.abs(recipient.organSize - donor.organSize));
+                        var percentDiff = (difference/recipient.organSize);
+
+                        if (percentDiff < .15)
+                        {
+                            console.log("Organ size score: " + (15 - (percentDiff * 100)));
+                            scoreDetails.sizeScore = (15 - (percentDiff * 100));
+                            return (15 - (percentDiff * 100)); //max score is 15
+                        }
+                        else
+                        {
+                            console.log("Organ sizes differ by more than 15%");
+                            scoreDetails.sizeScore = 0;
+                            return 0;
+                        }
+                    };
+
+                    var organSizeScore = getOrganSizeScore();
+                    score += organSizeScore;
+
+                    // pediatric bonus check
+                    //
+                    console.log("Determining pediatric status of patients");
+                    var recipientAge = calculateAge(recipient.dob);
+                    var donorAge = calculateAge(donor.dob);
+
+                    console.log("Recipient age : " + recipientAge + " Donor age : " + donorAge);
+
+                    if (recipientAge <= 18 && donorAge <= 18)
+                    {
+                        console.log("Adding pediatric bonus: 10");
+                        scoreDetails.pediatricBonus = 10;
+                        score += 10;
+                    }
+                    else
+                    {
+                        scoreDetails.pediatricBonus = 0;
+                    }
+
+                    // check kidney living status
+                    //
+
+                    if (recipient.organType == "Kidney" && !donor.deceased)
+                    {
+                        console.log("Adding living donor kidney bonus: 9");
+                        scoreDetails.kidneyBonus = 9;
+                        score += 9;
+                    }
+                    else
+                    {
+                        scoreDetails.kidneyBonus = 0;
+                    }
+
+                    var donorHospitalAddress = "";
+                    var recipientHospitalAddress = "";
+                    var avgHeliSpeed = 240000; // m/h
+
+                    console.log("Computing distance score");
+                    Doctor.findOne({"patients": ObjectId(recipient._id)})
+                        .catch(function(err)
+                        {
+                            console.log(err);
+                        })
+                        .then(function(doctor){
+                            if (doctor)
+                            {
+                                console.log("Found recipient in doctors list");
+                                //console.log(doctor);
+                                scoreDetails.doctor = doctor._id;
+                                var recipientDoctor = {};
+                                recipientDoctor.id = doctor._id;
+
+                                return Hospital.findOne({"doctors": {"_id" : ObjectId(recipientDoctor.id)}}).then(function(hospital) {return hospital;});
+                            }
+                        }).catch(function(err){
+                            console.log(err);
+                        }).then(function(hospital){
+                            recipientHospitalAddress = hospital.address;
+
+                            return Doctor.findOne({"patients": ObjectId(donor._id)}).then(function(doctor) {return doctor;})
+                        }).catch(function(err){
+                            console.log(err);
+                        }).then(function(doctor){
+                            console.log("Found donor in doctors list");
+
+                            var donorDoctor = {};
+                            donorDoctor.id = doctor._id;
+
+                            return Hospital.findOne({"doctors": {"_id" : ObjectId(donorDoctor.id)}}).then(function(hospital) {return hospital;});
+                        }).catch(function(err){
+                            console.log(err);
+                        }).then(function(hospital){
+                            donorHospitalAddress = hospital.address;
+                            return googleMapsClient.distanceMatrix({
+                                origins: recipientHospitalAddress.street + " " + recipientHospitalAddress.zip,
+                                destinations: donorHospitalAddress.street + " " + donorHospitalAddress.zip,
+                                    }).asPromise();
+                        }).then(function(response){
+                            var travelScore = 0;
+                            //console.log(response.json.rows[0].elements[0].distance.value);
+                            var distanceMeters = response.json.rows[0].elements[0].distance.value;
+                            var travelHours = distanceMeters/avgHeliSpeed;
+                            var diffMs = (Date.now() - donor.dateAdded); //donor organ expire time left
+                            var organHoursLeft = diffMs/(60*60*1000);
+
+                            var travelDifference =  organHoursLeft - travelHours;
+
+                            if (travelDifference > 0)
+                            {
+                                travelScore = (travelDifference/organHoursLeft)*15;
+                            }
+
+                            scoreDetails.travelScore = travelScore;
+                            score += travelScore;
+                            scoreDetails.totalScore = score;
+                            scoreDetails.recipient = recipient._id;
+                            scoreDetails.donor = donor._id;
+                            //res.json(response);
+                            console.log("Distance score: " + travelScore);
+                    
+                            resolve(scoreDetails);
+                        });
                 }
-            return (Math.pow(matches,2));
-        }
-
-        var HLAscore = getHLAscore();
-        if (HLAscore == 0)
-        {
-            console.log("Zero HLA match");
-            resolve(zeroScore);
-            return score; //0
-        }
-        else
-        {
-            console.log("HLA score: " + HLAscore);
-            scoreDetails.HLAscore = HLAscore;
-            score += HLAscore;
-        }
-
-
-        //organ size check
-        //
-        console.log("Determining organ size match +- 15%")
-        var getOrganSizeScore = function(){
-            var difference = (Math.abs(recipient.organSize - donor.organSize));
-            var percentDiff = (difference/recipient.organSize);
-
-            if (percentDiff < .15)
-            {
-                console.log("Organ size score: " + (15 - (percentDiff * 100)));
-                scoreDetails.sizeScore = (15 - (percentDiff * 100));
-                return (15 - (percentDiff * 100)); //max score is 15
-            }
-            else
-            {
-                console.log("Organ sizes differ by more than 15%");
-                scoreDetails.sizeScore = 0;
-                return 0;
-            }
-        };
-
-        var organSizeScore = getOrganSizeScore();
-        score += organSizeScore;
-
-        // pediatric bonus check
-        //
-        console.log("Determining pediatric status of patients");
-        var recipientAge = calculateAge(recipient.dob);
-        var donorAge = calculateAge(donor.dob);
-
-        console.log("Recipient age : " + recipientAge + " Donor age : " + donorAge);
-
-        if (recipientAge <= 18 && donorAge <= 18)
-        {
-            console.log("Adding pediatric bonus: 10");
-            scoreDetails.pediatricBonus = 10;
-            score += 10;
-        }
-        else
-        {
-            scoreDetails.pediatricBonus = 0;
-        }
-
-        // check kidney living status
-        //
-
-        if (recipient.organType == "Kidney" && !donor.deceased)
-        {
-            console.log("Adding living donor kidney bonus: 9");
-            scoreDetails.kidneyBonus = 9;
-            score += 9;
-        }
-        else
-        {
-            scoreDetails.kidneyBonus = 0;
-        }
-
-        var donorHospitalAddress = "";
-        var recipientHospitalAddress = "";
-        var avgHeliSpeed = 240000; // m/h
-
-        console.log("Computing distance score");
-        Doctor.findOne({"patients": ObjectId(recipient._id)})
-            .catch(function(err)
-            {
-                console.log(err);
-            })
-            .then(function(doctor){
-                if (doctor)
-                {
-                    console.log("Found recipient in doctors list");
-                    //console.log(doctor);
-                    scoreDetails.doctor = doctor._id;
-                    var recipientDoctor = {};
-                    recipientDoctor.id = doctor._id;
-
-                    return Hospital.findOne({"doctors": {"_id" : ObjectId(recipientDoctor.id)}}).then(function(hospital) {return hospital;});
-                }
-            }).catch(function(err){
-                console.log(err);
-            }).then(function(hospital){
-                recipientHospitalAddress = hospital.address;
-
-                return Doctor.findOne({"patients": ObjectId(donor._id)}).then(function(doctor) {return doctor;})
-            }).catch(function(err){
-                console.log(err);
-            }).then(function(doctor){
-                console.log("Found donor in doctors list");
-
-                var donorDoctor = {};
-                donorDoctor.id = doctor._id;
-
-                return Hospital.findOne({"doctors": {"_id" : ObjectId(donorDoctor.id)}}).then(function(hospital) {return hospital;});
-            }).catch(function(err){
-                console.log(err);
-            }).then(function(hospital){
-                donorHospitalAddress = hospital.address;
-                return googleMapsClient.distanceMatrix({
-                    origins: recipientHospitalAddress.street + " " + recipientHospitalAddress.zip,
-                    destinations: donorHospitalAddress.street + " " + donorHospitalAddress.zip,
-                        }).asPromise();
-            }).then(function(response){
-                var travelScore = 0;
-                //console.log(response.json.rows[0].elements[0].distance.value);
-                var distanceMeters = response.json.rows[0].elements[0].distance.value;
-                var travelHours = distanceMeters/avgHeliSpeed;
-                var diffMs = (Date.now() - donor.dateAdded); //donor organ expire time left
-                var organHoursLeft = diffMs/(60*60*1000);
-
-                var travelDifference =  organHoursLeft - travelHours;
-
-                if (travelDifference > 0)
-                {
-                    travelScore = (travelDifference/organHoursLeft)*15;
-                }
-
-                scoreDetails.travelScore = travelScore;
-                score += travelScore;
-                scoreDetails.totalScore = score;
-                scoreDetails.recipient = recipient._id;
-                scoreDetails.donor = donor._id;
-                //res.json(response);
-                console.log("Distance score: " + travelScore);
-        
-                resolve(scoreDetails);
-
             });
 
+        
 
     });	
 };
@@ -513,7 +527,6 @@ var generateMatchforRecipient = function(recipient) {
         .then(function(donorCollection){
             var donorCollection = donorCollection;
             var scorePromises = [];
-            
 
             for (var i = 0; i < donorCollection.length; i++)
             {
