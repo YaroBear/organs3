@@ -7,6 +7,7 @@ var doctor = angular.module('doctor', [])
 
     var matchedRecipient;
     var matchedDonor;
+    var matchedOrgan;
 
 
     $scope.doctorName = localStorage.getItem("user");
@@ -61,6 +62,7 @@ var doctor = angular.module('doctor', [])
         url: '/doctor/api/doctor-notification/' + doctor_id,
         headers: { "x-access-token": token }
     }).success(function(serverResponse) {
+        console.log(serverResponse);
 
         if (serverResponse.hasNotification) {
             $scope.matchFound = true;
@@ -69,7 +71,7 @@ var doctor = angular.module('doctor', [])
             var request = {};
             request.recipient_id = serverResponse.notification.recipient;
             request.donor_id = serverResponse.notification.donor;
-            matchedDonor = serverResponse.notification.donor;;
+            matchedDonor = serverResponse.notification.donor;
             matchedRecipient = serverResponse.notification.recipient;
             $http({
                 method: "POST",
@@ -80,6 +82,7 @@ var doctor = angular.module('doctor', [])
                 console.log(serverResponse);
                 $scope.recipient_info = serverResponse.response.recipient;
                 $scope.donor_info = serverResponse.response.donor;
+                matchedOrgan = serverResponse.response.recipient.organType;
             }).error(function(err) {
                 console.log("Error:", err);
             });
@@ -130,6 +133,8 @@ var doctor = angular.module('doctor', [])
         data.choice = choice;
         data.recipientId = matchedRecipient;
         data.donorId = matchedDonor;
+        data.organType = matchedOrgan;
+        data.doctorId = localStorage.getItem("mongo_id");
         $http({
             method: "POST",
             url: '/doctor/api/respond-to-match/',

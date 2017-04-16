@@ -12,13 +12,7 @@ var cron = require("node-cron");
 //plotly 
 var plotly = require('plotly')("hasnainbilgrami", "Tp0ci7oUZdLrQ5Dg3AdZ")
 
-
-
-var plotly = require('plotly')("hasnainbilgrami", "Tp0ci7oUZdLrQ5Dg3AdZ")
-
-
 var mongoose = require('mongoose');
-
 
 var ObjectId = require('mongoose').Types.ObjectId;
 mongoose.Promise = Promise;
@@ -83,7 +77,7 @@ var Pancreas_Waitlist = schemas.Pancreas_Waitlist;
 //******************************
 
 /*
-Recipient.findOne({"_id" : ObjectId("58ee78e6976b8c332c7ac2ef")})
+Recipient.findOne({"organType" : "Heart"})
     .then(function(recip)
     {
     	if (recip)
@@ -94,6 +88,18 @@ Recipient.findOne({"_id" : ObjectId("58ee78e6976b8c332c7ac2ef")})
         
     });
 */
+
+Donor.findOne({"_id" : ObjectId("58f2b9bdb8d16a0fa01ecca2")})
+    .then(function(donor)
+    {
+    	if (donor)
+    	{
+    		return matchingFunctions.generateMatchforDonor(donor);
+    	}
+        
+        
+    });
+
 
 router.get('/api/hospitals/names', function(req, res) {
     Hospital.find({}, { name: 1 }, function(err, data) {
@@ -869,10 +875,8 @@ router.post('/doctor/api/donors', function(req, res) {
 });
 
 router.get('/doctor/api/hospital-info/:doctor_id', function(req, res) {
-    console.log(req.params.doctor_id);
     Hospital.findOne({ "doctors": { "_id": ObjectId(req.params.doctor_id) } })
         .then(function(hospital) {
-            console.log(hospital);
             if (hospital) {
                 res.status(201).send({ success: true, hospital: hospital });
             } else {
@@ -883,8 +887,9 @@ router.get('/doctor/api/hospital-info/:doctor_id', function(req, res) {
         });
 });
 
-router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
 
+
+router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
     var donorOldScores;
     DoctorNotifications.findOne({ "_id": ObjectId(req.params.doctor_id) })
         .then(function(notification) {
@@ -892,15 +897,20 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
                 donorOldScores = notification.scores;
                 return Donor.findOne({ "_id": ObjectId(notification.donor) });
             }
+            else
+            {
+            	res.status(201).send({ success: true, hasNotification: false });
+            }
         }).then(function(donor) {
             if (donor) {
-                console.log(donor);
                 var newExpireScore = matchingFunctions.getOrganTimeScore(donor);
                 var oldExpireScore = donorOldScores.expireScore;
                 var oldTotalScore = donorOldScores.totalScore;
                 var newTotalScore = (oldTotalScore - oldExpireScore) + newExpireScore;
 
-                if (newExpireScore > 0 && newTotalScore >= 60) {
+                if (newExpireScore > 0 && newTotalScore >= 60) 
+                {
+                	console.log("Updating doctor notifcation");
                     return DoctorNotifications.update({ "_id": ObjectId(req.params.doctor_id) }, {
                         $set: {
                             "scores.expireScore": newExpireScore,
@@ -908,13 +918,20 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
                             "createdAt": new Date()
                         }
                     });
-                } else {
-                    DoctorNotifications.delete({ "_id": ObjectId(req.params.doctor_id) });
-                    res.status(201).send({ success: true, hasNotification: false });
                 }
+                else 
+           		{
+	            	console.log("Removing doctor notification");
+	                DoctorNotifications.remove({ "_id": ObjectId(req.params.doctor_id) }, function(err, update){
+	                	if (update)
+	                	{
+	                		res.status(201).send({ success: true, hasNotification: false });
+	                	}
+	                });
+	            }
             }
         }).then(function(update) {
-            console.log(update);
+        	console.log(update);
             if (update) {
                 return DoctorNotifications.findOne({ "_id": ObjectId(req.params.doctor_id) });
             }
@@ -929,15 +946,14 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
 
 router.post('/doctor/api/respond-to-match/', function(req, res) {
     var request = req.body;
-
     console.log(request);
-    res.status(201).send("Acknowledged");
-
+    //res.status(201).send("Acknowledged");
+    var today = new Date();
     if (request.choice == "accept") {
-        var today = new Date();
 
         Matches.findOne({ "_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0) })
             .then(function(date) {
+            	console.log(date);
                 if (date == null) {
                     var newMatchDoc = new Matches({
                         _id: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0),
@@ -951,8 +967,73 @@ router.post('/doctor/api/respond-to-match/', function(req, res) {
                     });
                     return newMatchDoc.save();
                 }
-            }).then(function(match) {
 
+            }).then(function() {
+        		if (request.organType == "Heart")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.heart": 1}});
+                }
+                else if (request.organType == "Kidney")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.kidney": 1}});
+                }
+                else if (request.organType == "Pancreas")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.pancreas": 1}});
+                }
+                else if (request.organType == "Lung")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.lung": 1}});
+                }
+                else if (request.organType == "Liver")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.liver": 1}});
+                }
+
+            	
+            }).then(function(update){
+            	if (update)
+            	{
+            		return Recipient.remove({"_id" : ObjectId(request.recipientId)});
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{	
+            		return Donor.remove({"_id": ObjectId(request.donorId)});
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		return Doctor.update({"patients" : ObjectId(request.recipientId)}, {$pull : ObjectId(request.recipientId)});	
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		return Doctor.update({"patients" : ObjectId(request.donorId)}, {$pull : ObjectId(request.donorId)});
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		return DoctorNotifications.remove({"_id" : ObjectId(request.doctorId)});
+            	}	
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		res.status(201).send({success : true, message : "All collections updated"});
+            	}
+            }).catch(function(err){
+            	console.log(err);
+            	res.status(500).send({success : true, message : "One of the update collections failed"});
             });
     }
 });
