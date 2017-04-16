@@ -402,62 +402,8 @@ var getMatchingScore = function(donor, recipient) {
             });
 
 
-    });
-
-	
+    });	
 };
-
-var generateMatchforDonor = function(donor) {
-    var doner = donor;
-    var waitlist = {};
-    if (donor.organType == "Heart")
-    {
-        // waitlist = mongoose.model('heart_waitlists', waitlistSchema);
-        waitlist = schemas.Heart_Waitlist;
-    }
-    else if (donor.organType == "Liver")
-    {
-        //waitlist = mongoose.model('liver_waitlists', waitlistSchema);
-        waitlist = schemas.Liver_Waitlist;
-    }
-    else if (donor.organType == "Lung")
-    {
-        //waitlist = mongoose.model('lung_waitlists', waitlistSchema);
-        waitlist = schemas.Lung_Waitlist;
-    }
-    else if (donor.organType == "Pancreas")
-    {
-        //waitlist = mongoose.model('pancreas_waitlists', waitlistSchema);
-        waitlist = schemas.Heart_Waitlist;
-    }
-    else if (donor.organType == "Kidney")
-    {
-        //waitlist = mongoose.model('kidney_waitlists', waitlistSchema);
-        waitlist = schemas.Heart_Waitlist;
-    }
-    waitlist.find().sort({"priority" : -1}).exec(function(err, sortedList){
-        console.log(sortedList);
-        var matchScore = 0;
-        scorePromises = [];
-        var recipientID;
-        for (i = 0; i < sortedList.length; i++)
-        {
-            recipientID = sortedList[i]._id;
-            Recipient.findOne({"_id": recipientID})
-                .then(function(recipient){
-                    if (recipient)
-                    {
-                        var scorePromise = new getMatchingScore(donor, recipient);
-                        scorePromises.push(scorePromise);
-                    }
-                });
-        }
-        Promise.all(scorePromises).then(function(scoresArray){
-            notifyRecipientDoctor(scoresArray);
-        });
-    });
-};
-
 
 var notifyRecipientDoctor = function(scoresArray) {
     var scoreCompare = function(a,b){
@@ -469,7 +415,6 @@ var notifyRecipientDoctor = function(scoresArray) {
     var winner = sortedScoresArray[0];
 
     var organType = winner.organType;
-
 
     if (winner && winner.totalScore > 60)
     {
@@ -488,25 +433,79 @@ var notifyRecipientDoctor = function(scoresArray) {
                         console.log(doc);
                     });
                 }
+                else
+                {
+                    console.log("Doctor notifcation already exists. It must be accepted before pushing a new one");
+                }
             });
     }
-
-
-
-    if (winner && winner.totalScore > 60)
-    {
-        console.log("Notifiying Doctor of donor match");
-        var newDoctorNotification = new DoctorNotifications({"_id": ObjectId(winner.doctor), "createdAt" : new Date(), "expiresAt" : new Date(Date.now() + 3600*1000),
-        "donor": ObjectId(winner.donor), "recipient" : ObjectId(winner.recipient), scores : {"HLAscore": winner.HLAscore,
-        "sizeScore": winner.sizeScore, "travelScore": winner.travelScore, "expireScore": winner.expireScore, "totalScore": winner.totalScore,
-        "kidneyBonus" : winner.kidneyBonus, "pediatricBonus" :winner.pediatricBonus}});
-
-        newDoctorNotification.save(function(err, doc){
-            if (err) console.log(err);
-            console.log(doc);
-    });
-    }
 };
+
+var generateMatchforDonor = function(donor) {
+    var doner = donor;
+    var waitlist = {};
+    if (donor.organType == "Heart")
+    {
+
+        waitlist = schemas.Heart_Waitlist;
+    }
+    else if (donor.organType == "Liver")
+    {
+
+        waitlist = schemas.Liver_Waitlist;
+    }
+    else if (donor.organType == "Lung")
+    {
+        waitlist = schemas.Lung_Waitlist;
+    }
+    else if (donor.organType == "Pancreas")
+    {
+
+        waitlist = schemas.Heart_Waitlist;
+    }
+    else if (donor.organType == "Kidney")
+    {
+
+        waitlist = schemas.Heart_Waitlist;
+    }
+
+    var sortedList;
+
+    var nextOne = function(i){
+        if (i <= sortedList.length)
+        {
+            recipientID = sortedList[i]._id;
+
+            Recipient.findOne({"_id": recipientID})
+                .then(function(recipient){
+                    if (recipient)
+                    {
+                        getMatchingScore(donor, recipient).then(function(score){
+                            if (score.totalScore > 60)
+                            {
+                                notifyRecipientDoctor([score]);
+                                return;
+                            }
+                            else
+                            {
+                                console.log("Not a good match, nextOne()")
+                                nextOne(i+1);
+                            }
+                        });  
+                    }
+                });
+        }
+    };
+
+    waitlist.find().sort({"priority" : -1})
+        .then(function(list){
+            sortedList = list;
+        }).then(function(){
+            nextOne(0);
+    });
+};
+
+
 
 var generateMatchforRecipient = function(recipient) {
     Donor.find()

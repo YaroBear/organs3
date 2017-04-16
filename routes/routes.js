@@ -77,7 +77,7 @@ var Pancreas_Waitlist = schemas.Pancreas_Waitlist;
 //******************************
 
 /*
-Recipient.findOne({"_id" : ObjectId("58ee78e6976b8c332c7ac2ef")})
+Recipient.findOne({"organType" : "Heart"})
     .then(function(recip)
     {
     	if (recip)
@@ -88,6 +88,17 @@ Recipient.findOne({"_id" : ObjectId("58ee78e6976b8c332c7ac2ef")})
         
     });
 */
+
+Donor.findOne({"_id" : ObjectId("58f2b9bdb8d16a0fa01ecca2")})
+    .then(function(donor)
+    {
+    	if (donor)
+    	{
+    		return matchingFunctions.generateMatchforDonor(donor);
+    	}
+        
+        
+    });
 
 router.get('/api/hospitals/names', function(req, res) {
     Hospital.find({}, { name: 1 }, function(err, data) {
@@ -885,8 +896,12 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
                 donorOldScores = notification.scores;
                 return Donor.findOne({ "_id": ObjectId(notification.donor) });
             }
+            else
+            {
+            	res.status(201).send({ success: true, hasNotification: false });
+            }
         }).then(function(donor) {
-            if (donor != null) {
+            if (donor) {
                 var newExpireScore = matchingFunctions.getOrganTimeScore(donor);
                 var oldExpireScore = donorOldScores.expireScore;
                 var oldTotalScore = donorOldScores.totalScore;
@@ -902,17 +917,17 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
                             "createdAt": new Date()
                         }
                     });
-                } 
-            }
-            else 
-            {
-            	console.log("Removing doctor notification");
-                DoctorNotifications.remove({ "_id": ObjectId(req.params.doctor_id) }, function(err, update){
-                	if (update)
-                	{
-                		res.status(201).send({ success: true, hasNotification: false });
-                	}
-                });
+                }
+                else 
+           		{
+	            	console.log("Removing doctor notification");
+	                DoctorNotifications.remove({ "_id": ObjectId(req.params.doctor_id) }, function(err, update){
+	                	if (update)
+	                	{
+	                		res.status(201).send({ success: true, hasNotification: false });
+	                	}
+	                });
+	            }
             }
         }).then(function(update) {
         	console.log(update);
@@ -932,7 +947,7 @@ router.post('/doctor/api/respond-to-match/', function(req, res) {
     var request = req.body;
 
     console.log(request);
-    res.status(201).send("Acknowledged");
+    //res.status(201).send("Acknowledged");
 
     if (request.choice == "accept") {
         var today = new Date();
@@ -952,8 +967,11 @@ router.post('/doctor/api/respond-to-match/', function(req, res) {
                     });
                     return newMatchDoc.save();
                 }
-            }).then(function(match) {
-
+            }).then(function(newDoc) {
+            	if (newDoc)
+            	{
+            		//Match.update({"_id" : new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)}, )
+            	}
             });
     }
 });
