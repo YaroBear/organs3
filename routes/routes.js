@@ -78,8 +78,8 @@ var Pancreas_Waitlist = schemas.Pancreas_Waitlist;
 //******************************
 //******************************
 
-/*
-Recipient.findOne({"organType" : "Heart"})
+
+Recipient.findOne({"organType" : "Lung"})
     .then(function(recip)
     {
     	if (recip)
@@ -89,9 +89,10 @@ Recipient.findOne({"organType" : "Heart"})
         
         
     });
-*/
 
-Donor.findOne({"_id" : ObjectId("58f31abbdb0d4f27d4c9f77a")})
+
+/*
+Donor.findOne({"_id" : ObjectId("58f324cebd02080d54e01589")})
     .then(function(donor)
     {
     	if (donor)
@@ -101,7 +102,7 @@ Donor.findOne({"_id" : ObjectId("58f31abbdb0d4f27d4c9f77a")})
         
         
     });
-
+*/
 
 router.get('/api/hospitals/names', function(req, res) {
     Hospital.find({}, { name: 1 }, function(err, data) {
@@ -785,20 +786,23 @@ router.post('/doctor/api/recipients', function(req, res) {
         }).then(function(newRecipient) {
         	if (newRecipient)
         	{
-	            Doctor.findOneAndUpdate({ "_id": request.doctor_id }, {
+        		recip = newRecipient;
+	            return Doctor.findOneAndUpdate({ "_id": request.doctor_id }, {
 	                $push: { patients: newRecipient._id }});
         	}
-        }).then(function(newRecipient) {
-            if (newRecipient) {
-                matchingFunctions.addRecipientToWaitlist(newRecipient);
-                matchingFunctions.generateMatchforRecipient(recip);
+        }).then(function(updated) {
+            if (updated) {
+                return matchingFunctions.addRecipientToWaitlist(recip);
             }
-        }).then(function() {
-            res.status(201).send({ ok: true, message: 'Recipient added successfully' });
-
+        }).then(function(added) {
+        	if (added)
+        	{
+        		matchingFunctions.generateMatchforRecipient(recip);
+       			res.status(201).send({ ok: true, message: 'Recipient added successfully' });
+        	}
         }).catch(function(err) {
-        	errors.validationError = err;
-            res.status(400).send({ success: false, errors });
+        	errors.validationError = err
+            res.status(400).send({ success: false, errors: errors });
     });
 });
 //ADD Donors to donor list
@@ -1000,12 +1004,12 @@ router.post('/doctor/api/respond-to-match/', function(req, res) {
             }).then(function(removed){
             	if (removed)
             	{
-            		return Doctor.update({"patients" : ObjectId(request.recipientId)}, {$pull : ObjectId(request.recipientId)});	
+            		return Doctor.update({"patients" : ObjectId(request.recipientId)}, {$pull : {"patients" :  ObjectId(request.recipientId)}});	
             	}
             }).then(function(removed){
             	if (removed)
             	{
-            		return Doctor.update({"patients" : ObjectId(request.donorId)}, {$pull : ObjectId(request.donorId)});
+            		return Doctor.update({"patients" : ObjectId(request.donorId)}, {$pull : {"patients" :  ObjectId(request.donorId)}});
             	}
             }).then(function(removed){
             	if (removed)
@@ -1068,6 +1072,16 @@ router.post('/doctor/api/respond-to-match/', function(req, res) {
     			res.status(500).send({success : true, err: err, message : "Adding to rejection collection failed"});
     		});
     }
+
+    Donor.find()
+    	.then(function(allDonors){
+    		for (var i = 0; i < allDonors.length; i++)
+    		{
+    			matchingFunctions.generateMatchforDonor(allDonors[i]);
+    		}
+    	});
+
+
 });
 
 router.get('/doctor/api/doctors', function(req, res) {

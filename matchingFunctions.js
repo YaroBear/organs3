@@ -101,12 +101,14 @@ var addRecipientToWaitlist = function(recipient) {
 
 var getOrganTimeScore = function(donor) {
     console.log("Determining donor organ age compatability");
+
+    console.log(donor);
     var preservationTimes = {
         "Kidney" : 36,
         "Pancreas": 18,
         "Liver": 12,
         "Heart": 6,
-        "Lungs": 6
+        "Lung": 6
         };
     var diffMs = (Date.now() - donor.dateAdded);
     var diffHours = diffMs/(60*60*1000);
@@ -177,6 +179,8 @@ var deleteDonorUpdateWastedCollection = function(donor){
                     console.log(update);
                     return Donor.findOneAndRemove({"_id" : ObjectId(donor._id)})
                 }).then(function(update){
+                    return Doctor.update({"patients" : ObjectId(donor._id)}, {$pull : {"patients" : {"_id" : ObjectId(donor._id)}}});
+                }).then(function(update){
                     console.log("Expired donor deleted");
                 });
 };
@@ -242,18 +246,17 @@ var getMatchingScore = function(donor, recipient) {
                         "AB-" : ["AB-", "A-", "B-", "O-"],
                         "O+" : ["O+", "O-"],
                         "O-": ["O-"],
-                        // AB+ everyone
+                        "AB+" :["A+", "A-", "O+", "O-", "B+", "B-", "AB-", "AB+"]
                         };
 
-                    if (recipient.bloodtype != "AB+")
+                
+                    if (!bloodMatch[recipient.bloodType].includes(donor.bloodType))
                     {
-                        if (!bloodMatch[recipient.bloodType].includes(donor.bloodType))
-                        {
-                            console.log("Incompatible blood type");
-                            resolve(zeroScore);
-                            return score; // 0
-                        }
+                        console.log("Incompatible blood type");
+                        resolve(zeroScore);
+                        return score; // 0
                     }
+                    
 
                     // hla type check
                     //
@@ -487,7 +490,7 @@ var generateMatchforDonor = function(donor) {
     var sortedList;
 
     var nextOne = function(i){
-        if (i <= sortedList.length)
+        if (sortedList[i])
         {
             recipientID = sortedList[i]._id;
 

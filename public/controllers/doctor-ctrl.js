@@ -754,7 +754,7 @@ var doctor = angular.module('doctor', [])
                         text: text_hover,
                         marker: { size: 12 }
                     };
-                    var title = "Total number on wait list: " + $scope.recipents.length;
+                    var title = organ + " Waitlist";
                     var layout = {
                         xaxis: {
                             title: 'Date Added to Wait list'
@@ -803,7 +803,7 @@ var doctor = angular.module('doctor', [])
                         name: organ,
                         marker: { size: 12 }
                     };
-                    var title = "Total number of matches for " + organ + ": " + data.length;
+                    var title = "Matches for " + organ + ": ";
 
                     var layout = {
                         xaxis: {
@@ -853,7 +853,7 @@ var doctor = angular.module('doctor', [])
                         name: organ,
                         marker: { size: 12 }
                     };
-                    var title = "Total number of wasted " + organ + "s: " + data.length;
+                    var title = "Wasted " + organ + "s: ";
 
                     var layout = {
                         xaxis: {
