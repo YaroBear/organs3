@@ -100,6 +100,7 @@ Donor.findOne({"_id" : ObjectId("58f2b9bdb8d16a0fa01ecca2")})
         
     });
 
+
 router.get('/api/hospitals/names', function(req, res) {
     Hospital.find({}, { name: 1 }, function(err, data) {
         if (err)
@@ -945,15 +946,14 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
 
 router.post('/doctor/api/respond-to-match/', function(req, res) {
     var request = req.body;
-
     console.log(request);
     //res.status(201).send("Acknowledged");
-
+    var today = new Date();
     if (request.choice == "accept") {
-        var today = new Date();
 
         Matches.findOne({ "_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0) })
             .then(function(date) {
+            	console.log(date);
                 if (date == null) {
                     var newMatchDoc = new Matches({
                         _id: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0),
@@ -967,11 +967,73 @@ router.post('/doctor/api/respond-to-match/', function(req, res) {
                     });
                     return newMatchDoc.save();
                 }
-            }).then(function(newDoc) {
-            	if (newDoc)
+
+            }).then(function() {
+        		if (request.organType == "Heart")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.heart": 1}});
+                }
+                else if (request.organType == "Kidney")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.kidney": 1}});
+                }
+                else if (request.organType == "Pancreas")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.pancreas": 1}});
+                }
+                else if (request.organType == "Lung")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.lung": 1}});
+                }
+                else if (request.organType == "Liver")
+                {
+                    return Matches.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                        {$inc : {"organs.liver": 1}});
+                }
+
+            	
+            }).then(function(update){
+            	if (update)
             	{
-            		//Match.update({"_id" : new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)}, )
+            		return Recipient.remove({"_id" : ObjectId(request.recipientId)});
             	}
+            }).then(function(removed){
+            	if (removed)
+            	{	
+            		return Donor.remove({"_id": ObjectId(request.donorId)});
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		return Doctor.update({"patients" : ObjectId(request.recipientId)}, {$pull : ObjectId(request.recipientId)});	
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		return Doctor.update({"patients" : ObjectId(request.donorId)}, {$pull : ObjectId(request.donorId)});
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		return DoctorNotifications.remove({"_id" : ObjectId(request.doctorId)});
+            	}	
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		
+            	}
+            }).then(function(removed){
+            	if (removed)
+            	{
+            		res.status(201).send({success : true, message : "All collections updated"});
+            	}
+            }).catch(function(err){
+            	console.log(err);
+            	res.status(500).send({success : true, message : "One of the update collections failed"});
             });
     }
 });

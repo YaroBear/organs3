@@ -290,6 +290,7 @@ var getMatchingScore = function(donor, recipient) {
             else
             {
                 console.log("Organ sizes differ by more than 15%");
+                scoreDetails.sizeScore = 0;
                 return 0;
             }
         };
