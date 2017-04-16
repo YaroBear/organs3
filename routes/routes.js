@@ -78,7 +78,7 @@ var Pancreas_Waitlist = schemas.Pancreas_Waitlist;
 //******************************
 //******************************
 
-
+/*
 Recipient.findOne({"organType" : "Lung"})
     .then(function(recip)
     {
@@ -89,7 +89,7 @@ Recipient.findOne({"organType" : "Lung"})
         
         
     });
-
+*/
 
 /*
 Donor.findOne({"_id" : ObjectId("58f324cebd02080d54e01589")})
