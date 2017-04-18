@@ -102,7 +102,7 @@ var addRecipientToWaitlist = function(recipient) {
 var getOrganTimeScore = function(donor) {
     console.log("Determining donor organ age compatability");
 
-    console.log(donor);
+    //console.log(donor);
     var preservationTimes = {
         "Kidney" : 36,
         "Pancreas": 18,
@@ -126,64 +126,6 @@ var getOrganTimeScore = function(donor) {
     }
 };
 
-
-var deleteDonorUpdateWastedCollection = function(donor){
-    var today = new Date();
-
-    WastedOrgans.findOne({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)})
-                .then(function(date)
-                {
-                    if (date == null)
-                    {
-                        var wastedDoc = new WastedOrgans({
-                            _id: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0 ,0),
-                            organs: {
-                                heart: 0,
-                                kidney: 0,
-                                liver: 0,
-                                lung: 0,
-                                pancreas: 0
-                            }
-                        });
-                        return wastedDoc.save();
-                    }
-
-                }).then(function(update){
-                    console.log("Updating wasted organ collection");
-                    if (donor.organType == "Heart")
-                    {
-                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
-                            {$inc : {"organs.heart": 1}});
-                    }
-                    else if (donor.organType == "Kidney")
-                    {
-                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
-                            {$inc : {"organs.kidney": 1}});
-                    }
-                    else if (donor.organType == "Pancreas")
-                    {
-                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
-                            {$inc : {"organs.pancreas": 1}});
-                    }
-                    else if (donor.organType == "Lung")
-                    {
-                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
-                            {$inc : {"organs.lung": 1}});
-                    }
-                    else if (donor.organType == "Liver")
-                    {
-                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
-                            {$inc : {"organs.liver": 1}});
-                    }
-                }).then(function(update){
-                    console.log(update);
-                    return Donor.findOneAndRemove({"_id" : ObjectId(donor._id)})
-                }).then(function(update){
-                    return Doctor.update({"patients" : ObjectId(donor._id)}, {$pull : {"patients" : {"_id" : ObjectId(donor._id)}}});
-                }).then(function(update){
-                    console.log("Expired donor deleted");
-                });
-};
 
 var getMatchingScore = function(donor, recipient) {
     return new Promise(function(resolve, reject){
@@ -438,7 +380,7 @@ var notifyRecipientDoctor = function(scoresArray) {
     {
         DoctorNotifications.findOne({"_id": ObjectId(winner.doctor)})
             .then(function(notification){
-                if (!notification)
+                if (notification == null)
                 {
                     console.log("Notifiying Doctor of donor match");
                     var newDoctorNotification = new DoctorNotifications({"_id": ObjectId(winner.doctor), "createdAt" : new Date(),
@@ -453,7 +395,7 @@ var notifyRecipientDoctor = function(scoresArray) {
                 }
                 else
                 {
-                    console.log("Doctor notifcation already exists. It must be accepted before pushing a new one");
+                    console.log("Doctor notification already exists. It must be accepted before pushing a new one");
                 }
             });
     }
@@ -523,6 +465,70 @@ var generateMatchforDonor = function(donor) {
     });
 };
 
+var deleteDonorUpdateWastedCollection = function(donor){
+    var today = new Date();
+
+    WastedOrgans.findOne({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)})
+                .then(function(date)
+                {
+                    if (date == null)
+                    {
+                        var wastedDoc = new WastedOrgans({
+                            _id: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0 ,0),
+                            organs: {
+                                heart: 0,
+                                kidney: 0,
+                                liver: 0,
+                                lung: 0,
+                                pancreas: 0
+                            }
+                        });
+                        return wastedDoc.save();
+                    }
+
+                }).then(function(update){
+                    console.log("Updating wasted organ collection");
+                    if (donor.organType == "Heart")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.heart": 1}});
+                    }
+                    else if (donor.organType == "Kidney")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.kidney": 1}});
+                    }
+                    else if (donor.organType == "Pancreas")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.pancreas": 1}});
+                    }
+                    else if (donor.organType == "Lung")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.lung": 1}});
+                    }
+                    else if (donor.organType == "Liver")
+                    {
+                        return WastedOrgans.update({"_id": new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0)},
+                            {$inc : {"organs.liver": 1}});
+                    }
+                }).then(function(update){
+                    console.log(update);
+                    return Donor.findOneAndRemove({"_id" : ObjectId(donor._id)})
+                }).then(function(update){
+                    return Doctor.update({"patients" : ObjectId(donor._id)}, {$pull : {"patients" :  ObjectId(donor._id)}});
+                }).then(function(update){
+                    console.log("Expired donor deleted");
+                        Donor.find()
+                            .then(function(allDonors){
+                                for (var i = 0; i < allDonors.length; i++)
+                                {
+                                    generateMatchforDonor(allDonors[i]);
+                                }
+                            });
+                });
+};
 
 
 var generateMatchforRecipient = function(recipient) {

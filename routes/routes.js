@@ -52,7 +52,11 @@ cron.schedule('* * * * *', function() {
 
             if (timeLeft <= 0) {
                 matchingFunctions.deleteDonorUpdateWastedCollection(donors[i]);
+                console.log("Removing doctor notification");
+                DoctorNotifications.remove({ donor : donors[i]._id }, function(update){
+                });
             }
+
         }
     });
 });
@@ -103,7 +107,15 @@ Donor.findOne({"_id" : ObjectId("58f324cebd02080d54e01589")})
         
     });
 */
-
+/*
+    Donor.find()
+        .then(function(allDonors){
+            for (var i = 0; i < allDonors.length; i++)
+            {
+                matchingFunctions.generateMatchforDonor(allDonors[i]);
+            }
+        });
+*/
 router.get('/api/hospitals/names', function(req, res) {
     Hospital.find({}, { name: 1 }, function(err, data) {
         if (err)
@@ -897,15 +909,19 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
             	res.status(201).send({ success: true, hasNotification: false });
             }
         }).then(function(donor) {
+            console.log(donor);
             if (donor) {
                 var newExpireScore = matchingFunctions.getOrganTimeScore(donor);
                 var oldExpireScore = donorOldScores.expireScore;
                 var oldTotalScore = donorOldScores.totalScore;
                 var newTotalScore = (oldTotalScore - oldExpireScore) + newExpireScore;
 
+                console.log(newExpireScore);
+                console.log(newTotalScore);
+
                 if (newExpireScore > 0 && newTotalScore >= 60) 
                 {
-                	console.log("Updating doctor notifcation");
+                	console.log("Updating doctor notification");
                     return DoctorNotifications.update({ "_id": ObjectId(req.params.doctor_id) }, {
                         $set: {
                             "scores.expireScore": newExpireScore,
@@ -917,7 +933,7 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
                 else 
            		{
 	            	console.log("Removing doctor notification");
-	                DoctorNotifications.remove({ "_id": ObjectId(req.params.doctor_id) }, function(err, update){
+	                DoctorNotifications.remove({ "_id": ObjectId(req.params.doctor_id) }, function(update){
 	                	if (update)
 	                	{
 	                		res.status(201).send({ success: true, hasNotification: false });
@@ -926,7 +942,6 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
 	            }
             }
         }).then(function(update) {
-        	console.log(update);
             if (update) {
                 return DoctorNotifications.findOne({ "_id": ObjectId(req.params.doctor_id) });
             }
@@ -935,7 +950,10 @@ router.get('/doctor/api/doctor-notification/:doctor_id', function(req, res) {
                 res.status(201).send({ success: true, hasNotification: true, notification });
             }
         }).catch(function(err) {
-            res.status(500).send({ success: false, error: err });
+            if (err)
+            {
+                res.status(500).send({ success: false, error: err });
+            }
         });
 });
 
