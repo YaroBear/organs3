@@ -139,7 +139,7 @@ var donorSchema = new Schema({
         state: {type: String, required: [true, "Please select a state"]},
         zip: {type: String, validate: {
             validator: function(v) {
-                return /\d{5}/.test(v);
+                return /^[0-9]{5}$/.test(v);
             },
             message: "Please enter zip code as xxxxx"
         }, required: [true, "Zip code is required"]},
@@ -156,9 +156,9 @@ var donorSchema = new Schema({
     dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, validate: {
             validator: function(v) {
-                return /\d{6}/.test(v);
+                return /^[0-1]{6}$/.test(v);
             },
-            message: "Please enter HLA matching criteria as xxxxxx"
+            message: "Please enter HLA matching criteria as a string of six 1's and 0's in the form xxxxxx"
         }, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]},
@@ -200,7 +200,7 @@ var recipientSchema = new Schema({
 
         zip: {type: String, validate: {
             validator: function(v) {
-                return /\d{5}/.test(v);
+                return /^[0-9]{5}$/.test(v);
             },
             message: "Please enter zip code as xxxxx"
         },required: [true, "Zip code is required"]},
@@ -217,9 +217,9 @@ var recipientSchema = new Schema({
     dateAdded: {type: Date, required: [true, "Date is required"]},
     HLAType: {type: String, validate: {
             validator: function(v) {
-                return /\d{6}/.test(v);
+                return /^[0-1]{6}$/.test(v);
             },
-            message: "Please enter HLA matching criteria as xxxxxx"
+            message: "Please enter HLA matching criteria as a string of six 1's and 0's in the form xxxxxx"
         }, required: [true, "HLA type is required"]},
     height: {type: String, required: [true, "height is required"]},
     weight: {type: String, required: [true, "weight is required"]},
